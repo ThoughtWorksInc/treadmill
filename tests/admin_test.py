@@ -50,12 +50,12 @@ class AdminTest(unittest.TestCase):
         """Tests group by attribute option."""
         # Disable W0212: Test access protected members of admin module.
         # pylint: disable=W0212
-        self.assertEquals({'a': [('xxx', 'a', ['1']),
+        self.assertEquals(sorted({'a': [('xxx', 'a', ['1']),
                                  ('yyy', 'a', ['2'])],
-                           'b': [('xxx', 'b', ['3'])]},
-                          admin._group_entry_by_opt({'xxx;a': ['1'],
+                           'b': [('xxx', 'b', ['3'])]}),
+                          sorted(admin._group_entry_by_opt({'xxx;a': ['1'],
                                                      'xxx;b': ['3'],
-                                                     'yyy;a': ['2']}))
+                                                     'yyy;a': ['2']})))
 
     def test_grouped_to_list_of_dict(self):
         """Test conversion of grouped by opt elements to dicts."""
