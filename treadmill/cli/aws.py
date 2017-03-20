@@ -36,7 +36,10 @@ def init():
     @click.option('--key-file',
                   default='key.pem',
                   help='AWS ssh pem file',)
-    def cell(create, playbook, inventory, key_file):
+    @click.option('--aws-config',
+                  default=_get_from_treadmill_egg('aws.yml'),
+                  help='AWS config file',)
+    def cell(create, playbook, inventory, key_file, aws_config):
         """Manage treadmill cell on AWS"""
         if create:
             playbook_cli = PlaybookCLI([
@@ -46,6 +49,8 @@ def init():
                 playbook,
                 '--key-file',
                 key_file,
+                '-e',
+                'aws_config={}'.format(aws_config),
             ])
             playbook_cli.parse()
             playbook_cli.run()
@@ -64,7 +69,10 @@ def init():
     @click.option('--key-file',
                   default='key.pem',
                   help='AWS ssh pem file',)
-    def node(create, playbook, inventory, key_file):
+    @click.option('--aws-config',
+                  default=_get_from_treadmill_egg('aws.yml'),
+                  help='AWS config file',)
+    def node(create, playbook, inventory, key_file, aws_config):
         """Manage treadmill node"""
         if create:
             playbook_cli = PlaybookCLI([
@@ -74,6 +82,8 @@ def init():
                 playbook,
                 '--key-file',
                 key_file,
+                '-e',
+                'aws_config={}'.format(aws_config),
             ])
             playbook_cli.parse()
             playbook_cli.run()

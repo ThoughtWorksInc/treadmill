@@ -2,6 +2,6 @@
 - hosts: controller
   pre_tasks:
     - include_vars:
-        file: aws.yml
+        file: "{{aws_config | default('aws.yml')}}"
   roles:
     - {role: vpc}
