@@ -20,7 +20,7 @@ def init():
 
     def _get_from_treadmill_egg(obj):
         treadmill_egg_path = treadmill.__path__
-        return os.path.join(treadmill_egg_path[0], '../ansible/', obj)
+        return os.path.join(treadmill_egg_path[0], '../deploy/', obj)
 
     @aws.command(name='cell')
     @click.option('--create',
