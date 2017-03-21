@@ -5,7 +5,9 @@ import logging
 import treadmill
 import os
 import click
+import errno
 from ansible.cli.playbook import PlaybookCLI
+from distutils.dir_util import copy_tree
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,10 +24,20 @@ def init():
         treadmill_egg_path = treadmill.__path__
         return os.path.join(treadmill_egg_path[0], '../deploy/', obj)
 
+    @aws.command(name='init')
+    def init():
+        """Initialise ansible files for AWS deployment"""
+        destination_dir = os.getcwd() + '/deploy'
+        try:
+            os.makedirs(destination_dir)
+        except OSError, e:
+            if e.errno == errno.EEXIST:
+                print '''AWS "deploy" directory already exists in this filder
+                \n''', destination_dir
+        copy_tree(_get_from_treadmill_egg('../deploy'), destination_dir)
+
     @aws.command(name='cell')
-    @click.option('--create',
-                  required=False,
-                  is_flag=True,
+    @click.option('--create', required=False, is_flag=True,
                   help='Create a new treadmill cell on AWS',)
     @click.option('--playbook',
                   default=_get_from_treadmill_egg('cell.yml'),

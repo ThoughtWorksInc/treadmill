@@ -16,7 +16,6 @@ class AwsTest(unittest.TestCase):
 
     def setUp(self):
         """Setup common test variables"""
-
         self.runner = click.testing.CliRunner()
         self.configure_cli = importlib.import_module(
             'treadmill.cli.aws').init()
@@ -59,7 +58,11 @@ class AwsTest(unittest.TestCase):
                 'cell.yml',
             ),
             '--key-file',
-            'key.pem'
+            'key.pem',
+            '-e',
+            'aws_config=' + os.path.join(
+                treadmill.__path__[0], '../deploy/aws.yml'
+            )
         ])
 
         playbook_cli_obj_mock.parse.assert_called_once()
@@ -102,11 +105,25 @@ class AwsTest(unittest.TestCase):
                 'node.yml',
             ),
             '--key-file',
-            'key.pem'
+            'key.pem',
+            '-e',
+            'aws_config=' + os.path.join(
+                treadmill.__path__[0], '../deploy/aws.yml'
+            )
         ])
 
         playbook_cli_obj_mock.parse.assert_called_once()
         playbook_cli_obj_mock.run.assert_called_once()
+
+    @mock.patch('treadmill.cli.aws.copy_tree')
+    def test_aws_init(self, copy_tree_mock):
+        """Test treadmill CLI init"""
+
+        self.runner.invoke(
+            self.configure_cli,
+            ['init']
+        )
+        copy_tree_mock.assert_called_once()
 
 
 if __name__ == '__main__':
