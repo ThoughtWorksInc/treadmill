@@ -38,9 +38,9 @@ def init():
     @aws.command(name='cell')
     @click.option('--create', required=False, is_flag=True,
                   help='Create a new treadmill cell on AWS',)
-    @click.option('--playbook',
-                  default=_get_from_treadmill_egg('cell.yml'),
-                  help='Playbok file',)
+    @click.option('--destroy', required=False, is_flag=True,
+                  help='Destroy treadmill cell on AWS',)
+    @click.option('--playbook', help='Playbok file',)
     @click.option('--inventory',
                   default=_get_from_treadmill_egg('controller.inventory'),
                   help='Inventory file',)
@@ -50,21 +50,33 @@ def init():
     @click.option('--aws-config',
                   default=_get_from_treadmill_egg('aws.yml'),
                   help='AWS config file',)
-    def cell(create, playbook, inventory, key_file, aws_config):
+    def cell(create, destroy, playbook, inventory, key_file, aws_config):
         """Manage treadmill cell on AWS"""
+
+        playbook_args = [
+            'ansible-playbook',
+            '-i',
+            inventory,
+            '--key-file',
+            key_file,
+            '-e',
+            'aws_config={}'.format(aws_config),
+        ]
+
         if create:
-            playbook_cli = PlaybookCLI([
-                'ansible-playbook',
-                '-i',
-                inventory,
-                playbook,
-                '--key-file',
-                key_file,
-                '-e',
-                'aws_config={}'.format(aws_config),
-            ])
-            playbook_cli.parse()
-            playbook_cli.run()
+            playbook_args.append(
+                playbook or _get_from_treadmill_egg('cell.yml')
+            )
+        elif destroy:
+            playbook_args.append(
+                playbook or _get_from_treadmill_egg('destroy-cell.yml')
+            )
+        else:
+            return
+
+        playbook_cli = PlaybookCLI(playbook_args)
+        playbook_cli.parse()
+        playbook_cli.run()
 
     @aws.command(name='node')
     @click.option('--create',

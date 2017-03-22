@@ -51,9 +51,42 @@ class AwsTest(unittest.TestCase):
                 treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'controller.inventory',
             ),
+            '--key-file',
+            'key.pem',
+            '-e',
+            'aws_config=' + os.path.join(
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
+                'aws.yml'
+            ),
             os.path.join(
                 treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'cell.yml',
+            ),
+         ])
+
+        playbook_cli_obj_mock.parse.assert_called_once()
+        playbook_cli_obj_mock.run.assert_called_once()
+
+    @mock.patch('treadmill.cli.aws.PlaybookCLI')
+    def test_cell_with_destroy(self, playbook_cli_mock):
+        """Test cli.aws.cell with destroy option"""
+
+        playbook_cli_obj_mock = mock.Mock(
+            **{
+                'parse.return_value': None,
+                'run.return_value': None
+            }
+        )
+        playbook_cli_mock.return_value = playbook_cli_obj_mock
+
+        self.runner.invoke(self.configure_cli, ['cell', '--destroy'])
+
+        playbook_cli_mock.assert_called_once_with([
+            'ansible-playbook',
+            '-i',
+            os.path.join(
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
+                'controller.inventory',
             ),
             '--key-file',
             'key.pem',
@@ -61,7 +94,11 @@ class AwsTest(unittest.TestCase):
             'aws_config=' + os.path.join(
                 treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'aws.yml'
-            )
+            ),
+            os.path.join(
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
+                'destroy-cell.yml',
+            ),
         ])
 
         playbook_cli_obj_mock.parse.assert_called_once()
