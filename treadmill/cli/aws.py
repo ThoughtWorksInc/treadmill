@@ -21,8 +21,7 @@ def init():
         pass
 
     def _get_from_treadmill_egg(obj):
-        treadmill_egg_path = treadmill.__path__
-        return os.path.join(treadmill_egg_path[0], '../deploy/', obj)
+        return os.path.join(treadmill.TREADMILL_DEPLOY_PACKAGE,  obj)
 
     @aws.command(name='init')
     def init():

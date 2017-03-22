@@ -48,20 +48,19 @@ class AwsTest(unittest.TestCase):
             'ansible-playbook',
             '-i',
             os.path.join(
-                treadmill.__path__[0],
-                '../deploy',
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'controller.inventory',
             ),
             os.path.join(
-                treadmill.__path__[0],
-                '../deploy',
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'cell.yml',
             ),
             '--key-file',
             'key.pem',
             '-e',
             'aws_config=' + os.path.join(
-                treadmill.__path__[0], '../deploy/aws.yml'
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
+                'aws.yml'
             )
         ])
 
@@ -95,20 +94,19 @@ class AwsTest(unittest.TestCase):
             'ansible-playbook',
             '-i',
             os.path.join(
-                treadmill.__path__[0],
-                '../deploy',
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'controller.inventory',
             ),
             os.path.join(
-                treadmill.__path__[0],
-                '../deploy',
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'node.yml',
             ),
             '--key-file',
             'key.pem',
             '-e',
             'aws_config=' + os.path.join(
-                treadmill.__path__[0], '../deploy/aws.yml'
+                treadmill.TREADMILL_DEPLOY_PACKAGE,
+                'aws.yml'
             )
         ])
 

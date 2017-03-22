@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 import os
 import pkgutil
-
+import treadmill
 
 __path__ = pkgutil.extend_path(__path__, __name__)
 
@@ -32,3 +32,5 @@ else:
     TREADMILL_BIN = os.path.join('/bin', _TREADMILL_SCRIPT)
 
 TREADMILL_LDAP = os.environ.get('TREADMILL_LDAP')
+TREADMILL_PACKAGE = treadmill.__path__[0]
+TREADMILL_DEPLOY_PACKAGE = os.path.join(TREADMILL_PACKAGE, '../deploy/')
