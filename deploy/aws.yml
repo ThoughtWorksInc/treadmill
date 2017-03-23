@@ -16,3 +16,10 @@ master:
 node_server:
   name: Treadmill_Node_Server
   exact_count: 1
+freeipa:
+  name: Treadmill_FreeIPA
+  exact_count: 1
+  realm: TW.TREADMILL
+  domain: tw.treadmill
+  server_hostname: ipa
+

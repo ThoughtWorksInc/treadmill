@@ -1,0 +1,8 @@
+---
+- name: install FreeIPA server package
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ipa-server
+

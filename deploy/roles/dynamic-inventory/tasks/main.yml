@@ -13,6 +13,13 @@
     ansible_user=centos
   with_items: "{{instance_facts_node_server.instances}}"
 
+- add_host:
+    groupname=ec2freeipainstances
+    hostname="{{item.public_ip_address}}"
+    instance_tags="{{item.tags}}"
+    ansible_user=centos
+  with_items: "{{instance_facts_freeipa_server.instances}}"
+
 - name: Wait for SSH
   local_action:
     wait_for host="{{ item.public_ip_address }}"
