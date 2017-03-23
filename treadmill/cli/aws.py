@@ -31,7 +31,7 @@ def init():
             os.makedirs(destination_dir)
         except OSError, e:
             if e.errno == errno.EEXIST:
-                print '''AWS "deploy" directory already exists in this filder
+                print '''AWS "deploy" directory already exists in this folder
                 \n''', destination_dir
         copy_tree(_get_from_treadmill_egg('../deploy'), destination_dir)
 
@@ -57,16 +57,16 @@ def init():
             'ansible-playbook',
             '-i',
             inventory,
-            '--key-file',
-            key_file,
             '-e',
             'aws_config={}'.format(aws_config),
         ]
 
         if create:
-            playbook_args.append(
-                playbook or _get_from_treadmill_egg('cell.yml')
-            )
+            playbook_args.extend([
+                playbook or _get_from_treadmill_egg('cell.yml'),
+                '--key-file',
+                key_file,
+            ])
         elif destroy:
             playbook_args.append(
                 playbook or _get_from_treadmill_egg('destroy-cell.yml')

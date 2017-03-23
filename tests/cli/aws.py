@@ -51,8 +51,6 @@ class AwsTest(unittest.TestCase):
                 treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'controller.inventory',
             ),
-            '--key-file',
-            'key.pem',
             '-e',
             'aws_config=' + os.path.join(
                 treadmill.TREADMILL_DEPLOY_PACKAGE,
@@ -62,7 +60,9 @@ class AwsTest(unittest.TestCase):
                 treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'cell.yml',
             ),
-         ])
+            '--key-file',
+            'key.pem',
+        ])
 
         playbook_cli_obj_mock.parse.assert_called_once()
         playbook_cli_obj_mock.run.assert_called_once()
@@ -88,8 +88,6 @@ class AwsTest(unittest.TestCase):
                 treadmill.TREADMILL_DEPLOY_PACKAGE,
                 'controller.inventory',
             ),
-            '--key-file',
-            'key.pem',
             '-e',
             'aws_config=' + os.path.join(
                 treadmill.TREADMILL_DEPLOY_PACKAGE,
