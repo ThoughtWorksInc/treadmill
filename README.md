@@ -1,5 +1,11 @@
 # Treadmill
 
+## Download
+```shell
+wget https://github.com/ThoughtWorksInc/treadmill/releases/download/0.0.1/treadmill -O /usr/bin/treadmill && chmod +x /usr/bin/treadmill
+```
+This will put `treadmill` in your path.
+
 [![Build Status](https://travis-ci.org/ThoughtWorksInc/treadmill.svg?branch=master)](https://travis-ci.org/ThoughtWorksInc/treadmill)
 
 ## Vagrant setup for development
