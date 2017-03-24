@@ -1,5 +1,7 @@
 aws_key_name: ms_treadmill_dev
 ami_id: ami-6d1c2007
+domain: tw.treadmill
+
 vpc:
   name: Treadmill
   cidr: 172.23.0.0/16
@@ -20,6 +22,4 @@ freeipa:
   name: Treadmill_FreeIPA
   exact_count: 1
   realm: TW.TREADMILL
-  domain: tw.treadmill
   server_hostname: ipa
-

@@ -1,7 +1,7 @@
 ---
 - name: Add route53 DNS Zone
   route53_zone:
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     state: present
     vpc_region: "{{vpc.region}}"
     vpc_id: "{{vpc_id}}"
@@ -9,120 +9,120 @@
 - name: Add DNS A record for IPA server
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: A
-    record: "{{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "{{freeipa.server_hostname}}.{{domain}}."
     value: "{{instance_facts_freeipa_server.instances[0].private_ip_address}}"
 
 - name: Add kerberos TXT DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: TXT
-    record: "_kerberos.{{freeipa.domain}}."
+    record: "_kerberos.{{domain}}."
     value: "\"{{freeipa.realm}}\""
 
 - name: Add kerberos master tcp SRV DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_kerberos-master._tcp.{{freeipa.domain}}."
-    value: "0 100 88 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_kerberos-master._tcp.{{domain}}."
+    value: "0 100 88 {{freeipa.server_hostname}}.{{domain}}."
 
 - name: Add kerberos tcp SRV DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_kerberos._tcp.{{freeipa.domain}}."
-    value: "0 100 88 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_kerberos._tcp.{{domain}}."
+    value: "0 100 88 {{freeipa.server_hostname}}.{{domain}}."
 
 - name: Add kpasswd tcp SRV DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_kpasswd._tcp.{{freeipa.domain}}."
-    value: "0 100 464 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_kpasswd._tcp.{{domain}}."
+    value: "0 100 464 {{freeipa.server_hostname}}.{{domain}}."
 
 - name: Add ldap tcp SRV DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_ldap._tcp.{{freeipa.domain}}."
-    value: "0 100 389 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_ldap._tcp.{{domain}}."
+    value: "0 100 389 {{freeipa.server_hostname}}.{{domain}}."
 
 - name: Add kerberos master udp SRV DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_kerberos-master._udp.{{freeipa.domain}}."
-    value: "0 100 88 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_kerberos-master._udp.{{domain}}."
+    value: "0 100 88 {{freeipa.server_hostname}}.{{domain}}."
 
 - name: Add kerberos udp SRV DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_kerberos._udp.{{freeipa.domain}}."
-    value: "0 100 88 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_kerberos._udp.{{domain}}."
+    value: "0 100 88 {{freeipa.server_hostname}}.{{domain}}."
 
 - name: Add kpasswd udp SRV DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_kpasswd._udp.{{freeipa.domain}}."
-    value: "0 100 464 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_kpasswd._udp.{{domain}}."
+    value: "0 100 464 {{freeipa.server_hostname}}.{{domain}}."
 
 - name: Add ntp udp SRV record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_ntp._udp.{{freeipa.domain}}."
-    value: "0 100 123 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_ntp._udp.{{domain}}."
+    value: "0 100 123 {{freeipa.server_hostname}}.{{domain}}."
 
 - name: Add IP CA DNS A record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: A
-    record: "ipa-ca.{{freeipa.domain}}."
+    record: "ipa-ca.{{domain}}."
     value: "{{instance_facts_freeipa_server.instances[0].private_ip_address}}"
 
 - name: Add VPC ldap tcp SRV DNS record
   route53:
     command: create
-    zone: "{{freeipa.domain}}"
+    zone: "{{domain}}"
     private_zone: true
     vpc_id: "{{vpc_id}}"
     type: SRV
-    record: "_ldap._tcp.{{vpc_id}}.{{freeipa.domain}}."
-    value: "0 100 1389 {{freeipa.server_hostname}}.{{freeipa.domain}}."
+    record: "_ldap._tcp.{{vpc_id}}.{{domain}}."
+    value: "0 100 1389 {{freeipa.server_hostname}}.{{domain}}."
 
