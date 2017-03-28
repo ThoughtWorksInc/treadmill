@@ -1,4 +1,11 @@
 ---
+- name: Add route53 DNS Zone
+  route53_zone:
+    zone: "{{domain}}"
+    state: present
+    vpc_region: "{{vpc.region}}"
+    vpc_id: "{{vpc_id}}"
+
 - name: Add entry to Route53  
   route53:
     command: create

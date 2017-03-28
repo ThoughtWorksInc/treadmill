@@ -21,4 +21,3 @@ freeipa:
   name: TreadmillFreeIPA
   exact_count: 1
   realm: TW.TREADMILL
-  server_hostname: ipa
