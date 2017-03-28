@@ -30,3 +30,4 @@
   with_flattened:
     - "{{instance_facts_master.instances}}"
     - "{{instance_facts_node_server.instances}}"
+    - "{{instance_facts_freeipa_server.instances}}"
