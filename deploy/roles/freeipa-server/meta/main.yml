@@ -1,2 +1,4 @@
 dependencies:
+  - { role: fetch-facts, resources: ['vpc']}
   - { role: base-setup }
+  - { role: treadmill-base-setup }

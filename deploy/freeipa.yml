@@ -17,9 +17,9 @@
     AWS_SECRET_ACCESS_KEY: "{{hostvars.localhost.ansible_env.AWS_SECRET_ACCESS_KEY}}"
   vars_files:
     - aws.yml
-  #vars_prompt:
-  #  - name: ipaserver_admin_password
-  #    prompt: "What should the admin password be for IPA?"
-  #    private: yes
+  vars_prompt:
+    - name: ipaserver_admin_password
+      prompt: "What should the admin password be for IPA?"
+      private: yes
   roles:
     - {role: freeipa-server}
