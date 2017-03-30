@@ -25,5 +25,5 @@ tornado>=4.4,<5
 Twisted>=16.4,<17
 urllib_kerberos
 websocket-client>=0.40.0,<1
-ansible==2.2.1.0
+ansible==2.2.2.0
 boto==2.46.1
