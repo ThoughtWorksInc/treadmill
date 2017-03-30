@@ -12,9 +12,6 @@
 
 - name: Set hostname
   hostname:
-    name: "{{item.tags.Name}}{{item.tags.instance_number}}.{{domain}}"
-  with_items: 
-    - "{{instance_facts_master.instances}}"
-    - "{{instance_facts_node_server.instances}}"
-    - "{{instance_facts_freeipa_server.instances}}"
-  when: item.id == local_instance_id.content
+    name: "{{item.1.tags.Name}}{{item.0 + 1}}.{{domain}}"
+  with_indexed_items: "{{hostvars.localhost.created_instances.tagged_instances}}"
+  when: item.1.id == local_instance_id.content

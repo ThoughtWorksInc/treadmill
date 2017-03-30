@@ -29,10 +29,10 @@ def init():
         destination_dir = os.getcwd() + '/deploy'
         try:
             os.makedirs(destination_dir)
-        except OSError, e:
+        except OSError as e:
             if e.errno == errno.EEXIST:
-                print '''AWS "deploy" directory already exists in this folder
-                \n''', destination_dir
+                print('''AWS "deploy" directory already exists in this folder
+                \n''', destination_dir)
         copy_tree(_get_from_treadmill_egg('../deploy'), destination_dir)
 
     @aws.command(name='cell')

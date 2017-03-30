@@ -6,7 +6,7 @@
 
 - include: instance.yml _name="{{node_server.name}}" _exact_count="{{node_server.exact_count}}"
 
-- hosts: ec2nodeinstances
+- hosts: ec2instances
   environment:
     AWS_ACCESS_KEY_ID: "{{hostvars.localhost.ansible_env.AWS_ACCESS_KEY_ID}}"
     AWS_SECRET_ACCESS_KEY: "{{hostvars.localhost.ansible_env.AWS_SECRET_ACCESS_KEY}}"
