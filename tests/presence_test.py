@@ -68,15 +68,16 @@ nfsd /proc/fs/nfsd nfsd rw,relatime 0 0
 vagrant /vagrant vboxsf rw,nodev,relatime 0 0
 home_centos_treadmill /home/centos/treadmill vboxsf rw,nodev,relatime 0 0
 home_centos_treadmill-pid1 /home/centos/treadmill-pid1 vboxsf rw,nodev,relatime 0 0
-tmpfs /run/user/1000 tmpfs rw,seclabel,nosuid,nodev,relatime,size=50040k,mode=700,uid=1000,gid=1000 0 0"""
+tmpfs /run/user/1000 tmpfs rw,seclabel,nosuid,nodev,relatime,size=50040k,mode=700,uid=1000,gid=1000 0 0"""  # noqa: E501
 
 original_open = open
 
+
 def _open_side_effect(path, *args):
     if path == '/proc/mounts':
-        return io.BytesIO(PROCMOUNTS)
+        return io.StringIO(PROCMOUNTS)
     elif path == '/proc/cgroups':
-        return io.BytesIO(PROCCGROUPS)
+        return io.StringIO(PROCCGROUPS)
     else:
         return original_open(path, *args)
 
@@ -245,7 +246,7 @@ class PresenceTest(mockzk.MockZookeeperTestCase):
     @mock.patch('treadmill.presence.ServicePresence.report_running',
                 mock.Mock())
     @mock.patch('time.time', mock.Mock(return_value=0))
-    @mock.patch('__builtin__.open', mock.Mock(side_effect=_open_side_effect))
+    @mock.patch('builtins.open', mock.Mock(side_effect=_open_side_effect))
     def test_start_service(self):
         """Verifies restart/finish file interaction."""
         manifest = {
@@ -399,7 +400,7 @@ class PresenceTest(mockzk.MockZookeeperTestCase):
     @mock.patch('kazoo.client.KazooClient.get_children', mock.Mock())
     @mock.patch('treadmill.sysinfo.hostname', mock.Mock())
     @mock.patch('treadmill.subproc.call', mock.Mock())
-    @mock.patch('__builtin__.open', mock.Mock(side_effect=_open_side_effect))
+    @mock.patch('builtins.open', mock.Mock(side_effect=_open_side_effect))
     def test_app_exit(self):
         """Verifies app deletion on service exit."""
         manifest = {
@@ -455,7 +456,7 @@ class PresenceTest(mockzk.MockZookeeperTestCase):
         app_presence.exit_app('web_server')
 
         self.assertTrue(os.path.exists(os.path.join(self.root, 'exitinfo')))
-        self.assertEquals(
+        self.assertEqual(
             yaml.load(open(os.path.join(self.root, 'exitinfo')).read()),
             {'rc': 1,
              'sig': 3,
@@ -467,7 +468,7 @@ class PresenceTest(mockzk.MockZookeeperTestCase):
         del app_presence.services['web_server']['last_exit']
         app_presence.exit_app('web_server')
         self.assertTrue(os.path.exists(os.path.join(self.root, 'exitinfo')))
-        self.assertEquals(
+        self.assertEqual(
             yaml.load(open(os.path.join(self.root, 'exitinfo')).read()),
             {'service': 'web_server',
              'killed': False,
@@ -478,7 +479,7 @@ class PresenceTest(mockzk.MockZookeeperTestCase):
     @mock.patch('treadmill.sysinfo.hostname', mock.Mock())
     @mock.patch('treadmill.appevents.post', mock.Mock())
     @mock.patch('time.time', mock.Mock(return_value=100))
-    @mock.patch('__builtin__.open', mock.Mock(side_effect=_open_side_effect))
+    @mock.patch('builtins.open', mock.Mock(side_effect=_open_side_effect))
     def test_update_exit_status(self):
         """Verifies reading the finished file and updating task status."""
         manifest = {
@@ -571,7 +572,7 @@ class PresenceTest(mockzk.MockZookeeperTestCase):
     @mock.patch('treadmill.presence.ServicePresence.report_running',
                 mock.Mock())
     @mock.patch('time.time', mock.Mock(return_value=None))
-    @mock.patch('__builtin__.open', mock.Mock(side_effect=_open_side_effect))
+    @mock.patch('builtins.open', mock.Mock(side_effect=_open_side_effect))
     def test_restart_rate(self):
         """Verifies reading the finished file and updating task status."""
         manifest = {
@@ -712,22 +713,22 @@ class PresenceTest(mockzk.MockZookeeperTestCase):
         )
         ws_svc_dir = os.path.join(self.root, 'services', 'web_server')
         einfo, count = app_presence.exit_info(ws_svc_dir)
-        self.assertEquals(1, count)
-        self.assertEquals(1, einfo['rc'])
-        self.assertEquals(0, einfo['sig'])
+        self.assertEqual(1, count)
+        self.assertEqual(1, einfo['rc'])
+        self.assertEqual(0, einfo['sig'])
         self.assertFalse(einfo['oom'])
 
         with open(finished_file, 'a+') as f:
             f.write('1001 255 9\n')
         einfo, count = app_presence.exit_info(ws_svc_dir)
-        self.assertEquals(2, count)
-        self.assertEquals(255, einfo['rc'])
-        self.assertEquals(9, einfo['sig'])
+        self.assertEqual(2, count)
+        self.assertEqual(255, einfo['rc'])
+        self.assertEqual(9, einfo['sig'])
         self.assertFalse(einfo['oom'])
 
-        open_name = '__builtin__.open'
+        open_name = 'builtins.open'
         with mock.patch(open_name, mock.mock_open()) as mock_open:
-            file_mock = mock.MagicMock(spec=file)
+            file_mock = mock.MagicMock(spec=io.IOBase)
             file_mock.__enter__.return_value.read.return_value = '1'
             mock_open.return_value = file_mock
             self.assertTrue(presence.is_oom())

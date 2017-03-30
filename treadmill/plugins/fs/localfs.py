@@ -39,4 +39,4 @@ def configure(_approot, newroot, _app):
         fs.mkdir_safe(newroot_norm + directory)
 
     for directory in stickydirs:
-        os.chmod(newroot_norm + directory, 0777 | stat.S_ISVTX)
+        os.chmod(newroot_norm + directory, 777 | stat.S_ISVTX)

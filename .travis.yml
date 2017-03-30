@@ -1,11 +1,8 @@
 language: python
 
 env:
-- TOXENV=py27
 - TOXENV=py34
 - TOXENV=flake8
-- TOXENV=docs
-- TOXENV=docs-linkcheck
 
 install:
 - sudo touch /etc/ld.so.preload

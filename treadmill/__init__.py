@@ -1,6 +1,5 @@
 """Treadmill module."""
 
-from __future__ import absolute_import
 
 import os
 import pkgutil
@@ -18,19 +17,19 @@ def __root_join(*path):
 # Global pointing to root of the source distribution.
 #
 # TODO: how will it work if packaged as single zip file?
-TREADMILL = __root_join('..', '..', '..')
-VIRTUAL_ENV = os.environ.get('VIRTUAL_ENV')
-
 if os.name == 'nt':
     _TREADMILL_SCRIPT = 'treadmill.cmd'
 else:
     _TREADMILL_SCRIPT = 'treadmill'
 
+VIRTUAL_ENV = os.environ.get('VIRTUAL_ENV')
+
 if VIRTUAL_ENV:
     TREADMILL_BIN = os.path.join(VIRTUAL_ENV, 'bin', _TREADMILL_SCRIPT)
+    TREADMILL = os.path.join(VIRTUAL_ENV, '../')
 else:
     TREADMILL_BIN = os.path.join('/bin', _TREADMILL_SCRIPT)
+    TREADMILL = __root_join('..')
 
 TREADMILL_LDAP = os.environ.get('TREADMILL_LDAP')
-TREADMILL_PACKAGE = treadmill.__path__[0]
-TREADMILL_DEPLOY_PACKAGE = os.path.join(TREADMILL_PACKAGE, '../deploy/')
+TREADMILL_DEPLOY_PACKAGE = os.path.join(treadmill.__path__[0], '../deploy/')

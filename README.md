@@ -1,12 +1,6 @@
 # Treadmill
 
-## Download
-```shell
-wget https://github.com/ThoughtWorksInc/treadmill/releases/download/0.0.1/treadmill -O /bin/treadmill && chmod +x /bin/treadmill
-```
-This will put `treadmill` in your path.
-
-[![Build Status](https://travis-ci.org/ThoughtWorksInc/treadmill.svg?branch=master)](https://travis-ci.org/ThoughtWorksInc/treadmill)
+[![Build Status](https://travis-ci.org/Morgan-Stanley/treadmill.svg?branch=master)](https://travis-ci.org/Morgan-Stanley/treadmill)
 
 ## Vagrant setup for development
 
@@ -18,7 +12,7 @@ This will put `treadmill` in your path.
 vagrant plugin install vagrant-vbguest
 ```
 ### Vagrant Setup
-* Clone the [treadmill](https://github.com/ThoughtWorksInc/treadmill.git) repo.
+* Clone the [treadmill](https://github.com/Morgan-Stanley/treadmill.git) repo.
 * Clone the [treadmill-pid1](https://github.com/Morgan-Stanley/treadmill-pid1) repo.
 * Run the following commands
 ``` sh
