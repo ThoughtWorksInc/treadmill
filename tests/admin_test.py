@@ -7,12 +7,20 @@ Unit test for treadmill admin.
 
 import hashlib
 import unittest
+import io
 
 import mock
 import ldap3
 
 import treadmill
 from treadmill import admin
+
+
+def _open_side_effect(path, *args):
+    if path == '~/.treadmill_ldap':
+        return io.StringIO("secret")
+    else:
+        return open(path, *args)
 
 
 class AdminTest(unittest.TestCase):
@@ -302,6 +310,22 @@ class AdminTest(unittest.TestCase):
         self.assertTrue('dc=test,dc=com' in dn_list)
         self.assertTrue('ou=treadmill,dc=test,dc=com' in dn_list)
         self.assertTrue('ou=apps,ou=treadmill,dc=test,dc=com' in dn_list)
+
+    @mock.patch('builtins.open', mock.Mock(side_effect=_open_side_effect))
+    @mock.patch('ldap3.Connection', mock.Mock())
+    @mock.patch('ldap3.Server', mock.Mock(return_value={}))
+    def test_ldap3_connection(self):
+        """Tests ldap credential."""
+        admin_obj = admin.Admin("ldap://host:389", None)
+
+        admin_obj.connect()
+
+        ldap3.Connection.assert_called_with({},
+                                            authentication='SIMPLE',
+                                            user="admin",
+                                            password="secret",
+                                            client_strategy='RESTARTABLE',
+                                            auto_bind=True)
 
 
 class TenantTest(unittest.TestCase):

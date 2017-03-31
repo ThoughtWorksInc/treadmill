@@ -58,6 +58,7 @@ _TYPE_2_SUBSTR = {
 _TREADMILL_ATTR_OID_PREFIX = '1.3.6.1.4.1.360.10.6.1.'
 _TREADMILL_OBJCLS_OID_PREFIX = '1.3.6.1.4.1.360.10.6.2.'
 
+_TREADMILL_LDAP_ADMIN_CREDENTIAL_FILE = "~/.treadmill_ldap"
 
 def _entry_2_dict(entry, schema):
     """Convert LDAP entry like object to dict."""
@@ -388,11 +389,14 @@ class Admin(object):
         ldap3.set_config_parameter('RESTARTABLE_TRIES', 3)
         for uri in self.uri:
             try:
+                with open(_TREADMILL_LDAP_ADMIN_CREDENTIAL_FILE) as f:
+                    password = f.read().strip()
                 server = ldap3.Server(uri)
                 self.ldap = ldap3.Connection(
                     server,
-                    authentication=ldap3.SASL,
-                    sasl_mechanism='GSSAPI',
+                    authentication=ldap3.SIMPLE,
+                    user="admin",
+                    password=password,
                     client_strategy=ldap3.STRATEGY_SYNC_RESTARTABLE,
                     auto_bind=True
                 )
