@@ -60,6 +60,7 @@ _TREADMILL_OBJCLS_OID_PREFIX = '1.3.6.1.4.1.360.10.6.2.'
 
 _TREADMILL_LDAP_ADMIN_CREDENTIAL_FILE = "~/.treadmill_ldap"
 
+
 def _entry_2_dict(entry, schema):
     """Convert LDAP entry like object to dict."""
     obj = dict()
