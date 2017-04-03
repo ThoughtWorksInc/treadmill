@@ -16,6 +16,14 @@
     group=root
     mode=0644
 
+- name: Genereate freeipa admin password
+  command: echo {{ lookup('password', freeipa.admin_pwd_file) }}
+  register: lookup_result
+
+- name: Set freeipa admin password fact
+  set_fact:
+    ipaserver_admin_password: "{{lookup_result.stdout}}"
+
 - name: Configure FreeIPA server
   command: /sbin/ipa-server-install
     -U --domain "{{ domain }}"
