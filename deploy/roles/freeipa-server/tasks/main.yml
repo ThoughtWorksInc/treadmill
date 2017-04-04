@@ -96,6 +96,9 @@
 
 - name: Run treadmill ldap init
   command: treadmill admin ldap init {{ domain }}
+  environment:
+    TREADMILL_LDAP: "ldap://{{ freeipa.name|lower }}1.{{ domain }}:1389"
+    TREADMILL_LDAP_SEARCH_BASE: "ou=treadmill,{{ domain | regex_replace('(.*)\\.(.*)', 'dc=\\1,dc=\\2') }}"
 
 - name: Copy schema.yml file
   copy:
@@ -107,7 +110,13 @@
 
 - name: Run treadmill ldap schema load
   command: treadmill admin ldap schema --load /root/schema.yml
+  environment:
+    TREADMILL_LDAP: "ldap://{{ freeipa.name|lower }}1.{{ domain }}:1389"
+    TREADMILL_LDAP_SEARCH_BASE: "ou=treadmill,{{ domain | regex_replace('(.*)\\.(.*)', 'dc=\\1,dc=\\2') }}"
 
 - name: Run ldap cell configure
   command: treadmill admin ldap cell configure -u admin {{ vpc_id }}
+  environment:
+    TREADMILL_LDAP: "ldap://{{ freeipa.name|lower }}1.{{ domain }}:1389"
+    TREADMILL_LDAP_SEARCH_BASE: "ou=treadmill,{{ domain | regex_replace('(.*)\\.(.*)', 'dc=\\1,dc=\\2') }}"
 
