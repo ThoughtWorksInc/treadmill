@@ -24,6 +24,9 @@
   set_fact:
     ipaserver_admin_password: "{{lookup_result.stdout}}"
 
+- name: Copy credential file on FreeIPA server
+  copy: src="{{freeipa.admin_pwd_file}}" dest="{{freeipa.admin_pwd_file}}"
+
 - name: Configure FreeIPA server
   command: /sbin/ipa-server-install
     -U --domain "{{ domain }}"
