@@ -49,6 +49,14 @@
     group: ldap
     mode: 0600
 
+- name: Copy treadmill schema config ldif file
+  template:
+    src: treadmill.ldif
+    dest: /etc/openldap/slapd.d/cn=config/cn=schema/cn={1}treadmill.ldif
+    owner: ldap
+    group: ldap
+    mode: 0600
+
 - name: Copy slapd sysconfig file
   template:
     src: slapd.sysconfig
