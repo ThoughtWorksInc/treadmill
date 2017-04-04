@@ -16,6 +16,12 @@
     group=root
     mode=0644
 
+- name: Fetch credential file if it exists
+  fetch:
+    src: "{{freeipa.admin_pwd_file}}"
+    dest: "{{freeipa.admin_pwd_file}}"
+    flat: yes
+
 - name: Genereate freeipa admin password
   command: echo {{ lookup('password', freeipa.admin_pwd_file) }}
   register: lookup_result
@@ -87,4 +93,21 @@
     name: slapd
     state: started
     enabled: yes
+
+- name: Run treadmill ldap init
+  command: treadmill admin ldap init {{ domain }}
+
+- name: Copy schema.yml file
+  copy:
+    src: schema.yml
+    dest: /root/schema.yml
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Run treadmill ldap schema load
+  command: treadmill admin ldap schema --load /root/schema.yml
+
+- name: Run ldap cell configure
+  command: treadmill admin ldap cell configure -u admin {{ vpc_id }}
 
