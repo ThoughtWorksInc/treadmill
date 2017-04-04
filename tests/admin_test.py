@@ -19,6 +19,12 @@ from treadmill import admin
 def _open_side_effect(path, *args):
     if path == '/root/.treadmill_ldap':
         return io.StringIO("secret")
+    elif path.endswith('deploy/config/treadmill.yml'):
+        return io.StringIO(
+            """
+            freeipa:
+                admin_pwd_file: /root/.treadmill_ldap
+            """)
     else:
         return open(path, *args)
 
