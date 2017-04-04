@@ -22,6 +22,7 @@ def _open_side_effect(path, *args):
     elif path.endswith('deploy/config/treadmill.yml'):
         return io.StringIO(
             """
+            domain: tm.treadmill
             freeipa:
                 admin_pwd_file: /root/.treadmill_ldap
             """)
@@ -328,7 +329,7 @@ class AdminTest(unittest.TestCase):
 
         ldap3.Connection.assert_called_with({},
                                             authentication='SIMPLE',
-                                            user="admin",
+                                            user="cn=admin,dc=tm,dc=treadmill",
                                             password="secret",
                                             client_strategy='RESTARTABLE',
                                             auto_bind=True)

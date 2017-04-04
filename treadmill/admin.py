@@ -13,6 +13,7 @@ import logging
 import shlex
 import os
 import yaml
+import re
 
 from distutils import util
 
@@ -59,6 +60,8 @@ _TYPE_2_SUBSTR = {
 
 _TREADMILL_ATTR_OID_PREFIX = '1.3.6.1.4.1.360.10.6.1.'
 _TREADMILL_OBJCLS_OID_PREFIX = '1.3.6.1.4.1.360.10.6.2.'
+_TREADMILL_CONFIG_PATH = os.path.join(treadmill.TREADMILL_DEPLOY_PACKAGE,
+                                      'config', 'treadmill.yml')
 
 
 def _entry_2_dict(entry, schema):
@@ -358,12 +361,16 @@ class AndQuery(object):
 
 
 def _admin_ldap_pwd():
-    config_path = os.path.join(treadmill.TREADMILL_DEPLOY_PACKAGE,
-                               'config', 'treadmill.yml')
-    with open(config_path) as f:
+    with open(_TREADMILL_CONFIG_PATH) as f:
         pwd_file_path = yaml.load(f).get('freeipa').get('admin_pwd_file')
         with open(pwd_file_path) as p:
             return p.read().strip()
+
+
+def _admin_ldap_user():
+    with open(_TREADMILL_CONFIG_PATH) as f:
+        match = re.match("(.*)\.(.*)", yaml.load(f).get('domain'))
+        return "cn=admin,dc={},dc={}".format(match.group(1), match.group(2))
 
 
 class Admin(object):
@@ -403,7 +410,7 @@ class Admin(object):
                 self.ldap = ldap3.Connection(
                     server,
                     authentication=ldap3.SIMPLE,
-                    user="admin",
+                    user=_admin_ldap_user(),
                     password=_admin_ldap_pwd(),
                     client_strategy=ldap3.STRATEGY_SYNC_RESTARTABLE,
                     auto_bind=True
