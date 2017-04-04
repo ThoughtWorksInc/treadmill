@@ -58,7 +58,7 @@ _TYPE_2_SUBSTR = {
 _TREADMILL_ATTR_OID_PREFIX = '1.3.6.1.4.1.360.10.6.1.'
 _TREADMILL_OBJCLS_OID_PREFIX = '1.3.6.1.4.1.360.10.6.2.'
 
-_TREADMILL_LDAP_ADMIN_CREDENTIAL_FILE = "~/.treadmill_ldap"
+_TREADMILL_LDAP_ADMIN_CREDENTIAL_FILE = "/root/.treadmill_ldap"
 
 
 def _entry_2_dict(entry, schema):

@@ -1,8 +1,10 @@
 ---
 - hosts: controller
   pre_tasks:
-    - include_vars:
-        file: "{{aws_config | default('aws.yml')}}"
+    - include_vars: "{{ item }}"
+      with_items:
+        - "{{aws_config | default('config/aws.yml')}}"
+        - "config/treadmill.yml"
 
 - include: instance.yml _name="{{freeipa.name}}" _exact_count="{{freeipa.exact_count}}"
 
@@ -16,6 +18,7 @@
     AWS_ACCESS_KEY_ID: "{{hostvars.localhost.ansible_env.AWS_ACCESS_KEY_ID}}"
     AWS_SECRET_ACCESS_KEY: "{{hostvars.localhost.ansible_env.AWS_SECRET_ACCESS_KEY}}"
   vars_files:
-    - aws.yml
+    - "{{aws_config | default('config/aws.yml')}}"
+    - "config/treadmill.yml"
   roles:
     - {role: freeipa-server}

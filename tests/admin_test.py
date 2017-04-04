@@ -17,7 +17,7 @@ from treadmill import admin
 
 
 def _open_side_effect(path, *args):
-    if path == '~/.treadmill_ldap':
+    if path == '/root/.treadmill_ldap':
         return io.StringIO("secret")
     else:
         return open(path, *args)
