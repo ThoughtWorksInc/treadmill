@@ -1,0 +1,31 @@
+---
+- name: Create a directory to copy api manifests
+  file:
+    path: "~/api_manifests"
+    state: directory
+
+- name: Drop the cell api template
+  copy: src="cellapi.yml" dest="~/api_manifests/cellapi.yml"
+
+- name: Drop the state api template
+  copy: src="stateapi.yml" dest="~/api_manifests/stateapi.yml"
+
+- name: Check if cell API is running
+  shell: ps -ef | grep Treadmill_Cell_API | grep -v grep
+  ignore_errors: yes
+  changed_when: false
+  register: cell_api_status
+
+- name: Check if query API is running
+  shell: ps -ef | grep Treadmill_Query_API | grep -v grep
+  ignore_errors: yes
+  changed_when: false
+  register: state_api_status
+
+- name: Start cell api
+  shell: ". ~/.bashrc && nohup treadmill admin master app schedule root.cellapi --manifest ~/api_manifests/cellapi.yml --proid root --env prod > cell_api.out 2>&1 &"
+  when: cell_api_status.rc != 0
+
+- name: Start state api
+  shell: ". ~/.bashrc && nohup treadmill admin master app schedule root.stateapi --manifest ~/api_manifests/stateapi.yml --proid root --env prod > state_api.out 2>&1 &"
+  when: state_api_status.rc != 0

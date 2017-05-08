@@ -6,6 +6,13 @@
     ansible_user=centos
   with_items: "{{created_instances.tagged_instances}}"
 
+- add_host:
+    groupname=ec2apinode
+    hostname="{{created_instances.tagged_instances[0].public_ip}}"
+    instance_tags="{{created_instances.tagged_instances[0].tags}}"
+    ansible_user=centos
+  when: created_instances.tagged_instances[0].tags.Name == "TreadmillNodeServer"
+
 - name: Wait for SSH
   local_action:
     wait_for host="{{ item.public_ip }}"

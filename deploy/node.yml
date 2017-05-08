@@ -22,3 +22,11 @@
     - "config/treadmill.yml"
   roles:
     - {role: node-server}
+
+- hosts: ec2apinode
+  become: yes
+  environment:
+    AWS_ACCESS_KEY_ID: "{{hostvars.localhost.ansible_env.AWS_ACCESS_KEY_ID}}"
+    AWS_SECRET_ACCESS_KEY: "{{hostvars.localhost.ansible_env.AWS_SECRET_ACCESS_KEY}}"
+  roles:
+    - {role: api-services}
