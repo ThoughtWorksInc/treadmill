@@ -73,6 +73,8 @@ class AppEnvironment(object):
 
         if host_ip is not None:
             self.host_ip = host_ip
+        elif os.environ.get('TREADMILL_NODE_IP', None):
+            self.host_ip = os.environ.get('TREADMILL_NODE_IP')
         else:
             hostname = socket.gethostname()
             self.host_ip = socket.gethostbyname(hostname)
