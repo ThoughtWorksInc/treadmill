@@ -12,8 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "base_treadmill"
-  config.vm.box_url = "https://s3.amazonaws.com/ms-treadmill/base_treadmill.box"
+  config.vm.box = "centos/7"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -87,6 +86,6 @@ Vagrant.configure("2") do |config|
     node.vm.hostname = 'node'
   end
 
-  config.vm.synced_folder "../treadmill", "/home/centos/treadmill"
-  config.vm.synced_folder "../treadmill-pid1", "/home/centos/treadmill-pid1"
+  config.vm.synced_folder "../treadmill", "/home/treadmld/treadmill"
+  config.vm.synced_folder "../treadmill-pid1", "/home/treadmld/treadmill-pid1"
 end
