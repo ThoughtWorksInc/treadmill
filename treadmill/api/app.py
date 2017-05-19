@@ -45,7 +45,7 @@ class API(object):
                 app for app in apps
                 if fnmatch.fnmatch(app['_id'], match)
             ]
-            return sorted(filtered)
+            return sorted(filtered, key=lambda x: x['_id'])
 
         @schema.schema({'$ref': 'app.json#/resource_id'})
         def get(rsrc_id):
