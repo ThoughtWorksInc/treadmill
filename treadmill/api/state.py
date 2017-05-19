@@ -165,40 +165,40 @@ def watch_tasks_history(zkclient, cell_state):
     def _get_instance(path):
         return '#'.join(path[len(z.TASKS) + 1:].rsplit('/', 1))
 
-    @exc.exit_on_unhandled
-    @zkclient.ChildrenWatch(z.TASKS_HISTORY)
-    def _watch_tasks_history(tasks_history):
-        """Watch /tasks.history nodes."""
-        for db_node in set(tasks_history) - set(loaded_tasks_history):
-            _LOGGER.debug('Loading tasks history from: %s', db_node)
-            db_node_path = z.path.tasks_history(db_node)
-            data, _stat = zkclient.get(db_node_path)
-            loaded_tasks_history[db_node] = []
+    # @exc.exit_on_unhandled
+    # @zkclient.ChildrenWatch(z.TASKS_HISTORY)
+    # def _watch_tasks_history(tasks_history):
+    #     """Watch /tasks.history nodes."""
+    #     for db_node in set(tasks_history) - set(loaded_tasks_history):
+    #         _LOGGER.debug('Loading tasks history from: %s', db_node)
+    #         db_node_path = z.path.tasks_history(db_node)
+    #         data, _stat = zkclient.get(db_node_path)
+    #         loaded_tasks_history[db_node] = []
 
-            with tempfile.NamedTemporaryFile(delete=False, mode='wb') as f:
-                f.write(zlib.decompress(data))
-            conn = sqlite3.connect(f.name)
-            cur = conn.cursor()
-            for row in cur.execute('select path, data from tasks'
-                                   ' where data is not null'):
-                path, data = row
-                instance = _get_instance(path)
-                if data:
-                    data = yaml.load(data)
-                cell_state.tasks_history[instance] = data
-                loaded_tasks_history[db_node].append(instance)
-            conn.close()
-            os.unlink(f.name)
+    #         with tempfile.NamedTemporaryFile(delete=False, mode='wb') as f:
+    #             f.write(zlib.decompress(data))
+    #         conn = sqlite3.connect(f.name)
+    #         cur = conn.cursor()
+    #         for row in cur.execute('select path, data from tasks'
+    #                                ' where data is not null'):
+    #             path, data = row
+    #             instance = _get_instance(path)
+    #             if data:
+    #                 data = yaml.load(data)
+    #             cell_state.tasks_history[instance] = data
+    #             loaded_tasks_history[db_node].append(instance)
+    #         conn.close()
+    #         os.unlink(f.name)
 
-        for db_node in set(loaded_tasks_history) - set(tasks_history):
-            _LOGGER.debug('Unloading tasks history from: %s', db_node)
-            for instance in loaded_tasks_history[db_node]:
-                del cell_state.tasks_history[instance]
-            del loaded_tasks_history[db_node]
+    #     for db_node in set(loaded_tasks_history) - set(tasks_history):
+    #         _LOGGER.debug('Unloading tasks history from: %s', db_node)
+    #         for instance in loaded_tasks_history[db_node]:
+    #             del cell_state.tasks_history[instance]
+    #         del loaded_tasks_history[db_node]
 
-        return True
+    #     return True
 
-    _LOGGER.info('Loaded tasks history.')
+    # _LOGGER.info('Loaded tasks history.')
 
 
 class CellState(object):
