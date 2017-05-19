@@ -28,3 +28,4 @@ doc/swagger.json
 env/
 build/
 dist/
+*.out
