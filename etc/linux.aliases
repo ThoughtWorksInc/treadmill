@@ -110,7 +110,7 @@ treadmill_spawn_finish: ~
 # ld_preload libs use $LIB notation, and in the code should be resolved with
 # check=False.
 treadmill_bind_preload.so: ~
-treadmill: /home/centos/treadmill
+treadmill: /home/treadmld/treadmill
 
 # HAProxy
 haproxy: ~
