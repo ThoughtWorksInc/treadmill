@@ -3,3 +3,4 @@ base:
     - vpc/create-vpc
     - vpc/create-subnet
     - vpc/create-igw
+    - vpc/create-route
