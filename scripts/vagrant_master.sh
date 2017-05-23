@@ -32,4 +32,10 @@ setsebool -P nis_enabled on
 
 sudo service slapd start
 
+# Make pid1 and put it in /bin/
+cd $TREADMILL_CODE"../treadmill-pid1"
+make
+cp pid1 /bin
+cd -
+
 echo 'master provisioned!'
