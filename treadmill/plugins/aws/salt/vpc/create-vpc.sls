@@ -1,6 +1,6 @@
 Ensure VPC exists:
   boto_vpc.present:
-    - name: salt_vpc
+    - name: {{ pillar['vpc']['name'] }}
     - cidr_block: {{ pillar['vpc']['cidr'] }}
     - dns_hostnames: True
     - region: {{ pillar['vpc']['region'] }}
