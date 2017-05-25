@@ -1,0 +1,13 @@
+my_ec2_freeipa:
+  minion:
+    master: <master_ip>
+  ssh_interface: public_ips
+  id: <AWS_ACCESS_KEY_ID>
+  key: '<AWS_SECRET_ACCESS_KEY>'
+  private_key: <pem_file_path>
+  keyname: <public_key_name>
+  location: us-east-1
+  availability_zone: us-east-1b
+  del_root_vol_on_destroy: True
+  rename_on_destroy: True
+  driver: ec2

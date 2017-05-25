@@ -1,0 +1,4 @@
+ec2_freeipa:
+  provider: my_ec2_freeipa
+  image: ami-6d1c2007
+  size: t2.micro
