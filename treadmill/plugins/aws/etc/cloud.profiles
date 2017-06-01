@@ -1,4 +1,5 @@
 ec2_freeipa:
   provider: my_ec2_freeipa
   image: ami-6d1c2007
+  subnetid: subnet-08f7c56d
   size: t2.micro
