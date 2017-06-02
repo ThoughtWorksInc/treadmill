@@ -91,6 +91,19 @@
     state: yes
     persistent: yes
 
+- name: Add ldap principal to keytab
+  shell: /sbin/kadmin.local ktadd ldap/{{ ansible_hostname.lower()|quote }}.{{ domain|quote }}@{{ freeipa_server.realm|quote }} > /var/lock/ktadd_ldap.lock
+  args:
+    creates: /var/lock/ktadd_ldap.lock
+
+- name: Change group of krb5.keytab file
+  file:
+    path: /etc/krb5.keytab
+    owner: root
+    group: ldap
+    state: file
+    mode: 0660
+
 - name: Start slapd service
   service:
     name: slapd
