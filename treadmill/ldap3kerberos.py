@@ -48,7 +48,8 @@ def sasl_gssapi(connection, controls):
         in_token = b''
         while True:
             status = kerberos.authGSSClientStep(ctx,
-                                                base64.b64encode(in_token).decode('ascii'))
+                                                base64.b64encode(in_token).
+                                                decode('ascii'))
             out_token = kerberos.authGSSClientResponse(ctx) or ''
             result = send_sasl_negotiation(connection, controls,
                                            base64.b64decode(out_token))
@@ -56,7 +57,9 @@ def sasl_gssapi(connection, controls):
             if status == kerberos.AUTH_GSS_COMPLETE:
                 break
 
-        kerberos.authGSSClientUnwrap(ctx, base64.b64encode(in_token).decode('ascii'))
+        kerberos.authGSSClientUnwrap(ctx,
+                                     base64.b64encode(in_token)
+                                     .decode('ascii'))
 
         unwrapped_token = base64.b64decode(
             kerberos.authGSSClientResponse(ctx) or '')
