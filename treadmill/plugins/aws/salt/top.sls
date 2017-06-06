@@ -5,6 +5,7 @@ base:
     - vpc/create-igw
     - vpc/create-route
     - instance/create-instance
+    - instance/create-security-group
   'freeipa':
     - instance/create-dns-entry
     - freeipa/configure
