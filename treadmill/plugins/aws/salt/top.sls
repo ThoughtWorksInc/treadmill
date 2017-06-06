@@ -4,7 +4,7 @@ base:
     - vpc/create-subnet
     - vpc/create-igw
     - vpc/create-route
-    - instance/create_instance
+    - instance/create-instance
   'freeipa':
-    - instance/create_dns_entry
+    - instance/create-dns-entry
     - freeipa/configure
