@@ -5,3 +5,6 @@ base:
   'freeipa':
     - aws
     - treadmill
+  'treadmill_master':
+    - aws
+    - treadmill

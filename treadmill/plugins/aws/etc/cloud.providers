@@ -1,11 +1,10 @@
-my_ec2_freeipa:
+ec2:
   minion:
-    master: <master_ip>
-  ssh_interface: public_ips
-  id: <AWS_ACCESS_KEY_ID>
-  key: '<AWS_SECRET_ACCESS_KEY>'
-  private_key: <pem_file_path>
-  keyname: <public_key_name>
+    master: 54.235.225.65
+  id: 'id'
+  key: 'key'
+  private_key: /srv/ms_treadmill_dev.pem
+  keyname: ms_treadmill_dev
   location: us-east-1
   availability_zone: us-east-1b
   del_root_vol_on_destroy: True

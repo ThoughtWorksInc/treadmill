@@ -1,5 +1,17 @@
 ec2_freeipa:
-  provider: my_ec2_freeipa
+  provider: ec2
   image: ami-6d1c2007
   subnetid: subnet-08f7c56d
   size: t2.micro
+ec2_master:
+  provider: ec2
+  image: ami-6d1c2007
+  size: t2.small
+  ssh_username: centos
+  securitygroup: sg_common
+  network_interfaces:
+    - DeviceIndex: 0
+      PrivateIpAddresses:
+        - Primary: True
+      AssociatePublicIpAddress: True
+      SubnetId: subnet-08f7c56d
