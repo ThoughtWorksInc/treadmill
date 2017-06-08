@@ -10,5 +10,5 @@
 
 Create ec2 Instance:
   cmd.run:
-    - name: salt-cloud --profile=ec2_freeipa freeipa
+    - name: salt-cloud --profile={{ pillar['profile'] }} {{ pillar['instance_name'] }}
     - cwd: /srv/
