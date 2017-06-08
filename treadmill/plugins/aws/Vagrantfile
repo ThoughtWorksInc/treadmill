@@ -71,24 +71,29 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :salt_master do |salt_master|
     salt_master.vm.provider "virtualbox" do |v|
-      v.memory = 1024*2
-      v.cpus = 2
+      v.memory = 1024
+      v.cpus = 1
     end
     salt_master.vm.network :private_network, ip: "10.10.10.10"
     salt_master.vm.hostname = 'saltmaster'
     salt_master.vm.provision :salt do |salt|
       salt.install_master = true
+      salt.master_config = "master_config_vagrant"
       salt.minion_config = "master_minion_config_vagrant"
     end
-    config.vm.provision "shell",
-    inline: "sudo /sbin/ifdown eth1 && sudo /sbin/ifup eth1"
+    salt_master.vm.provision "shell", inline: <<-SHELL
+      sudo /sbin/ifdown eth1 && sudo /sbin/ifup eth1
+      sudo yum install salt-cloud epel-release python-devel -y
+      sudo yum install python-pip -y
+      sudo pip install boto boto3 pycrypto
+    SHELL
   end
   
 
   config.vm.define :salt_minion do |salt_minion|
     salt_minion.vm.provider "virtualbox" do |v|
-      v.memory = 1024*6
-      v.cpus = 2
+      v.memory = 1024
+      v.cpus = 1
     end
     salt_minion.vm.network :private_network, ip: "10.10.10.11"
     salt_minion.vm.hostname = 'saltminion'
@@ -96,6 +101,12 @@ Vagrant.configure("2") do |config|
       salt.install_master = false
       salt.minion_config = "minion_config_vagrant"
     end
+    salt_minion.vm.provision "shell", inline: <<-SHELL
+      sudo /sbin/ifdown eth1 && sudo /sbin/ifup eth1
+      sudo yum install epel-release python-devel -y
+      sudo yum install python-pip -y
+      sudo pip install boto boto3 pycrypto
+    SHELL
   end
 
 
