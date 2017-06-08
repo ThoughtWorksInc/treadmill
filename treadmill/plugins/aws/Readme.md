@@ -1,27 +1,28 @@
 # Salt Vagrant Setup
 
-In the current directory run the following to create saltmaster and saltminion VMs-
+In the current directory run the following to create salt master and minion VMs-
 ```sh
 vagrant up
 ```
 
-Current directory will be mounted to `/srv/` inside saltmaster.
+Current directory will be mounted to `/srv/` inside salt master.
 
 Required aws configuration such as region can be changed in the pillar data(`/srv/pillar`)
 
-Run the following to ssh into the saltmater VM-
+Run the following to ssh into the salt master VM-
 
 ```sh
-vagrant ssh saltmaster
+vagrant ssh salt_master
 ```
 
 Salt Master also contains a minion on it to interact with aws to create vpc, subnet etc.
 
 ## Create VPC, Subnet, Gateway, EC2 instance
 
-Export the AWS Credentials
+Become root user and export the AWS Credentials
 
 ```sh
+sudo su -
 export AWS_ACCESS_KEY_ID=<Access Key ID>
 export AWS_SECRET_ACCESS_KEY=<Secret Access Key>
 ```
