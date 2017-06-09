@@ -65,7 +65,7 @@ resource "aws_route_table_association" "association" {
   route_table_id = "${aws_route_table.route_table.id}"
 }
 
-resource "aws_security_group" "sg" {
+resource "aws_security_group" "secgroup" {
   name = "${var.securtiygrp_name}"
   description = "allow inbound traffic from within vpc"
   vpc_id = "${aws_vpc.vpc.id}"
@@ -96,5 +96,5 @@ output "subnet_id" {
   value = "${aws_subnet.subnet.id}"
 }
 output "secgroup_id" {
-  value = "${aws_security_group.sg.id}"
+  value = "${aws_security_group.secgroup.id}"
 }
