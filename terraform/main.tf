@@ -7,7 +7,7 @@ module "vpc" {
   region = "${var.region}"
 }
 
-module "instance"  {
+module "instance" {
   source = "instance"
   role = "freeipa"
   count = "1"
