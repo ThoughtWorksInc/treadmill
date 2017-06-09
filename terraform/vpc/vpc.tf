@@ -8,7 +8,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "subnet" {
 	vpc_id = "${aws_vpc.vpc.id}"
 	cidr_block = "${var.subnet_cidr}"
-	availability_zone = "${var.az}"
+	availability_zone = "${lookup(var.az, var.region)}"
 	tags {
 		Name = "${var.subnet_name}"
 	}	

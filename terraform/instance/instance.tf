@@ -1,6 +1,6 @@
 resource "aws_instance" "freeipa" {
-	ami = "${var.ami_id}"
-	instance_type = "${var.size}"
+	ami = "${lookup(var.ami_id, var.region)}"
+	instance_type = "${lookup(var.size, var.role)}"
 	key_name = "${var.key}"
 	subnet_id = "${var.subnet_id}"
 	vpc_security_group_ids = ["var.sg_id"]
