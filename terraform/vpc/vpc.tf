@@ -52,7 +52,7 @@ resource "aws_internet_gateway" "gateway" {
   vpc_id = "${aws_vpc.vpc.id}"
 }
 
-resource "aws_route_table" "rtb" {
+resource "aws_route_table" "route_table" {
   vpc_id = "${aws_vpc.vpc.id}"
   route {
     cidr_block = "0.0.0.0/0"
@@ -62,7 +62,7 @@ resource "aws_route_table" "rtb" {
 
 resource "aws_route_table_association" "association" {
   subnet_id = "${aws_subnet.subnet.id}"
-  route_table_id = "${aws_route_table.rtb.id}"
+  route_table_id = "${aws_route_table.route_table.id}"
 }
 
 resource "aws_security_group" "sg" {
