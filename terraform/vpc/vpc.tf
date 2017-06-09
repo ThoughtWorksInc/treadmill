@@ -16,7 +16,7 @@ variable "subnet_cidr" {
   default = "172.23.1.0/24"
 }
 
-variable "securtiygrp_name" {
+variable "secgroup_name" {
   default = "sg_common"
 }
 
@@ -66,12 +66,12 @@ resource "aws_route_table_association" "association" {
 }
 
 resource "aws_security_group" "secgroup" {
-  name = "${var.securtiygrp_name}"
+  name = "${var.secgroup_name}"
   description = "allow inbound traffic from within vpc"
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags {
-    Name = "${var.securtiygrp_name}"
+    Name = "${var.secgroup_name}"
   }
 
   ingress {
