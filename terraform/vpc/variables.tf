@@ -13,7 +13,7 @@ variable "subnet_cidr" {
   default = "172.23.1.0/24"
 }
 variable "securtiygrp_name" {
-	default = "sg_common"
+  default = "sg_common"
 }
 
 variable "az" {

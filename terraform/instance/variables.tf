@@ -20,7 +20,7 @@ variable "ami_id" {
 }
 
 variable "key"{
-	default = "ms_treadmill_dev"
+  default = "ms_treadmill_dev"
 }
 
 variable "size" {
