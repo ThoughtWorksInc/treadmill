@@ -12,6 +12,6 @@ module "instance" {
   role = "freeipa"
   count = "1"
   subnet_id = "${module.vpc.subnet_id}"
-  sg_id = "${module.vpc.sg_id}"
+  secgroup_id = "${module.vpc.secgroup_id}"
   region = "${var.region}"
 }
