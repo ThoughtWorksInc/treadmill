@@ -1,10 +1,6 @@
-variable "vpc_name" {
-  default = "Treadmill"
-}
+variable "vpc_name" {}
 
-variable "vpc_cidr" {
-  default = "172.23.0.0/16"
-}
+variable "vpc_cidr" {}
 
 resource "aws_vpc" "vpc" {
   cidr_block = "${var.vpc_cidr}"

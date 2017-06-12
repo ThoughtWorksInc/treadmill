@@ -2,8 +2,20 @@ provider "aws" {
   region = "${var.region}"
 }
 
-variable "name" { }
-variable "vpc_cidr" { }
+variable "name" {
+  default = "Treadmill"
+}
+variable "vpc_cidr" {
+  default = "172.23.0.0/16"
+}
+
+variable "region" {
+  default = "us-east-1"
+}
+
+variable "domain" {
+  default = "tw.treadmill."
+}
 
 module "vpc" {
   source = "vpc"
@@ -31,6 +43,8 @@ module "freeipa" {
   subnet_id = "${module.public_subnet.subnet_id}"
   secgroup_id = "${module.security_group.secgroup_id}"
   region = "${var.region}"
+  hostedzone_id = "${module.hostedzone.hostedzone_id}"
+  domain = "${var.domain}"
 }
 
 module "treadmill-master" {
@@ -40,6 +54,8 @@ module "treadmill-master" {
   subnet_id = "${module.public_subnet.subnet_id}"
   secgroup_id = "${module.security_group.secgroup_id}"
   region = "${var.region}"
+  hostedzone_id = "${module.hostedzone.hostedzone_id}"
+  domain = "${var.domain}"
 }
 
 module "treadmill-node" {
@@ -49,4 +65,11 @@ module "treadmill-node" {
   subnet_id = "${module.public_subnet.subnet_id}"
   secgroup_id = "${module.security_group.secgroup_id}"
   region = "${var.region}"
+  hostedzone_id = "${module.hostedzone.hostedzone_id}"
+  domain = "${var.domain}"
+}
+
+module "hostedzone" {
+  source = "hostedzone"
+  domain = "${var.domain}"
 }

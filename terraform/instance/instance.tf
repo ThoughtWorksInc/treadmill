@@ -8,6 +8,10 @@ variable "secgroup_id" {}
 
 variable "role" {}
 
+variable "hostedzone_id" {}
+
+variable "domain" {}
+
 variable "ami_id" {
   type = "map"
   default = {
@@ -45,4 +49,12 @@ resource "aws_instance" "instance" {
     Name = "${var.role}"
     Id = "${count.index + 1}"
   }
+}
+
+resource "aws_route53_record" "dns-entry" {
+  count = "${var.count}"
+  name = "${element(aws_instance.instance.*.tags.Name, count.index)}${element(aws_instance.instance.*.tags.Id, count.index)}.${var.domain}."
+  zone_id = "${var.hostedzone_id}"
+  type = "A"
+  records = ["${element(aws_instance.instance.*.private_ip, count.index)}"]
 }
