@@ -31,7 +31,7 @@ variable "size" {
   }
 }
 
-resource "aws_instance" "freeipa" {
+resource "aws_instance" "instance" {
   ami = "${lookup(var.ami_id, var.region)}"
   instance_type = "${lookup(var.size, var.role)}"
   key_name = "${var.key}"
