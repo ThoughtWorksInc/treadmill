@@ -49,7 +49,6 @@ module "freeipa" {
   region = "${var.region}"
   key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
-  domain = "${var.domain}"
 }
 
 module "treadmill-master" {
@@ -61,7 +60,6 @@ module "treadmill-master" {
   region = "${var.region}"
   key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
-  domain = "${var.domain}"
 }
 
 module "treadmill-node" {
@@ -73,7 +71,6 @@ module "treadmill-node" {
   region = "${var.region}"
   key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
-  domain = "${var.domain}"
 }
 
 module "hostedzone" {

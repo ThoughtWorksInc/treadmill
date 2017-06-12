@@ -12,8 +12,6 @@ variable "role" {}
 
 variable "hostedzone_id" {}
 
-variable "domain" {}
-
 variable "ami_id" {
   type = "map"
   default = {
@@ -51,8 +49,9 @@ resource "aws_instance" "instance" {
 
 resource "aws_route53_record" "dns-entry" {
   count = "${var.count}"
-  name = "${element(aws_instance.instance.*.tags.Name, count.index)}${element(aws_instance.instance.*.tags.Id, count.index)}.${var.domain}."
+  name = "${element(aws_instance.instance.*.tags.Name, count.index)}${element(aws_instance.instance.*.tags.Id, count.index)}"
   zone_id = "${var.hostedzone_id}"
   type = "A"
+  ttl = "3600"
   records = ["${element(aws_instance.instance.*.private_ip, count.index)}"]
 }
