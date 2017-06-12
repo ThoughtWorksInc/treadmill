@@ -27,7 +27,9 @@ variable "key" {
 variable "size" {
   type = "map"
   default = {
-    "freeipa" = "t2.micro"
+    "freeipa" = "t2.small"
+    "TreadmillMaster" = "t2.small"
+    "TreadmillNode" = "t2.xlarge"
   }
 }
 
