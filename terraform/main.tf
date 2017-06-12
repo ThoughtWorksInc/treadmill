@@ -4,7 +4,6 @@ provider "aws" {
 
 variable "name" { }
 variable "vpc_cidr" { }
-variable "region" { }
 
 module "vpc" {
   source = "vpc"

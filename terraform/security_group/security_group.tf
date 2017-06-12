@@ -1,5 +1,5 @@
-var "secgroup_name" {}
-var "vpc_id" {}
+variable "secgroup_name" {}
+variable "vpc_id" {}
 
 resource "aws_security_group" "secgroup" {
   name = "${var.secgroup_name}"
