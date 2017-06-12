@@ -76,4 +76,5 @@ module "treadmill-node" {
 module "hostedzone" {
   source = "hostedzone"
   domain = "${var.domain}"
+  vpc_id = "${module.vpc.vpc_id}"
 }
