@@ -1,5 +1,7 @@
 variable "region" {}
 
+variable "key" {}
+
 variable "count" {}
 
 variable "subnet_id" {}
@@ -22,10 +24,6 @@ variable "ami_id" {
     "us-west-1" = "ami-af4333cf"
     "us-west-2" = "ami-d2c924b2"
   }
-}
-
-variable "key" {
-  default = "ms_treadmill_dev"
 }
 
 variable "size" {

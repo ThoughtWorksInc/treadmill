@@ -43,6 +43,7 @@ module "freeipa" {
   subnet_id = "${module.public_subnet.subnet_id}"
   secgroup_id = "${module.security_group.secgroup_id}"
   region = "${var.region}"
+  key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
   domain = "${var.domain}"
 }
@@ -54,6 +55,7 @@ module "treadmill-master" {
   subnet_id = "${module.public_subnet.subnet_id}"
   secgroup_id = "${module.security_group.secgroup_id}"
   region = "${var.region}"
+  key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
   domain = "${var.domain}"
 }
@@ -65,6 +67,7 @@ module "treadmill-node" {
   subnet_id = "${module.public_subnet.subnet_id}"
   secgroup_id = "${module.security_group.secgroup_id}"
   region = "${var.region}"
+  key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
   domain = "${var.domain}"
 }
