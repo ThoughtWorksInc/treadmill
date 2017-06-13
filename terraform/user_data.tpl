@@ -8,4 +8,4 @@ curl -L https://github.com/ThoughtWorksInc/treadmill/archive/terraform_spike.tar
 
 tar xvf /tmp/treadmill.tar.gz
 
-salt-call --states-dir=treadmill-terraform_spike/saltstack --local state.apply
+salt-call --file-root=treadmill-terraform_spike/saltstack --local state.apply
