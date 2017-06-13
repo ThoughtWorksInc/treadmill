@@ -34,6 +34,7 @@ variable "size" {
     "freeipa" = "t2.small"
     "TreadmillMaster" = "t2.small"
     "TreadmillNode" = "t2.xlarge"
+    "SaltMaster" = "t2.small"
   }
 }
 
@@ -68,4 +69,8 @@ resource "aws_route53_record" "dns-entry" {
   type = "A"
   ttl = "3600"
   records = ["${element(aws_instance.instance.*.private_ip, count.index)}"]
+}
+
+output "dns_entry_name" {
+  value = "${aws_route53_record.dns-entry.name}"
 }

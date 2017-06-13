@@ -48,6 +48,27 @@ module "security_group" {
   vpc_id = "${module.vpc.vpc_id}"
 }
 
+module "salt-master" {
+  source = "instance"
+  role = "SaltMaster"
+  count = "1"
+  subnet_id = "${module.public_subnet.subnet_id}"
+  secgroup_id = "${module.security_group.secgroup_id}"
+  region = "${var.region}"
+  key = "${var.key}"
+  hostedzone_id = "${module.hostedzone.hostedzone_id}"
+  tm_repo = "${var.tm_repo}"
+  git_branch = "${var.git_branch}"
+}
+
+module "salt-master-cname" {
+  source = "dns_record"
+  name = "salt"
+  type = "CNAME"
+  hostedzone_id = "${module.hostedzone.hostedzone_id}"
+  record = "${module.salt-master.dns_entry_name}.${var.domain}"
+}
+
 module "freeipa" {
   source = "instance"
   role = "freeipa"
