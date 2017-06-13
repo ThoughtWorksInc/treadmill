@@ -33,6 +33,13 @@ variable "size" {
   }
 }
 
+data "template_file" "user_data" {
+  template = "${file("user_data.tpl")}"
+  vars {
+    role = "${var.role}"
+  }
+}
+
 resource "aws_instance" "instance" {
   ami = "${lookup(var.ami_id, var.region)}"
   instance_type = "${lookup(var.size, var.role)}"
@@ -41,6 +48,7 @@ resource "aws_instance" "instance" {
   vpc_security_group_ids = ["${var.secgroup_id}"]
   associate_public_ip_address = true
   count = "${var.count}"
+  user_data = "${data.template_file.user_data.rendered}"
   tags {
     Name = "${var.role}"
     Id = "${count.index + 1}"
