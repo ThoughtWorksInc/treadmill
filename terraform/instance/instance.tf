@@ -10,6 +10,10 @@ variable "secgroup_id" {}
 
 variable "role" {}
 
+variable "tm_repo" {}
+
+variable "git_branch" {}
+
 variable "hostedzone_id" {}
 
 variable "ami_id" {
@@ -37,6 +41,8 @@ data "template_file" "user_data" {
   template = "${file("user_data.tpl")}"
   vars {
     role = "${var.role}"
+    tm_repo = "${var.tm_repo}"
+    git_branch = "${var.git_branch}"
   }
 }
 

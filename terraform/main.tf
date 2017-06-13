@@ -17,6 +17,14 @@ variable "key" {
   default = "ms_treadmill_dev"
 }
 
+variable "tm_repo" {
+  default = "https://github.com/Morgan-Stanley/treadmill"
+}
+
+variable "git_branch" {
+  default = "master"
+}
+
 variable "domain" {
   default = "tw.treadmill."
 }
@@ -49,6 +57,8 @@ module "freeipa" {
   region = "${var.region}"
   key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
+  tm_repo = "${var.tm_repo}"
+  git_branch = "${var.git_branch}"
 }
 
 module "treadmill-master" {
@@ -60,6 +70,8 @@ module "treadmill-master" {
   region = "${var.region}"
   key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
+  tm_repo = "${var.tm_repo}"
+  git_branch = "${var.git_branch}"
 }
 
 module "treadmill-node" {
@@ -71,6 +83,8 @@ module "treadmill-node" {
   region = "${var.region}"
   key = "${var.key}"
   hostedzone_id = "${module.hostedzone.hostedzone_id}"
+  tm_repo = "${var.tm_repo}"
+  git_branch = "${var.git_branch}"
 }
 
 module "hostedzone" {
