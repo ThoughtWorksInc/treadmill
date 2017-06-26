@@ -3,18 +3,33 @@ import polling
 
 
 class Instance:
-    def __init__(self, Name=None, ImageId=None,
-                 InstanceType='t2.small', SubnetId='',
-                 Count=1, SecurityGroupIds=None, ids=None):
-        self.ids = ids or []
+    def __init__(self, Name=None, id=None, metadata=None):
+        self.id = id
         self.name = Name
         self.conn = Connection()
-        self.ImageId = ImageId
-        self.InstanceType = InstanceType
-        self.SubnetId = SubnetId
-        self.count = Count
-        self.SecurityGroupIds = SecurityGroupIds or None
+        self.metadata = metadata
+
+    def create_tags(self):
+        self.conn.create_tags(
+            Resources=[self.id],
+            Tags=[{
+                'Key': 'Name',
+                'Value': self.name + str(
+                    self.metadata.get('AmiLaunchIndex', 0) + 1
+                )
+            }]
+        )
+
+
+class Instances:
+    def __init__(self, instances=[]):
+        self.instances = instances
         self.volume_ids = []
+        self.conn = Connection()
+
+    @property
+    def ids(self):
+        return [i.id for i in self.instances]
 
     @classmethod
     def load_json(cls, ids=[], filters=[]):
@@ -32,35 +47,46 @@ class Instance:
 
         return sum([r['Instances'] for r in response], [])
 
-    def create(self):
-        self.instances = self.conn.run_instances(
-            ImageId=self.ImageId,
-            MinCount=self.count,
-            MaxCount=self.count,
-            InstanceType=self.InstanceType,
-            SubnetId=self.SubnetId,
-            SecurityGroupIds=self.SecurityGroupIds
+    @classmethod
+    def get(cls, ids=[], filters=[]):
+        json = Instances.load_json(ids=ids, filters=[])
+        return Instances(
+            instances=[Instance(
+                id=j['InstanceId'],
+                metadata=j
+            ) for j in json]
         )
 
-        self.ids = [i['InstanceId'] for i in self.instances['Instances']]
+    @classmethod
+    def create(cls, Name=None, ImageId=None,
+               InstanceType='t2.small', SubnetId='',
+               Count=1, SecurityGroupIds=None):
+        conn = Connection()
+        _instances = conn.run_instances(
+            ImageId=ImageId,
+            MinCount=Count,
+            MaxCount=Count,
+            InstanceType=InstanceType,
+            SubnetId=SubnetId,
+            SecurityGroupIds=SecurityGroupIds
+        )
 
-        for idx, id in enumerate(self.ids, start=1):
-            tag_name = self.name + str(idx)
-            self.conn.create_tags(
-                Resources=[id],
-                Tags=[{
-                    'Key': 'Name',
-                    'Value': tag_name
-                }]
+        _ids = [i['InstanceId'] for i in _instances['Instances']]
+        _instances_json = Instances.load_json(ids=_ids)
+
+        _instances = []
+        for i in _instances_json:
+            _instance = Instance(
+                id=i['InstanceId'],
+                Name=Name,
+                metadata=i
             )
+            _instance.create_tags()
+            _instances.append(_instance)
+
+        return Instances(instances=_instances)
 
     create_master = create_freeipa = create_node = create
-
-    def terminate(self):
-        self.get_volume_ids()
-        self.conn.terminate_instances(InstanceIds=self.ids)
-        self._wait_for_termination()
-        self.delete_volumes()
 
     def get_volume_ids(self):
         if not self.volume_ids:
@@ -71,6 +97,12 @@ class Instance:
                 }]
             )
             self.volume_ids = [v['VolumeId'] for v in volumes['Volumes']]
+
+    def terminate(self):
+        self.get_volume_ids()
+        self.conn.terminate_instances(InstanceIds=self.ids)
+        self._wait_for_termination()
+        self.delete_volumes()
 
     def delete_volumes(self):
         for volume_id in self.volume_ids:

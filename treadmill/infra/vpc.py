@@ -1,5 +1,5 @@
 from treadmill.infra import connection
-from treadmill.infra import instance
+from treadmill.infra import instances
 import time
 
 
@@ -8,7 +8,6 @@ class VPC:
         self.conn = connection.Connection()
         self.id = id
         self.instances = []
-        self.instance_ids = []
         self.secgroup_ids = []
         self.route_table_ids = []
         self.route_related_ids = []
@@ -114,20 +113,16 @@ class VPC:
         )
 
     def get_instances(self):
-        if not (self.instances and self.instance_ids):
-            self.instances = instance.Instance.load_json(
-                ids=self.instance_ids,
+        if not self.instances:
+            self.instances = instances.Instances.get(
                 filters=self._filters()
             )
 
-            self.instance_ids = [i['InstanceId'] for i in self.instances]
-
     def terminate_instances(self):
-        if not self.instance_ids:
+        if not self.instances:
             self.get_instances()
 
-        instances = instance.Instance(ids=self.instance_ids)
-        instances.terminate()
+        self.instances.terminate()
 
     def get_security_group_ids(self):
         if not self.secgroup_ids:
@@ -208,7 +203,10 @@ class VPC:
         self.get_instances()
         return {
             'VpcId': self.id,
-            'Instances': list(map(self._instance_details, self.instances))
+            'Instances': list(map(
+                self._instance_details,
+                [i.metadata for i in self.instances])
+            )
         }
 
     def _instance_details(self, data):

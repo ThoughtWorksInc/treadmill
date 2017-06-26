@@ -1,5 +1,5 @@
 from treadmill.infra.vpc import VPC
-from treadmill.infra.instance import Instance
+from treadmill.infra.instances import Instances
 
 
 class Master:
@@ -16,18 +16,16 @@ class Master:
         self.vpc.create_security_group('sg_common', 'Treadmill Security group')
         self.vpc.create_hosted_zone()
 
-        instance = Instance(
-            'TreadmillMaster',
+        instances = Instances.create_master(
+            Name='TreadmillMaster',
             ImageId='ami-6d1c2007',
             Count=3,
             SubnetId=self.vpc.subnet_ids[0],
             SecurityGroupIds=self.vpc.secgroup_ids
         )
 
-        instance.create_master()
-
-        self.vpc.instance_ids = instance.ids
-        self.ids = instance.ids
+        self.vpc.instance_ids = instances.ids
+        self.ids = instances.ids
         self.show()
 
         return self.vpc.id

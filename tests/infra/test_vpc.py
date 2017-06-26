@@ -6,6 +6,8 @@ import unittest
 import mock
 
 from treadmill.infra import vpc
+from treadmill.infra.instances import Instance
+from treadmill.infra.instances import Instances
 
 
 class VPCTest(unittest.TestCase):
@@ -179,54 +181,52 @@ class VPCTest(unittest.TestCase):
             CallerReference='786'
         )
 
-    @mock.patch('treadmill.infra.instance.Connection', mock.Mock())
-    @mock.patch('treadmill.infra.instance.Instance')
-    def test_get_instances(self, instance_mock):
+    @mock.patch('treadmill.infra.instances.Connection', mock.Mock())
+    @mock.patch('treadmill.infra.instances.Instances')
+    def test_get_instances(self, instances_mock):
+        instance0_json = {'InstanceId': 'instance-id-0'}
+        instance1_json = {'InstanceId': 'instance-id-1'}
         expected_instances = [
-            {
-                'InstanceId': 'instance-id-0',
-            },
-            {
-                'InstanceId': 'instance-id-1'
-            }
+            Instance(
+                id='instance-id-0',
+                metadata=instance0_json
+            ),
+            Instance(
+                id='instance-id-1',
+                metadata=instance1_json
+            )
         ]
 
-        instance_mock.load_json = mock.Mock(
-            return_value=expected_instances
+        instances_mock.get = mock.Mock(
+            return_value=Instances(instances=expected_instances)
         )
 
         _vpc = vpc.VPC(self.vpc_id_mock)
         _vpc.get_instances()
 
         self.assertEquals(
-            _vpc.instance_ids,
-            ['instance-id-0', 'instance-id-1']
+            _vpc.instances.instances,
+            expected_instances
         )
 
-        self.assertEquals(_vpc.instances, expected_instances)
-        instance_mock.load_json.assert_called_once_with(
-            ids=[],
+        instances_mock.get.assert_called_once_with(
             filters=[{
                 'Name': 'vpc-id',
                 'Values': [self.vpc_id_mock]
             }]
         )
 
-    @mock.patch('treadmill.infra.instance.Connection', mock.Mock())
-    @mock.patch('treadmill.infra.instance.Instance')
-    def test_terminate_instances(self, instance_mock):
-        instance_obj_mock = mock.Mock()
-        instance_mock.return_value = instance_obj_mock
+    @mock.patch('treadmill.infra.instances.Connection', mock.Mock())
+    @mock.patch('treadmill.infra.instances.Instances')
+    def test_terminate_instances(self, instances_mock):
+        instances_obj_mock = mock.Mock()
 
         _vpc = vpc.VPC(self.vpc_id_mock)
-        _vpc.instance_ids = ['instance-id-0', 'instance-id-1']
-        _vpc.volume_ids = [1, 2]
+        _vpc.instances = instances_obj_mock
+
         _vpc.terminate_instances()
 
-        instance_mock.assert_called_once_with(
-            ids=['instance-id-0', 'instance-id-1']
-        )
-        instance_obj_mock.terminate.assert_called_once()
+        instances_obj_mock.terminate.assert_called_once()
 
     @mock.patch('treadmill.infra.connection.Connection')
     def test_get_security_group_ids(self, connectionMock):
