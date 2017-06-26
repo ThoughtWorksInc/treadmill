@@ -82,10 +82,12 @@ class InstancesTest(unittest.TestCase):
         conn_mock.run_instances.assert_called_with(
             ImageId='foo-123',
             InstanceType='t2.small',
+            KeyName='ms_treadmill_dev',
             MaxCount=2,
             MinCount=2,
             SecurityGroupIds=None,
             SubnetId='',
+            UserData='',
         )
         conn_mock.describe_instances.assert_called_with(
             InstanceIds=[1, 2]

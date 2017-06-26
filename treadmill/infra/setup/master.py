@@ -14,14 +14,16 @@ class Master:
         self.vpc.create_internet_gateway()
         self.vpc.create_route_table()
         self.vpc.create_security_group('sg_common', 'Treadmill Security group')
-        self.vpc.create_hosted_zone()
+
+        self.setup_scripts = []
 
         instances = Instances.create_master(
             Name='TreadmillMaster',
             ImageId='ami-6d1c2007',
-            Count=3,
+            Count=1,
             SubnetId=self.vpc.subnet_ids[0],
-            SecurityGroupIds=self.vpc.secgroup_ids
+            SecurityGroupIds=self.vpc.secgroup_ids,
+            SetupScripts=self.setup_scripts,
         )
 
         self.vpc.instance_ids = instances.ids
@@ -40,7 +42,6 @@ class Master:
         self.vpc.delete_security_groups()
         self.vpc.delete_route_tables()
         self.vpc.delete()
-        self.vpc.delete_hosted_zone()
 
     def show(self):
         self.output = self.vpc.show()
