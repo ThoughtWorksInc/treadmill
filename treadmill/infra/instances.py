@@ -25,7 +25,7 @@ class Instance:
 
 
 class Instances:
-    def __init__(self, instances=[]):
+    def __init__(self, instances):
         self.instances = instances
         self.volume_ids = []
         self.conn = Connection()
@@ -50,6 +50,7 @@ class Instances:
     def load_json(cls, ids=[], filters=[]):
         """Fetch instance details"""
         conn = Connection()
+        response = []
 
         if ids:
             response = conn.describe_instances(
