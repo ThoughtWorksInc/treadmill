@@ -6,7 +6,8 @@ class Master:
     def __init__(self, vpc_id=None):
         self.vpc = VPC(vpc_id)
 
-    def setup(self):
+    def setup(self, domain='tw.treadmill', app_root='/var/tmp',
+              tm_release='0.1.0', freeipa_hostname='treadmillfreeipa'):
         if not self.vpc.id:
             self.vpc.create()
 
@@ -15,7 +16,27 @@ class Master:
         self.vpc.create_route_table()
         self.vpc.create_security_group('sg_common', 'Treadmill Security group')
 
-        self.setup_scripts = []
+        self.setup_scripts = [
+            {
+                'name': 'provision-base.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'NAME': 'TreadmillMaster',
+                },
+            },
+            {'name': 'install-pid1.sh', 'vars': {}},
+            {'name': 'install-s6.sh', 'vars': {}},
+            {
+                'name': 'configure-master.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'CELL': self.vpc.subnet_ids[0],
+                    'APPROOT': app_root,
+                    'FREEIPA_HOSTNAME': freeipa_hostname,
+                    'TREADMILL_RELEASE': tm_release,
+                },
+            },
+        ]
 
         instances = Instances.create_master(
             Name='TreadmillMaster',
