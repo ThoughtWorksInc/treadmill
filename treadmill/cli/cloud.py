@@ -1,6 +1,7 @@
 import click
 from treadmill.infra.vpc import VPC
 from treadmill.infra.setup.master import Master
+from treadmill.infra.setup.node import Node
 
 
 def init():
@@ -18,6 +19,11 @@ def init():
         if cell:
             _master = Master()
             _master.setup()
+            _node = Node()
+            _subnet_id = _master.vpc.subnet_ids[0]
+            _node.setup(
+                SubnetId=_subnet_id
+            )
 
         else:
             _vpc = VPC()

@@ -31,9 +31,13 @@ class CloudTest(unittest.TestCase):
         )
         _vpc.create_hosted_zone.assert_called_once()
 
+    @mock.patch('treadmill.cli.cloud.Node')
     @mock.patch('treadmill.cli.cloud.Master')
-    def test_init_with_cell(self, master_mock):
+    def test_init_with_cell(self, master_mock, node_mock):
         _master = master_mock()
+        _master.vpc.subnet_ids = ['subnet-id']
+        _node = node_mock()
+
         result = self.runner.invoke(
             self.configure_cli,
             ['init', '--cell']
@@ -41,3 +45,6 @@ class CloudTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         _master.setup.assert_called_once()
+        _node.setup.assert_called_once_with(
+            SubnetId='subnet-id'
+        )
