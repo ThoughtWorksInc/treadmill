@@ -25,6 +25,7 @@ class Master:
         self.vpc.create_internet_gateway()
         self.vpc.create_route_table()
         self.vpc.create_security_group('sg_common', 'Treadmill Security group')
+        self.vpc.create_hosted_zone()
         self.vpc.associate_dhcp_options()
 
         self.setup_scripts = [
@@ -74,6 +75,7 @@ class Master:
         self.vpc.delete_security_groups()
         self.vpc.delete_route_tables()
         self.vpc.delete()
+        self.vpc.delete_hosted_zone()
 
     def show(self):
         self.output = self.vpc.show()
