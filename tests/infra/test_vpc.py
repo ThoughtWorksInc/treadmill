@@ -245,7 +245,7 @@ class VPCTest(unittest.TestCase):
         _vpc.get_instances()
 
         self.assertEquals(
-            _vpc.instances.instances,
+            _vpc.instances,
             expected_instances
         )
 

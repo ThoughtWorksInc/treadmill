@@ -128,7 +128,7 @@ class VPC:
         if not self.instances:
             self.instances = instances.Instances.get(
                 filters=self._filters()
-            )
+            ).instances
 
     def terminate_instances(self):
         if not self.instances:
