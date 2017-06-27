@@ -82,7 +82,6 @@ class Master:
         self.vpc.delete_security_groups()
         self.vpc.delete_route_tables()
         self.vpc.delete()
-        self.vpc.delete_hosted_zones()
 
     def show(self):
         self.output = self.vpc.show()

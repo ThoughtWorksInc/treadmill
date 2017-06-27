@@ -40,7 +40,7 @@ class MasterTest(unittest.TestCase):
         self.master.vpc.instance_ids = None
         self.master.vpc.get_instances()
 
-        self.assertEquals(self.master.vpc.instance_ids, [])
+        self.assertIsNone(self.master.vpc.instance_ids, None)
 
 
 if __name__ == '__main__':
