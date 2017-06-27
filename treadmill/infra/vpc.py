@@ -220,7 +220,7 @@ class VPC:
             'VpcId': self.id,
             'Instances': list(map(
                 self._instance_details,
-                [i.metadata for i in self.instances])
+                [i.metadata for i in self.instances.instances])
             )
         }
 
