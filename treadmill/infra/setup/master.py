@@ -77,16 +77,12 @@ class Master:
         return self.vpc.id
 
     def destroy(self):
-        try:
-            self.vpc.terminate_instances()
-        except Exception as ex:
-            print("Error: {0}".format(ex))
-
+        self.vpc.terminate_instances()
         self.vpc.delete_internet_gateway()
         self.vpc.delete_security_groups()
         self.vpc.delete_route_tables()
         self.vpc.delete()
-        self.vpc.delete_hosted_zone()
+        self.vpc.delete_hosted_zones()
 
     def show(self):
         self.output = self.vpc.show()
