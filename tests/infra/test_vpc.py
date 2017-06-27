@@ -33,7 +33,10 @@ class VPCTest(unittest.TestCase):
     def test_create(self, connectionMock):
         _connectionMock = connectionMock()
         _connectionMock.create_vpc = mock.Mock(
-            return_value={'Vpc': {'VpcId': self.vpc_id_mock}}
+            return_value={'Vpc': {
+                'VpcId': self.vpc_id_mock,
+                'CidrBlock': '172.16.0.0/16'
+            }}
         )
         _connectionMock.create_tags = mock.Mock()
 
@@ -41,6 +44,7 @@ class VPCTest(unittest.TestCase):
         _vpc.create()
 
         self.assertEquals(_vpc.id, self.vpc_id_mock)
+        self.assertEquals(_vpc.cidr_block, '172.16.0.0/16')
         _connectionMock.create_vpc.assert_called_once_with(
             CidrBlock='172.23.0.0/16'
         )
@@ -171,6 +175,42 @@ class VPCTest(unittest.TestCase):
         )
         _connectionMock.create_hosted_zone.assert_called_once_with(
             Name='foo.bar',
+            VPC={
+                'VPCRegion': 'us-east-1',
+                'VPCId': self.vpc_id_mock,
+            },
+            HostedZoneConfig={
+                'PrivateZone': True
+            },
+            CallerReference='786'
+        )
+
+    @mock.patch('treadmill.infra.connection.Connection')
+    @mock.patch('time.time', mock.Mock(return_value=786.007))
+    def test_create_hosted_zone_reverse(self, connectionMock):
+        _connectionMock = connectionMock('route53')
+        expected_hosted_zone = {
+            'HostedZone': {
+                'Id': 'Some-Zone-Id'
+            },
+            'VPC': {
+                'Id': self.vpc_id_mock
+            }
+        }
+        _connectionMock.create_hosted_zone = mock.Mock(
+            return_value=expected_hosted_zone
+        )
+
+        _vpc = vpc.VPC(self.vpc_id_mock, domain='foo.bar')
+        _vpc.cidr_block = '172.10.0.0/16'
+        _vpc.create_hosted_zone(Reverse=True)
+
+        self.assertEquals(
+            _vpc.reverse_hosted_zone_id,
+            expected_hosted_zone['HostedZone']['Id']
+        )
+        _connectionMock.create_hosted_zone.assert_called_once_with(
+            Name='10.172.in-addr.arpa',
             VPC={
                 'VPCRegion': 'us-east-1',
                 'VPCId': self.vpc_id_mock,

@@ -16,9 +16,11 @@ class VPC:
         self.subnet_ids = []
         self.association_ids = []
         self.hosted_zone_id = None
+        self.reverse_hosted_zone_id = None
 
     def create(self, cidr_block="172.23.0.0/16"):
         vpc_response = self.conn.create_vpc(CidrBlock=cidr_block)
+        self.cidr_block = vpc_response['Vpc']['CidrBlock']
         self.id = vpc_response['Vpc']['VpcId']
         self.conn.create_tags(
             Resources=[self.id],
@@ -73,13 +75,22 @@ class VPC:
         )['GroupId'])
 
     def create_hosted_zone(
-        self,
-        Region='us-east-1'
+            self,
+            Region='us-east-1',
+            Reverse=False
+
     ):
-        if not self.hosted_zone_id:
+        if Reverse:
+            identifier = 'reverse_hosted_zone_id'
+            name = self._reverse_domain_name()
+        else:
+            identifier = 'hosted_zone_id'
+            name = self.domain
+
+        if not getattr(self, identifier):
             _conn = connection.Connection('route53')
-            self.hosted_zone_id = _conn.create_hosted_zone(
-                Name=self.domain,
+            _hosted_zone_id = _conn.create_hosted_zone(
+                Name=name,
                 VPC={
                     'VPCRegion': Region,
                     'VPCId': self.id,
@@ -89,6 +100,7 @@ class VPC:
                 },
                 CallerReference=str(int(time.time()))
             )['HostedZone']['Id']
+            setattr(self, identifier, _hosted_zone_id)
 
     def get_hosted_zone_id(self):
         if not self.hosted_zone_id:
@@ -229,6 +241,14 @@ class VPC:
             DhcpOptionsId=self.dhcp_options_id,
             VpcId=self.id
         )
+
+    def _reverse_domain_name(self):
+        cidr_block_octets = self.cidr_block.split('.')
+        return '.'.join([
+            cidr_block_octets[1],
+            cidr_block_octets[0],
+            "in-addr.arpa"
+        ])
 
     def _instance_details(self, data):
         return {
