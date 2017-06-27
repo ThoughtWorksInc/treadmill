@@ -17,6 +17,7 @@ class VPC:
         self.association_ids = []
         self.hosted_zone_id = None
         self.reverse_hosted_zone_id = None
+        self.hosted_zone_ids = []
 
     def create(self, cidr_block="172.23.0.0/16"):
         vpc_response = self.conn.create_vpc(CidrBlock=cidr_block)
@@ -36,6 +37,7 @@ class VPC:
 
     def create_subnet(self, region_name='us-east-1',
                       cidr_block="172.23.0.0/24"):
+        self.region_name = region_name
         subnet = self.conn.create_subnet(
             VpcId=self.id,
             CidrBlock=cidr_block,
@@ -102,33 +104,34 @@ class VPC:
             )['HostedZone']['Id']
             setattr(self, identifier, _hosted_zone_id)
 
-    def get_hosted_zone_id(self):
-        if not self.hosted_zone_id:
-            _conn = connection.Connection('route53')
-            hosted_zones = _conn.list_hosted_zones()['HostedZones']
-            for hosted_zone in hosted_zones:
-                _hosted_zone_id = hosted_zone['Id']
-                hosted_zone_details = _conn.get_hosted_zone(
-                    Id=_hosted_zone_id
-                )
-                if self.id in [_vpc['VPCId']
-                               for _vpc in hosted_zone_details['VPCs']]:
-                    self.hosted_zone_id = _hosted_zone_id
-                    break
-
-    def delete_hosted_zone(self):
+    def get_hosted_zone_ids(self):
         _conn = connection.Connection('route53')
-        self.get_hosted_zone_id()
+        hosted_zones = _conn.list_hosted_zones()['HostedZones']
+        for hosted_zone in hosted_zones:
+            _hosted_zone_id = hosted_zone['Id']
+            hosted_zone_details = _conn.get_hosted_zone(
+                Id=_hosted_zone_id
+            )
+            if self.id in [_vpc['VPCId']
+                           for _vpc in hosted_zone_details['VPCs']]:
+                self.hosted_zone_ids.append(_hosted_zone_id)
 
-        _conn.delete_hosted_zone(
-            Id=self.hosted_zone_id
-        )
+    def delete_hosted_zones(self):
+        if not self.hosted_zone_ids:
+            self.get_hosted_zone_ids()
+        _conn = connection.Connection('route53')
+        self.get_hosted_zone_ids()
+
+        for id in self.hosted_zone_ids:
+            _conn.delete_hosted_zone(
+                Id=id
+            )
 
     def get_instances(self):
         if not self.instances:
             self.instances = instances.Instances.get(
                 filters=self._filters()
-            ).instances
+            )
 
     def terminate_instances(self):
         if not self.instances:
