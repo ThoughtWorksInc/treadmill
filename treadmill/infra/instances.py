@@ -1,8 +1,6 @@
 from treadmill.infra.connection import Connection
-from treadmill.infra import SCRIPT_DIR
 
 import polling
-from jinja2 import Template
 
 
 class Instance:
@@ -35,18 +33,6 @@ class Instances:
         return [i.id for i in self.instances]
 
     @classmethod
-    def get_userdata(cls, scripts):
-        if not scripts:
-            return ''
-
-        userdata = '#!/bin/bash -e\n'
-        for script in scripts:
-            with open(SCRIPT_DIR + script['name'], 'r') as data:
-                template = Template(data.read())
-                userdata += template.render(script['vars']) + '\n'
-        return userdata
-
-    @classmethod
     def load_json(cls, ids=[], filters=[]):
         """Fetch instance details"""
         conn = Connection()
@@ -77,7 +63,7 @@ class Instances:
     def create(cls, Name=None, ImageId=None,
                InstanceType='t2.small', SubnetId='',
                Count=1, SecurityGroupIds=None, KeyName='ms_treadmill_dev',
-               SetupScripts=None):
+               UserData=''):
         conn = Connection()
         _instances = conn.run_instances(
             ImageId=ImageId,
@@ -87,7 +73,7 @@ class Instances:
             SubnetId=SubnetId,
             SecurityGroupIds=SecurityGroupIds,
             KeyName=KeyName,
-            UserData=cls.get_userdata(SetupScripts),
+            UserData=UserData,
         )
 
         _ids = [i['InstanceId'] for i in _instances['Instances']]

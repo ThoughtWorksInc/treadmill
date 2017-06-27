@@ -1,5 +1,32 @@
 from treadmill.infra.vpc import VPC
 from treadmill.infra.instances import Instances
+from treadmill.infra.configuration import Configuration
+
+
+class MasterConfiguration(Configuration):
+    def __init__(self, domain, cell, app_root, freeipa_hostname, tm_release):
+        self.setup_scripts = [
+            {
+                'name': 'provision-base.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'NAME': 'TreadmillMaster',
+                },
+            },
+            {'name': 'install-pid1.sh', 'vars': {}},
+            {'name': 'install-s6.sh', 'vars': {}},
+            {
+                'name': 'configure-master.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'CELL': cell,
+                    'APPROOT': app_root,
+                    'FREEIPA_HOSTNAME': freeipa_hostname,
+                    'TREADMILL_RELEASE': tm_release,
+                },
+            },
+        ]
+        super(MasterConfiguration, self).__init__(self.setup_scripts)
 
 
 class Master:
@@ -29,27 +56,10 @@ class Master:
         self.vpc.create_hosted_zone(Reverse=True)
         self.vpc.associate_dhcp_options()
 
-        self.setup_scripts = [
-            {
-                'name': 'provision-base.sh',
-                'vars': {
-                    'DOMAIN': self.domain,
-                    'NAME': 'TreadmillMaster',
-                },
-            },
-            {'name': 'install-pid1.sh', 'vars': {}},
-            {'name': 'install-s6.sh', 'vars': {}},
-            {
-                'name': 'configure-master.sh',
-                'vars': {
-                    'DOMAIN': self.domain,
-                    'CELL': self.vpc.subnet_ids[0],
-                    'APPROOT': self.app_root,
-                    'FREEIPA_HOSTNAME': freeipa_hostname,
-                    'TREADMILL_RELEASE': tm_release,
-                },
-            },
-        ]
+        self.master_configuration = MasterConfiguration(
+            self.domain, self.vpc.subnet_ids[0], self.app_root,
+            freeipa_hostname, tm_release
+        )
 
         instances = Instances.create_master(
             Name='TreadmillMaster',
@@ -57,7 +67,7 @@ class Master:
             Count=1,
             SubnetId=self.vpc.subnet_ids[0],
             SecurityGroupIds=self.vpc.secgroup_ids,
-            SetupScripts=self.setup_scripts,
+            UserData=self.master_configuration.get_userdata(),
         )
 
         self.vpc.instance_ids = instances.ids

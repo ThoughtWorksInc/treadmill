@@ -4,7 +4,6 @@ Unit test for EC2 instance.
 
 import unittest
 import mock
-import io
 
 from treadmill.infra.instances import Instance
 from treadmill.infra.instances import Instances
@@ -190,26 +189,6 @@ class InstancesTest(unittest.TestCase):
             Filters=[{'foo': 'bar'}]
         )
         self.assertEquals(instance_details, sample_instances)
-
-    @mock.patch('builtins.open', create=True)
-    def test_get_userdata(self, open_mock):
-        open_mock.side_effect = [
-            io.StringIO('{{ DOMAIN }}'),
-            io.StringIO('{{ CELL }}'),
-        ]
-
-        userdata = Instances.get_userdata([])
-        self.assertEquals(userdata, '')
-
-        userdata = Instances.get_userdata([
-            {'name': 'script1.sh', 'vars': {'DOMAIN': 'test.treadmill'}},
-            {'name': 'script2.sh', 'vars': {'CELL': 'mycell'}},
-        ])
-
-        self.assertEquals(
-            userdata,
-            '#!/bin/bash -e\ntest.treadmill\nmycell\n'
-        )
 
 
 if __name__ == '__main__':
