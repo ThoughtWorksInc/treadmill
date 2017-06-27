@@ -9,17 +9,51 @@ class Instance:
         self.name = Name
         self.conn = Connection()
         self.metadata = metadata
+        self.private_ip = metadata.get('PrivateIpAddress', '') if metadata else ''
 
     def create_tags(self):
+        self.name = self.name + str(
+            self.metadata.get('AmiLaunchIndex', 0) + 1
+        )
         self.conn.create_tags(
             Resources=[self.id],
             Tags=[{
                 'Key': 'Name',
-                'Value': self.name + str(
-                    self.metadata.get('AmiLaunchIndex', 0) + 1
-                )
+                'Value': self.name
             }]
         )
+
+    def upsert_dns_record(self, hosted_zone_id, Region, Reverse=False):
+        _name, _type, _value = [
+            self._reverse_dns_record_name(), 'PTR', self.name
+        ] if Reverse else [
+            self.name, 'A', self.private_ip
+        ]
+
+        _conn = Connection('route53')
+        _conn.change_resource_record_sets(
+            HostedZoneId=hosted_zone_id,
+            ChangeBatch={
+                'Changes': [{
+                    'Action': 'UPSERT',
+                    'ResourceRecordSet': {
+                        'Name': _name,
+                        'Type': _type,
+                        'Region': Region,
+                        'ResourceRecords': [{
+                            'Value': _value
+                        }]
+                    }
+                }]
+            }
+        )
+
+    def _reverse_dns_record_name(self):
+        ip_octets = self.private_ip.split('.')
+        ip_octets.reverse()
+        ip_octets.append('in-addr.arpa')
+
+        return '.'.join(ip_octets)
 
 
 class Instances:
@@ -51,7 +85,7 @@ class Instances:
 
     @classmethod
     def get(cls, ids=[], filters=[]):
-        json = Instances.load_json(ids=ids, filters=[])
+        json = Instances.load_json(ids=ids, filters=filters)
         return Instances(
             instances=[Instance(
                 id=j['InstanceId'],

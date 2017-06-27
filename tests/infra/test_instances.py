@@ -23,6 +23,7 @@ class InstanceTest(unittest.TestCase):
             metadata={'AmiLaunchIndex': 100}
         )
         instance.create_tags()
+        self.assertEquals(instance.name, 'foo101')
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
@@ -30,6 +31,72 @@ class InstanceTest(unittest.TestCase):
                 'Key': 'Name',
                 'Value': 'foo101'
             }]
+        )
+
+    @mock.patch('treadmill.infra.instances.Connection')
+    def test_upsert_dns_record(self, ConnectionMock):
+        conn_mock = ConnectionMock('route53')
+        conn_mock.change_resource_record_sets = mock.Mock()
+
+        instance = Instance(
+            Name='foo',
+            id='1',
+            metadata={'PrivateIpAddress': '10.1.2.3'}
+        )
+        instance.upsert_dns_record(
+            hosted_zone_id='zone-id',
+            Region='jharkhand'
+        )
+        self.assertEquals(instance.private_ip, '10.1.2.3')
+
+        conn_mock.change_resource_record_sets.assert_called_once_with(
+            HostedZoneId='zone-id',
+            ChangeBatch={
+                'Changes': [{
+                    'Action': 'UPSERT',
+                    'ResourceRecordSet': {
+                        'Name': 'foo',
+                        'Type': 'A',
+                        'Region': 'jharkhand',
+                        'ResourceRecords': [{
+                            'Value': '10.1.2.3'
+                        }]
+                    }
+                }]
+            }
+        )
+
+    @mock.patch('treadmill.infra.instances.Connection')
+    def test_upsert_dns_record_reverse(self, ConnectionMock):
+        conn_mock = ConnectionMock('route53')
+        conn_mock.change_resource_record_sets = mock.Mock()
+
+        instance = Instance(
+            Name='instance-name',
+            id='1',
+            metadata={'PrivateIpAddress': '10.1.2.3'}
+        )
+        instance.upsert_dns_record(
+            hosted_zone_id='reverse-zone-id',
+            Region='jharkhand',
+            Reverse=True
+        )
+
+        conn_mock.change_resource_record_sets.assert_called_once_with(
+            HostedZoneId='reverse-zone-id',
+            ChangeBatch={
+                'Changes': [{
+                    'Action': 'UPSERT',
+                    'ResourceRecordSet': {
+                        'Name': '3.2.1.10.in-addr.arpa',
+                        'Type': 'PTR',
+                        'Region': 'jharkhand',
+                        'ResourceRecords': [{
+                            'Value': 'instance-name'
+                        }]
+                    }
+                }]
+            }
         )
 
 
