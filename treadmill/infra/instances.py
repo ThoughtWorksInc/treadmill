@@ -9,7 +9,10 @@ class Instance:
         self.name = Name
         self.conn = Connection()
         self.metadata = metadata
-        self.private_ip = metadata.get('PrivateIpAddress', '') if metadata else ''
+        self.private_ip = metadata.get(
+            'PrivateIpAddress',
+            ''
+        ) if metadata else ''
 
     def create_tags(self):
         self.name = self.name + str(
@@ -25,11 +28,14 @@ class Instance:
 
     def upsert_dns_record(self, hosted_zone_id, Region, Reverse=False):
         _name, _type, _value = [
-            self._reverse_dns_record_name(), 'PTR', self.name
+            self._reverse_dns_record_name(),
+            'PTR',
+            self.name
         ] if Reverse else [
-            self.name, 'A', self.private_ip
+            self.name,
+            'A',
+            self.private_ip
         ]
-
         _conn = Connection('route53')
         _conn.change_resource_record_sets(
             HostedZoneId=hosted_zone_id,
