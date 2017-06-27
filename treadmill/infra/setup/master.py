@@ -26,6 +26,7 @@ class Master:
         self.vpc.create_route_table()
         self.vpc.create_security_group('sg_common', 'Treadmill Security group')
         self.vpc.create_hosted_zone()
+        self.vpc.create_hosted_zone(Reverse=True)
         self.vpc.associate_dhcp_options()
 
         self.setup_scripts = [
