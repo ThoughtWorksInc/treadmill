@@ -3,11 +3,21 @@ from treadmill.infra.instances import Instances
 
 
 class Master:
-    def __init__(self, vpc_id=None):
-        self.vpc = VPC(vpc_id)
+    def __init__(
+            self,
+            vpc_id=None,
+            domain='tw.treadmill',
+            app_root='/var/tmp'
+    ):
+        self.vpc = VPC(vpc_id, domain=domain)
+        self.domain = domain
+        self.app_root = app_root
 
-    def setup(self, domain='tw.treadmill', app_root='/var/tmp',
-              tm_release='0.1.0', freeipa_hostname='treadmillfreeipa'):
+    def setup(
+            self,
+            tm_release='0.1.0',
+            freeipa_hostname='treadmillfreeipa'
+    ):
         if not self.vpc.id:
             self.vpc.create()
 
@@ -15,12 +25,13 @@ class Master:
         self.vpc.create_internet_gateway()
         self.vpc.create_route_table()
         self.vpc.create_security_group('sg_common', 'Treadmill Security group')
+        self.vpc.associate_dhcp_options()
 
         self.setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': self.domain,
                     'NAME': 'TreadmillMaster',
                 },
             },
@@ -29,9 +40,9 @@ class Master:
             {
                 'name': 'configure-master.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': self.domain,
                     'CELL': self.vpc.subnet_ids[0],
-                    'APPROOT': app_root,
+                    'APPROOT': self.app_root,
                     'FREEIPA_HOSTNAME': freeipa_hostname,
                     'TREADMILL_RELEASE': tm_release,
                 },

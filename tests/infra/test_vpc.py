@@ -434,6 +434,36 @@ class VPCTest(unittest.TestCase):
             InternetGatewayId=self.internet_gateway_id_mock
         )
 
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_associate_dhcp_options(self, connectionMock):
+        _connectionMock = connectionMock()
+        _connectionMock.create_dhcp_options = mock.Mock(return_value={
+            'DhcpOptions': {
+                'DhcpOptionsId': 'some-dhcp-id'
+            }
+        })
+        _connectionMock.associate_dhcp_options = mock.Mock()
+
+        _vpc = vpc.VPC(self.vpc_id_mock, domain='cloud.ms.com')
+        _vpc.associate_dhcp_options()
+
+        _connectionMock.create_dhcp_options.assert_called_once_with(
+            DhcpConfigurations=[
+                {
+                    'Key': 'domain-name',
+                    'Values': ['cloud.ms.com']
+                },
+                {
+                    'Key': 'domain-name-servers',
+                    'Values': ['AmazonProvidedDNS']
+                }
+            ]
+        )
+        _connectionMock.associate_dhcp_options.assert_called_once_with(
+            DhcpOptionsId='some-dhcp-id',
+            VpcId=self.vpc_id_mock
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

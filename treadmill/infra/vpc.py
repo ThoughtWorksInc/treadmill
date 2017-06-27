@@ -4,9 +4,10 @@ import time
 
 
 class VPC:
-    def __init__(self, id=None):
+    def __init__(self, id=None, domain='tw.treadmill'):
         self.conn = connection.Connection()
         self.id = id
+        self.domain = domain
         self.instances = []
         self.secgroup_ids = []
         self.route_table_ids = []
@@ -208,6 +209,27 @@ class VPC:
                 [i.metadata for i in self.instances])
             )
         }
+
+    def associate_dhcp_options(self, options=[]):
+        _default_options = [
+            {
+                'Key': 'domain-name',
+                'Values': [self.domain]
+            },
+            {
+                'Key': 'domain-name-servers',
+                'Values': ['AmazonProvidedDNS']
+            }
+        ]
+        response = self.conn.create_dhcp_options(
+            DhcpConfigurations=_default_options + options
+        )
+
+        self.dhcp_options_id = response['DhcpOptions']['DhcpOptionsId']
+        self.conn.associate_dhcp_options(
+            DhcpOptionsId=self.dhcp_options_id,
+            VpcId=self.id
+        )
 
     def _instance_details(self, data):
         return {
