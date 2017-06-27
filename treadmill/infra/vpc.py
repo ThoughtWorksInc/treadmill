@@ -74,13 +74,12 @@ class VPC:
 
     def create_hosted_zone(
         self,
-        Name='tw.treadmill',
         Region='us-east-1'
     ):
         if not self.hosted_zone_id:
             _conn = connection.Connection('route53')
             self.hosted_zone_id = _conn.create_hosted_zone(
-                Name=Name,
+                Name=self.domain,
                 VPC={
                     'VPCRegion': Region,
                     'VPCId': self.id,

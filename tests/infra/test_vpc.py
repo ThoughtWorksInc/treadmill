@@ -162,7 +162,7 @@ class VPCTest(unittest.TestCase):
             return_value=expected_hosted_zone
         )
 
-        _vpc = vpc.VPC(self.vpc_id_mock)
+        _vpc = vpc.VPC(self.vpc_id_mock, domain='foo.bar')
         _vpc.create_hosted_zone()
 
         self.assertEquals(
@@ -170,7 +170,7 @@ class VPCTest(unittest.TestCase):
             expected_hosted_zone['HostedZone']['Id']
         )
         _connectionMock.create_hosted_zone.assert_called_once_with(
-            Name='tw.treadmill',
+            Name='foo.bar',
             VPC={
                 'VPCRegion': 'us-east-1',
                 'VPCId': self.vpc_id_mock,
