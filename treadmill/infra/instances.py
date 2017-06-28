@@ -7,9 +7,15 @@ class Instance:
     def __init__(self, Name=None, id=None, metadata=None):
         self.id = id
         self.name = Name
-        self.conn = Connection()
         self.metadata = metadata
-        self.private_ip = metadata.get(
+        self.conn = Connection()
+
+        if self.metadata and self.metadata.get('Tags', None):
+            self.name = [t['Value']
+                         for t in self.metadata['Tags']
+                         if t['Key'] == 'Name'][0]
+
+        self.private_ip = self.metadata.get(
             'PrivateIpAddress',
             ''
         ) if metadata else ''
@@ -26,26 +32,50 @@ class Instance:
             }]
         )
 
-    def upsert_dns_record(self, hosted_zone_id, Region, Reverse=False):
+    def upsert_dns_record(self, hosted_zone_id, domain='', Reverse=False):
+        self._change_resource_record_sets(
+            'UPSERT',
+            hosted_zone_id,
+            domain,
+            Reverse
+        )
+
+    def delete_dns_record(self, hosted_zone_id, domain='', Reverse=False):
+        self._change_resource_record_sets(
+            'DELETE',
+            hosted_zone_id,
+            domain,
+            Reverse
+        )
+
+    def _change_resource_record_sets(
+            self,
+            action,
+            hosted_zone_id,
+            domain='',
+            Reverse=False
+    ):
+        forward_dns_name = self.name.lower() + '.' + domain + '.'
+        _hosted_zone_id = hosted_zone_id.split('/')[-1]
         _name, _type, _value = [
             self._reverse_dns_record_name(),
             'PTR',
-            self.name
+            forward_dns_name
         ] if Reverse else [
-            self.name,
+            forward_dns_name,
             'A',
             self.private_ip
         ]
         _conn = Connection('route53')
         _conn.change_resource_record_sets(
-            HostedZoneId=hosted_zone_id,
+            HostedZoneId=_hosted_zone_id,
             ChangeBatch={
                 'Changes': [{
-                    'Action': 'UPSERT',
+                    'Action': action,
                     'ResourceRecordSet': {
                         'Name': _name,
                         'Type': _type,
-                        'Region': Region,
+                        'TTL': 3600,
                         'ResourceRecords': [{
                             'Value': _value
                         }]
@@ -143,9 +173,21 @@ class Instances:
             )
             self.volume_ids = [v['VolumeId'] for v in volumes['Volumes']]
 
-    def terminate(self):
+    def terminate(self, hosted_zone_id, reverse_hosted_zone_id, domain):
         self.get_volume_ids()
-        self.conn.terminate_instances(InstanceIds=self.ids)
+        for instance in self.instances:
+            instance.delete_dns_record(
+                hosted_zone_id,
+                domain
+            )
+            instance.delete_dns_record(
+                hosted_zone_id=reverse_hosted_zone_id,
+                domain=domain,
+                Reverse=True
+            )
+        self.conn.terminate_instances(
+            InstanceIds=self.ids
+        )
         self._wait_for_termination()
         self.delete_volumes()
 
@@ -187,6 +229,6 @@ class Instances:
             ),
             check_success=is_terminated,
             step=10,
-            timeout=120
+            timeout=300
         ):
             return
