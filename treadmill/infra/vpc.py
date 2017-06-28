@@ -114,13 +114,16 @@ class VPC:
             )
             if self.id in [_vpc['VPCId']
                            for _vpc in hosted_zone_details['VPCs']]:
+                if 'in-addr.arpa' in hosted_zone_details['HostedZone']['Name']:
+                    self.reverse_hosted_zone_id = _hosted_zone_id
+                else:
+                    self.hosted_zone_id = _hosted_zone_id
                 self.hosted_zone_ids.append(_hosted_zone_id)
 
     def delete_hosted_zones(self):
         if not self.hosted_zone_ids:
             self.get_hosted_zone_ids()
         _conn = connection.Connection('route53')
-        self.get_hosted_zone_ids()
 
         for id in self.hosted_zone_ids:
             _conn.delete_hosted_zone(
@@ -136,8 +139,14 @@ class VPC:
     def terminate_instances(self):
         if not self.instances:
             self.get_instances()
+        if not self.hosted_zone_ids:
+            self.get_hosted_zone_ids()
 
-        self.instances.terminate()
+        self.instances.terminate(
+            hosted_zone_id=self.hosted_zone_id,
+            reverse_hosted_zone_id=self.reverse_hosted_zone_id,
+            domain=self.domain
+        )
 
     def get_security_group_ids(self):
         if not self.secgroup_ids:

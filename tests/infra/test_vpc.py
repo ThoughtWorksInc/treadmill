@@ -4,10 +4,7 @@ Unit test for VPC.
 
 import unittest
 import mock
-
 from treadmill.infra import vpc
-from treadmill.infra.instances import Instance
-from treadmill.infra.instances import Instances
 
 
 class VPCTest(unittest.TestCase):
@@ -224,29 +221,16 @@ class VPCTest(unittest.TestCase):
     @mock.patch('treadmill.infra.instances.Connection', mock.Mock())
     @mock.patch('treadmill.infra.instances.Instances')
     def test_get_instances(self, instances_mock):
-        instance0_json = {'InstanceId': 'instance-id-0'}
-        instance1_json = {'InstanceId': 'instance-id-1'}
-        expected_instances = [
-            Instance(
-                id='instance-id-0',
-                metadata=instance0_json
-            ),
-            Instance(
-                id='instance-id-1',
-                metadata=instance1_json
-            )
-        ]
-
         instances_mock.get = mock.Mock(
-            return_value=Instances(instances=expected_instances)
+            return_value='foo'
         )
 
         _vpc = vpc.VPC(self.vpc_id_mock)
         _vpc.get_instances()
 
         self.assertEquals(
-            _vpc.instances.instances,
-            expected_instances
+            _vpc.instances,
+            'foo'
         )
 
         instances_mock.get.assert_called_once_with(
@@ -261,12 +245,19 @@ class VPCTest(unittest.TestCase):
     def test_terminate_instances(self, instances_mock):
         instances_obj_mock = mock.Mock()
 
-        _vpc = vpc.VPC(self.vpc_id_mock)
+        _vpc = vpc.VPC(self.vpc_id_mock, domain='domain')
         _vpc.instances = instances_obj_mock
+        _vpc.hosted_zone_ids = [1, 2]
+        _vpc.hosted_zone_id = 1
+        _vpc.reverse_hosted_zone_id = 2
 
         _vpc.terminate_instances()
 
-        instances_obj_mock.terminate.assert_called_once()
+        instances_obj_mock.terminate.assert_called_once_with(
+            hosted_zone_id=1,
+            reverse_hosted_zone_id=2,
+            domain='domain'
+        )
 
     @mock.patch('treadmill.infra.connection.Connection')
     def test_get_security_group_ids(self, connectionMock):
@@ -316,8 +307,11 @@ class VPCTest(unittest.TestCase):
                 'Id': 'zone-id',
                 'Name': 'zone-name',
             }, {
+                'Id': 'zone-id-reverse',
+                'Name': 'zone-name.in-addr-arpa',
+            }, {
                 'Id': 'zone-id-1',
-                'Name': 'zone-name',
+                'Name': 'zone-name-foo',
             }]
         })
         _connectionMock.get_hosted_zone = mock.Mock()
@@ -334,26 +328,47 @@ class VPCTest(unittest.TestCase):
             },
             {
                 'HostedZone': {
+                    'Id': 'zone-id-reverse',
+                    'Name': 'zone-name.in-addr.arpa',
+                },
+                'VPCs': [{
+                    'VPCRegion': 'region',
+                    'VPCId': self.vpc_id_mock
+                }]
+            },
+            {
+                'HostedZone': {
                     'Id': 'zone-id-1',
-                    'Name': 'zone-name',
+                    'Name': 'zone-name-foo',
                 },
                 'VPCs': [{
                     'VPCRegion': 'region',
                     'VPCId': 'foobar'
                 }]
             }
-
         ]
 
         _vpc = vpc.VPC(self.vpc_id_mock)
         _vpc.get_hosted_zone_ids()
-        self.assertEquals(_vpc.hosted_zone_ids, ['zone-id'])
 
+        self.assertCountEqual(
+            _vpc.hosted_zone_ids,
+            ['zone-id', 'zone-id-reverse']
+        )
+        self.assertEqual(
+            _vpc.hosted_zone_id,
+            'zone-id'
+        )
+        self.assertEqual(
+            _vpc.reverse_hosted_zone_id,
+            'zone-id-reverse'
+        )
         _connectionMock.list_hosted_zones.assert_called_once()
         self.assertCountEqual(
             _connectionMock.get_hosted_zone.mock_calls,
             [
                 mock.mock.call(Id='zone-id'),
+                mock.mock.call(Id='zone-id-reverse'),
                 mock.mock.call(Id='zone-id-1')
             ]
         )
