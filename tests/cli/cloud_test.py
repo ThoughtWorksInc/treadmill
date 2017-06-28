@@ -11,40 +11,26 @@ class CloudTest(unittest.TestCase):
         self.configure_cli = importlib.import_module(
             'treadmill.cli.cloud').init()
 
-    @mock.patch('treadmill.cli.cloud.VPC')
-    def test_init_without_cell(self, vpc_mock):
-        _vpc = vpc_mock()
-
-        _result = self.runner.invoke(
-            self.configure_cli,
-            ['init']
-        )
-
-        self.assertEqual(_result.exit_code, 0)
-        _vpc.create.assert_called_once()
-        _vpc.create_subnet.assert_called_once()
-        _vpc.create_internet_gateway.assert_called_once()
-        _vpc.create_route_table.assert_called_once()
-        _vpc.create_security_group.assert_called_once_with(
-            'sg_common',
-            'Treadmill Security group'
-        )
-        _vpc.create_hosted_zone.assert_called_once()
-
-    @mock.patch('treadmill.cli.cloud.Node')
-    @mock.patch('treadmill.cli.cloud.Master')
-    def test_init_with_cell(self, master_mock, node_mock):
-        _master = master_mock()
-        _master.vpc.subnet_ids = ['subnet-id']
-        _node = node_mock()
-
+    @mock.patch('treadmill.cli.cloud.Cell')
+    def test_init_without_cell(self, cell_mock):
+        cell = cell_mock()
         result = self.runner.invoke(
-            self.configure_cli,
-            ['init', '--cell']
-        )
+            self.configure_cli, [
+                'init',
+                '--domain=test.treadmill',
+                '--region=us-west-1',
+                '--vpc-cidr-block=172.24.0.0/16',
+                '--subnet-cidr-block=172.24.0.0/24',
+                '--security-group-name=sg_common2',
+                '--security-group-description=Test'
+            ])
 
         self.assertEqual(result.exit_code, 0)
-        _master.setup.assert_called_once()
-        _node.setup.assert_called_once_with(
-            SubnetId='subnet-id'
+        cell.vpc_setup.assert_called_once_with(
+            domain='test.treadmill',
+            region_name='us-west-1',
+            vpc_cidr_block='172.24.0.0/16',
+            subnet_cidr_block='172.24.0.0/24',
+            security_group_name='sg_common2',
+            security_group_description='Test'
         )

@@ -4,8 +4,13 @@ import time
 
 
 class VPC:
-    def __init__(self, id=None, domain='tw.treadmill'):
-        self.conn = connection.Connection()
+    def __init__(
+        self,
+        id=None,
+        domain='tw.treadmill',
+        region_name='us-east-1'
+    ):
+        self.conn = connection.Connection(region_name=region_name)
         self.id = id
         self.domain = domain
         self.instances = []
@@ -294,7 +299,7 @@ class VPC:
             "us-east-2": "us-east-2a",
             "ap-southeast-1": "ap-southeast-1a",
             "ap-southeast-2": "ap-southeast-2a",
-            "us-west-1": "us-west-1a",
+            "us-west-1": "us-west-1b",
             "us-west-2": "us-west-2a"
         }
 

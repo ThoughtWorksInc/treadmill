@@ -1,7 +1,5 @@
 import click
-from treadmill.infra.vpc import VPC
-from treadmill.infra.setup.master import Master
-from treadmill.infra.setup.node import Node
+from treadmill.infra.setup.cell import Cell
 
 
 def init():
@@ -14,28 +12,36 @@ def init():
     @cloud.command(name='init')
     @click.option('--cell', required=False, is_flag=True,
                   help='Create a new treadmill cell')
-    def init(cell):
+    @click.option('--domain', required=False,
+                  default='tw.treadmill', help='Domain for hosted zone')
+    @click.option('--region', required=False,
+                  default='us-east-1', help='Region for the vpc')
+    @click.option('--vpc-cidr-block', required=False,
+                  default='172.23.0.0/16', help='Cidr block for the vpc')
+    @click.option('--subnet-cidr-block', required=False,
+                  default='172.23.0.0/24', help='Cidr block for the subnet')
+    @click.option('--security-group-name', required=False,
+                  default='sg_common', help='Region for the vpc')
+    @click.option(
+        '--security-group-description',
+        required=False,
+        default='Treadmill Security Group',
+        help='Description for the security group')
+    def init(
+        cell, domain, region, vpc_cidr_block,
+        subnet_cidr_block, security_group_name,
+        security_group_description
+    ):
         """Initialize treadmill cloud"""
-        if cell:
-            _master = Master()
-            _master.setup()
-            _node = Node()
-            _subnet_id = _master.vpc.subnet_ids[0]
-            _node.setup(
-                SubnetId=_subnet_id
-            )
-
-        else:
-            _vpc = VPC()
-            _vpc.create()
-            _vpc.create_subnet()
-            _vpc.create_internet_gateway()
-            _vpc.create_route_table()
-            _vpc.create_security_group(
-                'sg_common',
-                'Treadmill Security group'
-            )
-            _vpc.create_hosted_zone()
+        cell = Cell()
+        cell.vpc_setup(
+            domain=domain,
+            region_name=region,
+            vpc_cidr_block=vpc_cidr_block,
+            subnet_cidr_block=subnet_cidr_block,
+            security_group_name=security_group_name,
+            security_group_description=security_group_description
+        )
 
     del init
 
