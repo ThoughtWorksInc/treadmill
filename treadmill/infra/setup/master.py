@@ -1,6 +1,7 @@
 from treadmill.infra.vpc import VPC
 from treadmill.infra.instances import Instances
 from treadmill.infra.configuration import Configuration
+from pprint import pprint
 
 
 class MasterConfiguration(Configuration):
@@ -73,6 +74,17 @@ class Master:
             UserData=self.master_configuration.get_userdata(),
         )
 
+        for instance in instances.instances:
+            instance.upsert_dns_record(
+                self.vpc.hosted_zone_id,
+                self.domain
+            )
+            instance.upsert_dns_record(
+                self.vpc.reverse_hosted_zone_id,
+                self.domain,
+                Reverse=True
+            )
+
         self.vpc.instance_ids = instances.ids
         self.ids = instances.ids
         self.show()
@@ -84,10 +96,11 @@ class Master:
         self.vpc.delete_internet_gateway()
         self.vpc.delete_security_groups()
         self.vpc.delete_route_tables()
+        self.vpc.delete_hosted_zones()
         self.vpc.delete()
 
     def show(self):
         self.output = self.vpc.show()
-        print("******************************************************")
-        print(self.output)
-        print("******************************************************")
+        pprint("******************************************************")
+        pprint(self.output)
+        pprint("******************************************************")
