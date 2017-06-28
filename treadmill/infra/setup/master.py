@@ -57,8 +57,11 @@ class Master:
         self.vpc.associate_dhcp_options()
 
         self.master_configuration = MasterConfiguration(
-            self.domain, self.vpc.subnet_ids[0], self.app_root,
-            freeipa_hostname, tm_release
+            self.domain,
+            self.vpc.subnet_ids[0],
+            self.app_root,
+            freeipa_hostname,
+            tm_release
         )
 
         instances = Instances.create_master(
