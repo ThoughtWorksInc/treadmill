@@ -8,7 +8,7 @@ class FreeIPA:
     def setup(self, SubnetId=''):
         self.instances = Instances.create(
             Name='TreadmillFreeIPA',
-            ImageId='ami-6d1c2007',
+            ImageId='ami-9e2f0988',
             Count=1,
             SubnetId=SubnetId,
         )

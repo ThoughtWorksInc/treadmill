@@ -66,7 +66,7 @@ class Master:
 
         instances = Instances.create_master(
             Name='TreadmillMaster',
-            ImageId='ami-6d1c2007',
+            ImageId='ami-9e2f0988',
             Count=3,
             SubnetId=self.vpc.subnet_ids[0],
             SecurityGroupIds=self.vpc.secgroup_ids,

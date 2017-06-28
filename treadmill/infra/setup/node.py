@@ -8,7 +8,7 @@ class Node:
     def setup(self, Count=1, SubnetId='', SecurityGroupIds=()):
         self.instances = Instances.create(
             Name='TreadmillNode',
-            ImageId='ami-6d1c2007',
+            ImageId='ami-9e2f0988',
             Count=Count,
             SubnetId=SubnetId,
             SecurityGroupIds=SecurityGroupIds
