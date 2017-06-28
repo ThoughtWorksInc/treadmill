@@ -32,7 +32,7 @@ class ConfigurationTest(unittest.TestCase):
 
         self.assertEquals(
             userdata,
-            '#!/bin/bash -e\ntest.treadmill\nmycell\n'
+            '#!/bin/bash -ex\ntest.treadmill\nmycell\n'
         )
 
 
