@@ -15,8 +15,7 @@ class MasterTest(unittest.TestCase):
 
     def tearDown(self):
         if not self.attempted_destroy:
-            pass
-            # self.master.destroy()
+            self.master.destroy()
 
     def test_setup_master(self):
         self.vpc_id = self.master.setup()
@@ -41,7 +40,7 @@ class MasterTest(unittest.TestCase):
         self.master.vpc.instance_ids = None
         self.master.vpc.get_instances()
 
-        # self.assertIsNone(self.master.vpc.instance_ids, None)
+        self.assertIsNone(self.master.vpc.instance_ids, None)
 
 
 if __name__ == '__main__':
