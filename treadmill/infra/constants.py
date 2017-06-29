@@ -1,6 +1,7 @@
 ROUTE_53 = 'route53'
 EC2 = 'ec2'
 ROUTE_53_RECORD_SET_TTL = 3600
+IPA_ROUTE_53_RECORD_SET_TTL = 86400
 REVERSE_DNS_TLD = 'in-addr.arpa'
 ATTACHMENT_INSTANCE_ID = 'attachment.instance-id'
 ATTACHMENT_VPC_ID = 'attachment.vpc-id'
