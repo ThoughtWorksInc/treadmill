@@ -1,7 +1,9 @@
 from treadmill.infra.vpc import VPC
 from treadmill.infra.instances import Instances
 from treadmill.infra.configuration import Configuration
-from pprint import pprint
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class MasterConfiguration(Configuration):
@@ -101,6 +103,6 @@ class Master:
 
     def show(self):
         self.output = self.vpc.show()
-        pprint("******************************************************")
-        pprint(self.output)
-        pprint("******************************************************")
+        _LOGGER.info("******************************************************")
+        _LOGGER.info(self.output)
+        _LOGGER.info("******************************************************")

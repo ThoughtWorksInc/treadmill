@@ -1,6 +1,9 @@
 from treadmill.infra.connection import Connection
+import logging
 
 import polling
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Instance:
@@ -212,13 +215,13 @@ class Instances:
             return
 
         def is_terminated(res):
-            print("\nWaiting for instances termination...")
-            print("Current states:")
+            _LOGGER.info("\nWaiting for instances termination...")
+            _LOGGER.info("Current states:")
             instance_data = [
                 status['InstanceId'] + ": " + status['InstanceState']['Name']
                 for status in res['InstanceStatuses']
             ]
-            print("\n".join(instance_data))
+            _LOGGER.info("\n".join(instance_data))
 
             instance_statuses = list(set(
                 [
