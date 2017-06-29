@@ -216,9 +216,14 @@ class InstancesTest(unittest.TestCase):
         conn_mock.create_tags = mock.Mock()
 
         instances = Instances.create(
+            KeyName='key',
             Name='foo',
             ImageId='foo-123',
-            Count=2
+            Count=2,
+            InstanceType='t2.small',
+            SubnetId='',
+            SecurityGroupIds=None,
+            UserData='',
         ).instances
 
         instance_ids = [i.id for i in instances]
@@ -233,7 +238,7 @@ class InstancesTest(unittest.TestCase):
         conn_mock.run_instances.assert_called_with(
             ImageId='foo-123',
             InstanceType='t2.small',
-            KeyName='ms_treadmill_dev',
+            KeyName='key',
             MaxCount=2,
             MinCount=2,
             SecurityGroupIds=None,

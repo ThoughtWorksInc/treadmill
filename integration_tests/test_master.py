@@ -4,6 +4,7 @@ Unit test for EC2 master setup.
 
 import unittest
 from treadmill.infra.setup.master import Master
+from treadmill.infra import constants
 
 
 class MasterTest(unittest.TestCase):
@@ -11,14 +12,25 @@ class MasterTest(unittest.TestCase):
 
     def setUp(self):
         self.attempted_destroy = False
-        self.master = Master()
+        self.master = Master(
+            domain='ms.treadmill',
+            app_root='/var/tmp'
+        )
 
     def tearDown(self):
         if not self.attempted_destroy:
             self.master.destroy()
 
     def test_setup_master(self):
-        self.vpc_id = self.master.setup()
+        self.vpc_id = self.master.setup(
+            Name='TreadmillMaster',
+            ImageId='ami-9e2f0988',
+            Count=3,
+            tm_release='0.1.0',
+            freeipa_hostname='freeipa',
+            KeyName='ms_treadmill_dev',
+            InstanceType=constants.INSTANCE_TYPES['EC2']['small'],
+        )
         output = self.master.output
 
         self.assertEquals(len(self.master.ids), 3)

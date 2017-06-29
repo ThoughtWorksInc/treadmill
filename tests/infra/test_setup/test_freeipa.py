@@ -17,7 +17,7 @@ class FreeIPATest(unittest.TestCase):
         instances_mock.instances = ['foo']
 
         freeipa = FreeIPA()
-        freeipa.setup()
+        freeipa.setup(Name='freeipa', ImageId='foo-123', Count=1, SubnetId=123)
 
         self.assertIsNotNone(freeipa.instances)
 

@@ -5,10 +5,10 @@ class Node:
     def __init__(self):
         self.instances = None
 
-    def setup(self, Count=1, SubnetId='', SecurityGroupIds=()):
+    def setup(self, Name, ImageId, Count, SubnetId, SecurityGroupIds):
         self.instances = instances.Instances.create(
-            Name='TreadmillNode',
-            ImageId='ami-9e2f0988',
+            Name=Name,
+            ImageId=ImageId,
             Count=Count,
             SubnetId=SubnetId,
             SecurityGroupIds=SecurityGroupIds

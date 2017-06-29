@@ -149,13 +149,8 @@ class Instances:
         )
 
     @classmethod
-    def create(cls, Name=None, ImageId=None,
-               InstanceType=constants.INSTANCE_TYPES['EC2']['small'],
-               SubnetId='',
-               Count=1,
-               SecurityGroupIds=None,
-               KeyName='ms_treadmill_dev',
-               UserData=''):
+    def create(cls, Name, KeyName, Count, ImageId, InstanceType, SubnetId,
+               SecurityGroupIds, UserData):
         conn = connection.Connection()
         _instances = conn.run_instances(
             ImageId=ImageId,

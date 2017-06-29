@@ -5,11 +5,11 @@ class FreeIPA:
     def __init__(self):
         self.instance = None
 
-    def setup(self, SubnetId=''):
+    def setup(self, Name, ImageId, Count, SubnetId):
         self.instances = instances.Instances.create(
-            Name='TreadmillFreeIPA',
-            ImageId='ami-9e2f0988',
-            Count=1,
+            Name=Name,
+            ImageId=ImageId,
+            Count=Count,
             SubnetId=SubnetId,
         )
 
