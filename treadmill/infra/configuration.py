@@ -14,8 +14,10 @@ class Configuration:
             return ''
 
         userdata = ''
+        # Add initializer script
+        self.setup_scripts.insert(0, {'name': 'init.sh'})
         for script in self.setup_scripts:
             with open(SCRIPT_DIR + script['name'], 'r') as data:
                 template = Template(data.read())
-                userdata += template.render(script['vars']) + '\n'
+                userdata += template.render(script.get('vars', {})) + '\n'
         return userdata

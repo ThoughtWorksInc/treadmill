@@ -1,5 +1,3 @@
-#!/bin/bash -e
-
 LDAP_DC=ou=treadmill,$(echo "{{ DOMAIN }}" | sed -E 's/([a-z]*)\.([a-z]*)/dc=\1,dc=\2/g')
 LDAP_URL=ldap://{{ FREEIPA_HOSTNAME }}.{{ DOMAIN }}:1389
 ZK_URL=zookeeper://foo@TreadmillZookeeper1.{{ DOMAIN }}:2181,TreadmillZookeeper2.{{ DOMAIN }}:2181,TreadmillZookeeper3.{{ DOMAIN }}:2181

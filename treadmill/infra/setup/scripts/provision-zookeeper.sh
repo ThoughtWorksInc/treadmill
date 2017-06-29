@@ -1,5 +1,3 @@
-#!/bin/bash -e
-
 #Install
 
 DOMAIN=$1
