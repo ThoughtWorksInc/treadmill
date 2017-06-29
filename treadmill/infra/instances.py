@@ -55,20 +55,14 @@ class Instance:
             domain='',
             Reverse=False
     ):
-        forward_dns_name = self.name.lower() + '.' + domain + '.'
-        _hosted_zone_id = hosted_zone_id.split('/')[-1]
-        _name, _type, _value = [
-            self._reverse_dns_record_name(),
-            'PTR',
-            forward_dns_name
-        ] if Reverse else [
-            forward_dns_name,
-            'A',
-            self.private_ip
-        ]
+        if Reverse:
+            _name, _type, _value = self._reverse_dns_record_attrs(domain)
+        else:
+            _name, _type, _value = self._forward_dns_record_attrs(domain)
+
         _conn = Connection('route53')
         _conn.change_resource_record_sets(
-            HostedZoneId=_hosted_zone_id,
+            HostedZoneId=hosted_zone_id.split('/')[-1],
             ChangeBatch={
                 'Changes': [{
                     'Action': action,
@@ -83,6 +77,22 @@ class Instance:
                 }]
             }
         )
+
+    def _reverse_dns_record_attrs(self, domain):
+        forward_dns_name = self.name.lower() + '.' + domain + '.'
+        return [
+            self._reverse_dns_record_name(),
+            'PTR',
+            forward_dns_name
+        ]
+
+    def _forward_dns_record_attrs(self, domain):
+        forward_dns_name = self.name.lower() + '.' + domain + '.'
+        return [
+            forward_dns_name,
+            'A',
+            self.private_ip
+        ]
 
     def _reverse_dns_record_name(self):
         ip_octets = self.private_ip.split('.')
