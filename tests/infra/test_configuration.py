@@ -8,14 +8,20 @@ import io
 
 from treadmill.infra.configuration import Configuration
 from treadmill.infra.setup.master import MasterConfiguration
+from treadmill.infra import SCRIPT_DIR
 
 
 class ConfigurationTest(unittest.TestCase):
     """Tests configuration"""
 
+    def setUp(self):
+        with open(SCRIPT_DIR + 'init.sh', 'r') as data:
+            self.init_script_data = data.read()
+
     @mock.patch('builtins.open', create=True)
     def test_get_userdata(self, open_mock):
         open_mock.side_effect = [
+            io.StringIO(self.init_script_data),
             io.StringIO('{{ DOMAIN }}'),
             io.StringIO('{{ CELL }}'),
         ]
@@ -32,7 +38,7 @@ class ConfigurationTest(unittest.TestCase):
 
         self.assertEquals(
             userdata,
-            'test.treadmill\nmycell\n'
+            self.init_script_data + 'test.treadmill\nmycell\n'
         )
 
 
