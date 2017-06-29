@@ -13,8 +13,7 @@ class FreeIPATest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.setup.freeipa.instances.Instances')
     def test_setup_freeipa(self, InstancesMock):
-        instances_mock = InstancesMock()
-        instances_mock.instances = ['foo']
+        InstancesMock.create = mock.Mock(return_value=['foo'])
 
         freeipa = FreeIPA()
         freeipa.setup(
@@ -24,11 +23,16 @@ class FreeIPATest(unittest.TestCase):
             subnet_id=123
         )
 
-        self.assertIsNotNone(freeipa.instances)
+        self.assertEqual(freeipa.instances, ['foo'])
+        InstancesMock.create.assert_called_once_with(
+            image_id='foo-123',
+            name='freeipa',
+            count=1,
+            subnet_id=123
+        )
 
     @mock.patch('treadmill.infra.setup.freeipa.instances.Instances')
-    def test_setup_terminate(self, InstancesMock):
-
+    def test_freeipa_terminate(self, InstancesMock):
         freeipa = FreeIPA()
         freeipa.instances = InstancesMock()
         freeipa.terminate()

@@ -7,10 +7,10 @@ class FreeIPA:
 
     def setup(self, name, image_id, count, subnet_id):
         self.instances = instances.Instances.create(
-            Name=name,
-            ImageId=image_id,
-            Count=count,
-            SubnetId=subnet_id,
+            name=name,
+            image_id=image_id,
+            count=count,
+            subnet_id=subnet_id,
         )
 
     def terminate(self):
