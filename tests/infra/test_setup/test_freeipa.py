@@ -32,9 +32,9 @@ class FreeIPATest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.infra.setup.freeipa.instances.Instances')
-    def test_freeipa_terminate(self, InstancesMock):
+    def test_freeipa_destroy(self, InstancesMock):
         freeipa = FreeIPA()
         freeipa.instances = InstancesMock()
-        freeipa.terminate()
+        freeipa.destroy()
 
         freeipa.instances.terminate.assert_called_once()

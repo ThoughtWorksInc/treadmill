@@ -13,6 +13,6 @@ class FreeIPA:
             subnet_id=subnet_id,
         )
 
-    def terminate(self):
+    def destroy(self):
         """Terminate freeipa instance"""
         self.instances.terminate()
