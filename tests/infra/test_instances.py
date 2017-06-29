@@ -323,6 +323,14 @@ class InstancesTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.infra.instances.Connection')
+    def test_load_json_without_criteria(self, ConnectionMock):
+        conn_mock = ConnectionMock()
+
+        self.assertEqual(Instances.load_json(), [])
+
+        conn_mock.describe_instances.assert_not_called()
+
+    @mock.patch('treadmill.infra.instances.Connection')
     def test_load_json_with_instance_ids(self, ConnectionMock):
         conn_mock = ConnectionMock()
 

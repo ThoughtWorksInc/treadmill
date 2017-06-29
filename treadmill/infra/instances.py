@@ -113,7 +113,7 @@ class Instances:
         return [i.id for i in self.instances]
 
     @classmethod
-    def load_json(cls, ids=[], filters=[]):
+    def load_json(cls, ids=None, filters=None):
         """Fetch instance details"""
         conn = Connection()
         response = []
@@ -126,6 +126,8 @@ class Instances:
             response = conn.describe_instances(
                 Filters=filters
             )['Reservations']
+        else:
+            return []
 
         return sum([r['Instances'] for r in response], [])
 
