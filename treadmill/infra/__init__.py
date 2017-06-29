@@ -1,5 +1,3 @@
-import os
+import pkg_resources
 
-SCRIPT_DIR = os.path.join(
-    os.path.realpath(__file__ + '/../setup'), 'scripts/'
-)
+SCRIPT_DIR = pkg_resources.resource_filename(__name__, 'setup/scripts/')
