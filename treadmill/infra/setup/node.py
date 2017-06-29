@@ -1,4 +1,4 @@
-from treadmill.infra.instances import Instances
+from treadmill.infra import instances
 
 
 class Node:
@@ -6,7 +6,7 @@ class Node:
         self.instances = None
 
     def setup(self, Count=1, SubnetId='', SecurityGroupIds=()):
-        self.instances = Instances.create(
+        self.instances = instances.Instances.create(
             Name='TreadmillNode',
             ImageId='ami-9e2f0988',
             Count=Count,

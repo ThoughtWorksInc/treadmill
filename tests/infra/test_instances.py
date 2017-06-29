@@ -12,7 +12,7 @@ from treadmill.infra.instances import Instances
 class InstanceTest(unittest.TestCase):
     """Tests EC2 instance"""
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_init(self, ConnectionMock):
         conn_mock = ConnectionMock()
         instance = Instance(
@@ -30,7 +30,7 @@ class InstanceTest(unittest.TestCase):
         self.assertEquals(instance.private_ip, '1.1.1.1')
         self.assertEquals(instance.conn, conn_mock)
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create_tags(self, ConnectionMock):
         conn_mock = ConnectionMock()
         conn_mock.create_tags = mock.Mock()
@@ -51,7 +51,7 @@ class InstanceTest(unittest.TestCase):
             }]
         )
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_upsert_dns_record(self, ConnectionMock):
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
@@ -84,7 +84,7 @@ class InstanceTest(unittest.TestCase):
             }
         )
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_upsert_dns_record_reverse(self, ConnectionMock):
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
@@ -117,7 +117,7 @@ class InstanceTest(unittest.TestCase):
             }
         )
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_delete_dns_record(self, ConnectionMock):
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
@@ -150,7 +150,7 @@ class InstanceTest(unittest.TestCase):
             }
         )
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_delete_dns_record_reverse(self, ConnectionMock):
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
@@ -187,7 +187,7 @@ class InstanceTest(unittest.TestCase):
 class InstancesTest(unittest.TestCase):
     """Tests instances collection"""
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create(self, ConnectionMock):
         instance1_metadata_mock = {
             'InstanceId': 1,
@@ -265,7 +265,7 @@ class InstancesTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.infra.instances.Instance')
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_terminate(self, ConnectionMock, InstanceMock):
         conn_mock = ConnectionMock()
 
@@ -302,7 +302,7 @@ class InstancesTest(unittest.TestCase):
             ]
         )
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_get_volume_ids(self, connectionMock):
         conn_mock = connectionMock()
         conn_mock.describe_volumes = mock.Mock(return_value={
@@ -322,7 +322,7 @@ class InstancesTest(unittest.TestCase):
             }]
         )
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_load_json_without_criteria(self, ConnectionMock):
         conn_mock = ConnectionMock()
 
@@ -330,7 +330,7 @@ class InstancesTest(unittest.TestCase):
 
         conn_mock.describe_instances.assert_not_called()
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_load_json_with_instance_ids(self, ConnectionMock):
         conn_mock = ConnectionMock()
 
@@ -348,7 +348,7 @@ class InstancesTest(unittest.TestCase):
         )
         self.assertEquals(instance_details, sample_instances)
 
-    @mock.patch('treadmill.infra.instances.Connection')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_load_json_with_filters(self, ConnectionMock):
         conn_mock = ConnectionMock()
 

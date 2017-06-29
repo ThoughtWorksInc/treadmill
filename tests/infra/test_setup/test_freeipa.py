@@ -11,7 +11,7 @@ from treadmill.infra.setup.freeipa import FreeIPA
 class FreeIPATest(unittest.TestCase):
     """Tests EC2 freeipa setup."""
 
-    @mock.patch('treadmill.infra.setup.freeipa.Instances')
+    @mock.patch('treadmill.infra.setup.freeipa.instances.Instances')
     def test_setup_freeipa(self, InstancesMock):
         instances_mock = InstancesMock()
         instances_mock.instances = ['foo']
@@ -21,7 +21,7 @@ class FreeIPATest(unittest.TestCase):
 
         self.assertIsNotNone(freeipa.instances)
 
-    @mock.patch('treadmill.infra.setup.freeipa.Instances')
+    @mock.patch('treadmill.infra.setup.freeipa.instances.Instances')
     def test_setup_terminate(self, InstancesMock):
 
         freeipa = FreeIPA()

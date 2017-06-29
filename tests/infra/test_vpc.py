@@ -218,7 +218,7 @@ class VPCTest(unittest.TestCase):
             CallerReference='786'
         )
 
-    @mock.patch('treadmill.infra.instances.Connection', mock.Mock())
+    @mock.patch('treadmill.infra.instances.connection.Connection', mock.Mock())
     @mock.patch('treadmill.infra.instances.Instances')
     def test_get_instances(self, instances_mock):
         instances_mock.get = mock.Mock(
@@ -240,7 +240,7 @@ class VPCTest(unittest.TestCase):
             }]
         )
 
-    @mock.patch('treadmill.infra.instances.Connection', mock.Mock())
+    @mock.patch('treadmill.infra.instances.connection.Connection', mock.Mock())
     @mock.patch('treadmill.infra.instances.Instances')
     def test_terminate_instances(self, instances_mock):
         instances_obj_mock = mock.Mock()

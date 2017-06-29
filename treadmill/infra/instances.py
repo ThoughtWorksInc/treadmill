@@ -1,4 +1,4 @@
-from treadmill.infra.connection import Connection
+from treadmill.infra import connection
 import logging
 
 import polling
@@ -11,7 +11,7 @@ class Instance:
         self.id = id
         self.name = Name
         self.metadata = metadata
-        self.conn = Connection()
+        self.conn = connection.Connection()
 
         if self.metadata and self.metadata.get('Tags', None):
             self.name = [t['Value']
@@ -63,7 +63,7 @@ class Instance:
         else:
             _name, _type, _value = self._forward_dns_record_attrs(domain)
 
-        _conn = Connection('route53')
+        _conn = connection.Connection('route53')
         _conn.change_resource_record_sets(
             HostedZoneId=hosted_zone_id.split('/')[-1],
             ChangeBatch={
@@ -109,7 +109,7 @@ class Instances:
     def __init__(self, instances):
         self.instances = instances
         self.volume_ids = []
-        self.conn = Connection()
+        self.conn = connection.Connection()
 
     @property
     def ids(self):
@@ -118,7 +118,7 @@ class Instances:
     @classmethod
     def load_json(cls, ids=None, filters=None):
         """Fetch instance details"""
-        conn = Connection()
+        conn = connection.Connection()
         response = []
 
         if ids:
@@ -149,7 +149,7 @@ class Instances:
                InstanceType='t2.small', SubnetId='',
                Count=1, SecurityGroupIds=None, KeyName='ms_treadmill_dev',
                UserData=''):
-        conn = Connection()
+        conn = connection.Connection()
         _instances = conn.run_instances(
             ImageId=ImageId,
             MinCount=Count,

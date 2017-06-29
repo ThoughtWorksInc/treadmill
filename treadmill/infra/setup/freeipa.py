@@ -1,4 +1,4 @@
-from treadmill.infra.instances import Instances
+from treadmill.infra import instances
 
 
 class FreeIPA:
@@ -6,7 +6,7 @@ class FreeIPA:
         self.instance = None
 
     def setup(self, SubnetId=''):
-        self.instances = Instances.create(
+        self.instances = instances.Instances.create(
             Name='TreadmillFreeIPA',
             ImageId='ami-9e2f0988',
             Count=1,

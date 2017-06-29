@@ -1,12 +1,12 @@
-from treadmill.infra.vpc import VPC
-from treadmill.infra.instances import Instances
-from treadmill.infra.configuration import Configuration
+from treadmill.infra import vpc
+from treadmill.infra import instances
+from treadmill.infra import configuration
 import logging
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class MasterConfiguration(Configuration):
+class MasterConfiguration(configuration.Configuration):
     def __init__(self, domain, cell, app_root, freeipa_hostname, tm_release):
         self.setup_scripts = [
             {
@@ -39,7 +39,7 @@ class Master:
             domain='tw.treadmill',
             app_root='/var/tmp'
     ):
-        self.vpc = VPC(vpc_id, domain=domain)
+        self.vpc = vpc.VPC(vpc_id, domain=domain)
         self.domain = domain
         self.app_root = app_root
 
@@ -67,7 +67,7 @@ class Master:
             tm_release
         )
 
-        instances = Instances.create_master(
+        _instances = instances.Instances.create_master(
             Name='TreadmillMaster',
             ImageId='ami-9e2f0988',
             Count=3,
@@ -76,7 +76,7 @@ class Master:
             UserData=self.master_configuration.get_userdata(),
         )
 
-        for instance in instances.instances:
+        for instance in _instances.instances:
             instance.upsert_dns_record(
                 self.vpc.hosted_zone_id,
                 self.domain
@@ -87,8 +87,8 @@ class Master:
                 Reverse=True
             )
 
-        self.vpc.instance_ids = instances.ids
-        self.ids = instances.ids
+        self.vpc.instance_ids = _instances.ids
+        self.ids = _instances.ids
         self.show()
 
         return self.vpc.id

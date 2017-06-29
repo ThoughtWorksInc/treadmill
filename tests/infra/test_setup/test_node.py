@@ -11,7 +11,7 @@ from treadmill.infra.setup.node import Node
 class NodeTest(unittest.TestCase):
     """Tests EC2 node setup."""
 
-    @mock.patch('treadmill.infra.setup.node.Instances')
+    @mock.patch('treadmill.infra.setup.node.instances.Instances')
     def test_setup_node(self, InstancesMock):
         instances_mock = InstancesMock()
         instances_mock.instances = 'foo'
@@ -21,7 +21,7 @@ class NodeTest(unittest.TestCase):
 
         self.assertIsNotNone(node.instances)
 
-    @mock.patch('treadmill.infra.setup.node.Instances')
+    @mock.patch('treadmill.infra.setup.node.instances.Instances')
     def test_setup_terminate(self, InstancesMock):
         node = Node()
         node.instances = InstancesMock()
