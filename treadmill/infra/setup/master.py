@@ -1,6 +1,7 @@
 from treadmill.infra import vpc
 from treadmill.infra import instances
 from treadmill.infra import configuration
+from treadmill.infra import constants
 import logging
 
 _LOGGER = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ class Master:
     def setup(
             self,
             tm_release='0.1.0',
-            freeipa_hostname='treadmillfreeipa'
+            freeipa_hostname=constants.FREEIPA_HOSTNAME
     ):
         if not self.vpc.id:
             self.vpc.create()
@@ -70,7 +71,7 @@ class Master:
         _instances = instances.Instances.create_master(
             Name='TreadmillMaster',
             ImageId='ami-9e2f0988',
-            Count=3,
+            Count=constants.MASTER_INSTANCES_COUNT,
             SubnetId=self.vpc.subnet_ids[0],
             SecurityGroupIds=self.vpc.secgroup_ids,
             UserData=self.master_configuration.get_userdata(),

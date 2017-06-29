@@ -1,4 +1,5 @@
 import boto3
+from treadmill.infra import constants
 
 
 class Singleton(type):
@@ -7,7 +8,7 @@ class Singleton(type):
     def __call__(cls, *args, **kwargs):
         resource = kwargs.get(
             'resource',
-            ('ec2' if (len(args) == 0) else args[0])
+            (constants.EC2 if (len(args) == 0) else args[0])
         )
         instance_resources = [klass._service_model.service_name.lower()
                               for klass in list(cls._instances.values())]
@@ -19,8 +20,8 @@ class Singleton(type):
 
 
 class Connection(metaclass=Singleton):
-    def __init__(self, resource='ec2', region_name='us-east-1'):
+    def __init__(self, resource=constants.EC2, region_name='us-east-1'):
         pass
 
-    def __new__(cls, resource='ec2', region_name='us-east-1'):
+    def __new__(cls, resource=constants.EC2, region_name='us-east-1'):
         return boto3.client(resource, region_name=region_name)

@@ -1,4 +1,5 @@
 from treadmill.infra import connection
+from treadmill.infra import constants
 import logging
 
 import polling
@@ -18,10 +19,7 @@ class Instance:
                          for t in self.metadata['Tags']
                          if t['Key'] == 'Name'][0]
 
-        self.private_ip = self.metadata.get(
-            'PrivateIpAddress',
-            ''
-        ) if metadata else ''
+        self.private_ip = self._get_private_ip()
 
     def create_tags(self):
         self.name = self.name + str(
@@ -51,6 +49,12 @@ class Instance:
             Reverse
         )
 
+    def _get_private_ip(self):
+        return self.metadata.get(
+            'PrivateIpAddress',
+            ''
+        ) if self.metadata else ''
+
     def _change_resource_record_sets(
             self,
             action,
@@ -63,7 +67,7 @@ class Instance:
         else:
             _name, _type, _value = self._forward_dns_record_attrs(domain)
 
-        _conn = connection.Connection('route53')
+        _conn = connection.Connection(constants.ROUTE_53)
         _conn.change_resource_record_sets(
             HostedZoneId=hosted_zone_id.split('/')[-1],
             ChangeBatch={
@@ -72,7 +76,7 @@ class Instance:
                     'ResourceRecordSet': {
                         'Name': _name,
                         'Type': _type,
-                        'TTL': 3600,
+                        'TTL': constants.ROUTE_53_RECORD_SET_TTL,
                         'ResourceRecords': [{
                             'Value': _value
                         }]
@@ -100,7 +104,7 @@ class Instance:
     def _reverse_dns_record_name(self):
         ip_octets = self.private_ip.split('.')
         ip_octets.reverse()
-        ip_octets.append('in-addr.arpa')
+        ip_octets.append(constants.REVERSE_DNS_TLD)
 
         return '.'.join(ip_octets)
 
@@ -146,8 +150,11 @@ class Instances:
 
     @classmethod
     def create(cls, Name=None, ImageId=None,
-               InstanceType='t2.small', SubnetId='',
-               Count=1, SecurityGroupIds=None, KeyName='ms_treadmill_dev',
+               InstanceType=constants.INSTANCE_TYPES['EC2']['small'],
+               SubnetId='',
+               Count=1,
+               SecurityGroupIds=None,
+               KeyName='ms_treadmill_dev',
                UserData=''):
         conn = connection.Connection()
         _instances = conn.run_instances(
@@ -182,7 +189,7 @@ class Instances:
         if not self.volume_ids:
             volumes = self.conn.describe_volumes(
                 Filters=[{
-                    'Name': 'attachment.instance-id',
+                    'Name': constants.ATTACHMENT_INSTANCE_ID,
                     'Values': self.ids
                 }]
             )

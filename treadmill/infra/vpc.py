@@ -1,5 +1,7 @@
 from treadmill.infra import connection
 from treadmill.infra import instances
+from treadmill.infra import constants
+
 import time
 
 
@@ -65,7 +67,7 @@ class VPC:
         for gateway_id in self.gateway_ids:
             self.conn.create_route(
                 RouteTableId=self.route_table_id,
-                DestinationCidrBlock="0.0.0.0/0",
+                DestinationCidrBlock=constants.DESTINATION_CIDR_BLOCK,
                 GatewayId=gateway_id
             )
         for subnet_id in self.subnet_ids:
@@ -95,7 +97,7 @@ class VPC:
             name = self.domain
 
         if not getattr(self, identifier):
-            _conn = connection.Connection('route53')
+            _conn = connection.Connection(constants.ROUTE_53)
             _hosted_zone_id = _conn.create_hosted_zone(
                 Name=name,
                 VPC={
@@ -128,7 +130,7 @@ class VPC:
     def delete_hosted_zones(self):
         if not self.hosted_zone_ids:
             self.get_hosted_zone_ids()
-        _conn = connection.Connection('route53')
+        _conn = connection.Connection(constants.ROUTE_53)
 
         for id in self.hosted_zone_ids:
             _conn.delete_hosted_zone(
@@ -205,7 +207,7 @@ class VPC:
         if not self.gateway_ids:
             response = self.conn.describe_internet_gateways(
                 Filters=[{
-                    'Name': 'attachment.vpc-id',
+                    'Name': constants.ATTACHMENT_VPC_ID,
                     'Values': [self.id],
                 }]
             )
@@ -264,7 +266,7 @@ class VPC:
         return '.'.join([
             cidr_block_octets[1],
             cidr_block_octets[0],
-            "in-addr.arpa"
+            constants.REVERSE_DNS_TLD
         ])
 
     def _instance_details(self, data):
