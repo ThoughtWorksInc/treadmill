@@ -13,6 +13,7 @@ class MasterTest(unittest.TestCase):
     def setUp(self):
         self.attempted_destroy = False
         self.master = Master(
+            region_name='us-east-1',
             domain='ms.treadmill',
             app_root='/var/tmp'
         )
@@ -30,6 +31,7 @@ class MasterTest(unittest.TestCase):
             freeipa_hostname='freeipa',
             key_name='ms_treadmill_dev',
             instance_type=constants.INSTANCE_TYPES['EC2']['small'],
+            cidr_block='172.23.0.0/16',
         )
         output = self.master.output
 

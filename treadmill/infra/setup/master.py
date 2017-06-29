@@ -33,22 +33,23 @@ class MasterConfiguration(configuration.Configuration):
 
 
 class Master:
-    def __init__(self, domain, app_root, vpc_id=None):
-        self.vpc = vpc.VPC(vpc_id, domain=domain)
+    def __init__(self, region_name, domain, app_root, vpc_id=None):
+        self.vpc = vpc.VPC(region_name=region_name, id=vpc_id, domain=domain)
         self.domain = domain
         self.app_root = app_root
+        self.region_name = region_name
 
     def setup(self, name, key_name, count, image_id, instance_type, tm_release,
-              freeipa_hostname):
+              freeipa_hostname, cidr_block):
         if not self.vpc.id:
-            self.vpc.create()
+            self.vpc.create(cidr_block)
 
-        self.vpc.create_subnet()
+        self.vpc.create_subnet(self.region_name, cidr_block)
         self.vpc.create_internet_gateway()
         self.vpc.create_route_table()
         self.vpc.create_security_group('sg_common', 'Treadmill Security group')
-        self.vpc.create_hosted_zone()
-        self.vpc.create_hosted_zone(reverse=True)
+        self.vpc.create_hosted_zone(region_name=self.region_name)
+        self.vpc.create_hosted_zone(region_name=self.region_name, reverse=True)
         self.vpc.associate_dhcp_options()
 
         self.master_configuration = MasterConfiguration(

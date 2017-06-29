@@ -6,12 +6,7 @@ import time
 
 
 class VPC:
-    def __init__(
-        self,
-        id=None,
-        domain='tw.treadmill',
-        region_name='us-east-1'
-    ):
+    def __init__(self, domain, region_name, id=None):
         self.conn = connection.Connection()
         self.id = id
         self.domain = domain
@@ -26,7 +21,7 @@ class VPC:
         self.reverse_hosted_zone_id = None
         self.hosted_zone_ids = []
 
-    def create(self, cidr_block="172.23.0.0/16"):
+    def create(self, cidr_block):
         vpc_response = self.conn.create_vpc(CidrBlock=cidr_block)
         self.cidr_block = vpc_response['Vpc']['CidrBlock']
         self.id = vpc_response['Vpc']['VpcId']
@@ -42,8 +37,7 @@ class VPC:
                                            'Value': True
                                        })
 
-    def create_subnet(self, region_name='us-east-1',
-                      cidr_block="172.23.0.0/24"):
+    def create_subnet(self, region_name, cidr_block):
         self.region_name = region_name
         subnet = self.conn.create_subnet(
             VpcId=self.id,
@@ -83,12 +77,7 @@ class VPC:
             Description=description
         )['GroupId'])
 
-    def create_hosted_zone(
-            self,
-            region_name='us-east-1',
-            reverse=False
-
-    ):
+    def create_hosted_zone(self, region_name, reverse=False):
         if reverse:
             identifier = 'reverse_hosted_zone_id'
             name = self._reverse_domain_name()
