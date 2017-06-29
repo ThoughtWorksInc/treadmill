@@ -68,22 +68,25 @@ class Instance:
             _name, _type, _value = self._forward_dns_record_attrs(domain)
 
         _conn = connection.Connection(constants.ROUTE_53)
-        _conn.change_resource_record_sets(
-            HostedZoneId=hosted_zone_id.split('/')[-1],
-            ChangeBatch={
-                'Changes': [{
-                    'Action': action,
-                    'ResourceRecordSet': {
-                        'Name': _name,
-                        'Type': _type,
-                        'TTL': constants.ROUTE_53_RECORD_SET_TTL,
-                        'ResourceRecords': [{
-                            'Value': _value
-                        }]
-                    }
-                }]
-            }
-        )
+        try:
+            _conn.change_resource_record_sets(
+                HostedZoneId=hosted_zone_id.split('/')[-1],
+                ChangeBatch={
+                    'Changes': [{
+                        'Action': action,
+                        'ResourceRecordSet': {
+                            'Name': _name,
+                            'Type': _type,
+                            'TTL': constants.ROUTE_53_RECORD_SET_TTL,
+                            'ResourceRecords': [{
+                                'Value': _value
+                            }]
+                        }
+                    }]
+                }
+            )
+        except Exception as ex:
+            _LOGGER.info(ex)
 
     def _reverse_dns_record_attrs(self, domain):
         forward_dns_name = self.name.lower() + '.' + domain + '.'
@@ -191,7 +194,6 @@ class Instances:
             self.volume_ids = [v['VolumeId'] for v in volumes['Volumes']]
 
     def terminate(self, hosted_zone_id, reverse_hosted_zone_id, domain):
-        self.get_volume_ids()
         for instance in self.instances:
             instance.delete_dns_record(
                 hosted_zone_id,
@@ -202,11 +204,16 @@ class Instances:
                 domain=domain,
                 Reverse=True
             )
-        self.conn.terminate_instances(
-            InstanceIds=self.ids
-        )
-        self._wait_for_termination()
-        self.delete_volumes()
+
+        if self.ids:
+            self.conn.terminate_instances(
+                InstanceIds=self.ids
+            )
+            self._wait_for_termination()
+
+        self.get_volume_ids()
+        if self.volume_ids:
+            self.delete_volumes()
 
     def delete_volumes(self):
         for volume_id in self.volume_ids:
