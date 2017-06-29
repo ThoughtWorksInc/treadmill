@@ -17,8 +17,8 @@ class NodeTest(unittest.TestCase):
         instances_mock.instances = 'foo'
 
         node = Node()
-        node.setup(Name='node', ImageId='foo-123', Count=1, SubnetId='123',
-                   SecurityGroupIds=[1, 2])
+        node.setup(name='node', image_id='foo-123', count=1, subnet_id='123',
+                   secgroup_ids=[1, 2])
 
         self.assertIsNotNone(node.instances)
 

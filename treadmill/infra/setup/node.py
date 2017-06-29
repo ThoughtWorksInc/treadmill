@@ -5,13 +5,13 @@ class Node:
     def __init__(self):
         self.instances = None
 
-    def setup(self, Name, ImageId, Count, SubnetId, SecurityGroupIds):
+    def setup(self, name, image_id, count, subnet_id, secgroup_ids):
         self.instances = instances.Instances.create(
-            Name=Name,
-            ImageId=ImageId,
-            Count=Count,
-            SubnetId=SubnetId,
-            SecurityGroupIds=SecurityGroupIds
+            name=name,
+            image_id=image_id,
+            count=count,
+            subnet_id=subnet_id,
+            secgroup_ids=secgroup_ids
         )
 
         return self.instances

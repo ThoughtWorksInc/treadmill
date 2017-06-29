@@ -23,13 +23,13 @@ class MasterTest(unittest.TestCase):
 
     def test_setup_master(self):
         self.vpc_id = self.master.setup(
-            Name='TreadmillMaster',
-            ImageId='ami-9e2f0988',
-            Count=3,
+            name='TreadmillMaster',
+            image_id='ami-9e2f0988',
+            count=3,
             tm_release='0.1.0',
             freeipa_hostname='freeipa',
-            KeyName='ms_treadmill_dev',
-            InstanceType=constants.INSTANCE_TYPES['EC2']['small'],
+            key_name='ms_treadmill_dev',
+            instance_type=constants.INSTANCE_TYPES['EC2']['small'],
         )
         output = self.master.output
 

@@ -38,7 +38,7 @@ class Master:
         self.domain = domain
         self.app_root = app_root
 
-    def setup(self, Name, KeyName, Count, ImageId, InstanceType, tm_release,
+    def setup(self, name, key_name, count, image_id, instance_type, tm_release,
               freeipa_hostname):
         if not self.vpc.id:
             self.vpc.create()
@@ -48,7 +48,7 @@ class Master:
         self.vpc.create_route_table()
         self.vpc.create_security_group('sg_common', 'Treadmill Security group')
         self.vpc.create_hosted_zone()
-        self.vpc.create_hosted_zone(Reverse=True)
+        self.vpc.create_hosted_zone(reverse=True)
         self.vpc.associate_dhcp_options()
 
         self.master_configuration = MasterConfiguration(
@@ -60,14 +60,14 @@ class Master:
         )
 
         _instances = instances.Instances.create_master(
-            Name=Name,
-            ImageId=ImageId,
-            Count=Count,
-            InstanceType=InstanceType,
-            SubnetId=self.vpc.subnet_ids[0],
-            SecurityGroupIds=self.vpc.secgroup_ids,
-            KeyName=KeyName,
-            UserData=self.master_configuration.get_userdata(),
+            name=name,
+            image_id=image_id,
+            count=count,
+            instance_type=instance_type,
+            subnet_id=self.vpc.subnet_ids[0],
+            secgroup_ids=self.vpc.secgroup_ids,
+            key_name=key_name,
+            user_data=self.master_configuration.get_userdata(),
         )
 
         for instance in _instances.instances:
@@ -78,7 +78,7 @@ class Master:
             instance.upsert_dns_record(
                 self.vpc.reverse_hosted_zone_id,
                 self.domain,
-                Reverse=True
+                reverse=True
             )
 
         self.vpc.instance_ids = _instances.ids

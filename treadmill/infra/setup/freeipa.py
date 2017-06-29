@@ -5,12 +5,12 @@ class FreeIPA:
     def __init__(self):
         self.instance = None
 
-    def setup(self, Name, ImageId, Count, SubnetId):
+    def setup(self, name, image_id, count, subnet_id):
         self.instances = instances.Instances.create(
-            Name=Name,
-            ImageId=ImageId,
-            Count=Count,
-            SubnetId=SubnetId,
+            Name=name,
+            ImageId=image_id,
+            Count=count,
+            SubnetId=subnet_id,
         )
 
     def terminate(self):

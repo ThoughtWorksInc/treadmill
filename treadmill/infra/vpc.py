@@ -76,20 +76,20 @@ class VPC:
                 RouteTableId=self.route_table_id
             )
 
-    def create_security_group(self, GroupName, Description):
+    def create_security_group(self, group_name, description):
         self.secgroup_ids.append(self.conn.create_security_group(
             VpcId=self.id,
-            GroupName=GroupName,
-            Description=Description
+            GroupName=group_name,
+            Description=description
         )['GroupId'])
 
     def create_hosted_zone(
             self,
-            Region='us-east-1',
-            Reverse=False
+            region_name='us-east-1',
+            reverse=False
 
     ):
-        if Reverse:
+        if reverse:
             identifier = 'reverse_hosted_zone_id'
             name = self._reverse_domain_name()
         else:
@@ -101,7 +101,7 @@ class VPC:
             _hosted_zone_id = _conn.create_hosted_zone(
                 Name=name,
                 VPC={
-                    'VPCRegion': Region,
+                    'VPCRegion': region_name,
                     'VPCId': self.id,
                 },
                 HostedZoneConfig={
@@ -295,7 +295,7 @@ class VPC:
             'Values': [self.id]
         }]
 
-    def _availability_zone_for(self, region):
+    def _availability_zone_for(self, region_name):
         _map = {
             "us-east-1": "us-east-1a",
             "us-east-2": "us-east-2a",
@@ -305,4 +305,4 @@ class VPC:
             "us-west-2": "us-west-2a"
         }
 
-        return _map.get(region, None)
+        return _map.get(region_name, None)

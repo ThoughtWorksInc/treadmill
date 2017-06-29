@@ -36,7 +36,7 @@ class InstanceTest(unittest.TestCase):
         conn_mock.create_tags = mock.Mock()
 
         instance = Instance(
-            Name='foo',
+            name='foo',
             id='1',
             metadata={'AmiLaunchIndex': 100}
         )
@@ -57,7 +57,7 @@ class InstanceTest(unittest.TestCase):
         conn_mock.change_resource_record_sets = mock.Mock()
 
         instance = Instance(
-            Name='foo',
+            name='foo',
             id='1',
             metadata={'PrivateIpAddress': '10.1.2.3'}
         )
@@ -90,14 +90,14 @@ class InstanceTest(unittest.TestCase):
         conn_mock.change_resource_record_sets = mock.Mock()
 
         instance = Instance(
-            Name='instance-name',
+            name='instance-name',
             id='1',
             metadata={'PrivateIpAddress': '10.1.2.3'}
         )
         instance.upsert_dns_record(
             hosted_zone_id='reverse-zone-id',
             domain='joo.goo',
-            Reverse=True
+            reverse=True
         )
 
         conn_mock.change_resource_record_sets.assert_called_once_with(
@@ -123,7 +123,7 @@ class InstanceTest(unittest.TestCase):
         conn_mock.change_resource_record_sets = mock.Mock()
 
         instance = Instance(
-            Name='foo',
+            name='foo',
             id='1',
             metadata={'PrivateIpAddress': '10.1.2.3'}
         )
@@ -156,14 +156,14 @@ class InstanceTest(unittest.TestCase):
         conn_mock.change_resource_record_sets = mock.Mock()
 
         instance = Instance(
-            Name='instance-name',
+            name='instance-name',
             id='1',
             metadata={'PrivateIpAddress': '10.1.2.3'}
         )
         instance.delete_dns_record(
             hosted_zone_id='reverse-zone-id',
             domain='joo.goo',
-            Reverse=True
+            reverse=True
         )
 
         conn_mock.change_resource_record_sets.assert_called_once_with(
@@ -216,14 +216,14 @@ class InstancesTest(unittest.TestCase):
         conn_mock.create_tags = mock.Mock()
 
         instances = Instances.create(
-            KeyName='key',
-            Name='foo',
-            ImageId='foo-123',
-            Count=2,
-            InstanceType='t2.small',
-            SubnetId='',
-            SecurityGroupIds=None,
-            UserData='',
+            key_name='key',
+            name='foo',
+            image_id='foo-123',
+            count=2,
+            instance_type='t2.small',
+            subnet_id='',
+            secgroup_ids=None,
+            user_data='',
         ).instances
 
         instance_ids = [i.id for i in instances]
@@ -290,7 +290,7 @@ class InstancesTest(unittest.TestCase):
                     'tw.treadmill.test'
                 ),
                 mock.mock.call(
-                    Reverse=True,
+                    reverse=True,
                     domain='tw.treadmill.test',
                     hosted_zone_id='reverse-zone-id'
                 )

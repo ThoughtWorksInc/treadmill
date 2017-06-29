@@ -136,8 +136,8 @@ class VPCTest(unittest.TestCase):
 
         _vpc = vpc.VPC(self.vpc_id_mock)
         _vpc.create_security_group(
-            GroupName='foobar',
-            Description='foobar description'
+            group_name='foobar',
+            description='foobar description'
         )
 
         self.assertEquals(_vpc.secgroup_ids, [self.security_group_id_mock])
@@ -200,7 +200,7 @@ class VPCTest(unittest.TestCase):
 
         _vpc = vpc.VPC(self.vpc_id_mock, domain='foo.bar')
         _vpc.cidr_block = '172.10.0.0/16'
-        _vpc.create_hosted_zone(Reverse=True)
+        _vpc.create_hosted_zone(reverse=True)
 
         self.assertEquals(
             _vpc.reverse_hosted_zone_id,

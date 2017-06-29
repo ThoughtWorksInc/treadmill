@@ -8,9 +8,9 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Instance:
-    def __init__(self, Name=None, id=None, metadata=None):
+    def __init__(self, name=None, id=None, metadata=None):
         self.id = id
-        self.name = Name
+        self.name = name
         self.metadata = metadata
         self.conn = connection.Connection()
 
@@ -33,20 +33,20 @@ class Instance:
             }]
         )
 
-    def upsert_dns_record(self, hosted_zone_id, domain='', Reverse=False):
+    def upsert_dns_record(self, hosted_zone_id, domain='', reverse=False):
         self._change_resource_record_sets(
             'UPSERT',
             hosted_zone_id,
             domain,
-            Reverse
+            reverse
         )
 
-    def delete_dns_record(self, hosted_zone_id, domain='', Reverse=False):
+    def delete_dns_record(self, hosted_zone_id, domain='', reverse=False):
         self._change_resource_record_sets(
             'DELETE',
             hosted_zone_id,
             domain,
-            Reverse
+            reverse
         )
 
     def _get_private_ip(self):
@@ -60,9 +60,9 @@ class Instance:
             action,
             hosted_zone_id,
             domain='',
-            Reverse=False
+            reverse=False
     ):
-        if Reverse:
+        if reverse:
             _name, _type, _value = self._reverse_dns_record_attrs(domain)
         else:
             _name, _type, _value = self._forward_dns_record_attrs(domain)
@@ -152,18 +152,18 @@ class Instances:
         )
 
     @classmethod
-    def create(cls, Name, KeyName, Count, ImageId, InstanceType, SubnetId,
-               SecurityGroupIds, UserData):
+    def create(cls, name, key_name, count, image_id, instance_type, subnet_id,
+               secgroup_ids, user_data):
         conn = connection.Connection()
         _instances = conn.run_instances(
-            ImageId=ImageId,
-            MinCount=Count,
-            MaxCount=Count,
-            InstanceType=InstanceType,
-            SubnetId=SubnetId,
-            SecurityGroupIds=SecurityGroupIds,
-            KeyName=KeyName,
-            UserData=UserData,
+            ImageId=image_id,
+            MinCount=count,
+            MaxCount=count,
+            InstanceType=instance_type,
+            SubnetId=subnet_id,
+            SecurityGroupIds=secgroup_ids,
+            KeyName=key_name,
+            UserData=user_data,
         )
 
         _ids = [i['InstanceId'] for i in _instances['Instances']]
@@ -173,7 +173,7 @@ class Instances:
         for i in _instances_json:
             _instance = Instance(
                 id=i['InstanceId'],
-                Name=Name,
+                name=name,
                 metadata=i
             )
             _instance.create_tags()
@@ -202,7 +202,7 @@ class Instances:
             instance.delete_dns_record(
                 hosted_zone_id=reverse_hosted_zone_id,
                 domain=domain,
-                Reverse=True
+                reverse=True
             )
 
         if self.ids:

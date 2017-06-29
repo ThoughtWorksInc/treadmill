@@ -23,7 +23,7 @@ class Cell:
         _vpc.create_internet_gateway()
         _vpc.create_route_table()
         _vpc.create_security_group(
-            GroupName=security_group_name,
-            Description=security_group_description
+            group_name=security_group_name,
+            description=security_group_description
         )
-        _vpc.create_hosted_zone(Region=region_name)
+        _vpc.create_hosted_zone(region_name=region_name)
