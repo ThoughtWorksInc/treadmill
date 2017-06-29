@@ -1,4 +1,4 @@
-#Install
+# Install
 
 DOMAIN=$1
 
@@ -8,7 +8,7 @@ fi
 
 yum -y install zookeeper
 
-#Configure
+# Configure
 
 AMI_LAUNCH_INDEX=$(curl http://169.254.169.254/latest/meta-data/ami-launch-index)
 ZK_ID=$((AMI_LAUNCH_INDEX+1))
