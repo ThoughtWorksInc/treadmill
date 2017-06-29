@@ -13,7 +13,7 @@ class Configuration:
         if not self.setup_scripts:
             return ''
 
-        userdata = '#!/bin/bash -ex\n'
+        userdata = ''
         for script in self.setup_scripts:
             with open(SCRIPT_DIR + script['name'], 'r') as data:
                 template = Template(data.read())
