@@ -132,7 +132,7 @@ class Instances:
         return sum([r['Instances'] for r in response], [])
 
     @classmethod
-    def get(cls, ids=[], filters=[]):
+    def get(cls, ids=None, filters=None):
         json = Instances.load_json(ids=ids, filters=filters)
         return Instances(
             instances=[Instance(
