@@ -20,8 +20,8 @@ class Singleton(type):
 
 
 class Connection(metaclass=Singleton):
-    def __init__(self, resource=constants.EC2, region_name='us-east-1'):
+    def __init__(self, eresource=constants.EC2):
         pass
 
-    def __new__(cls, resource=constants.EC2, region_name='us-east-1'):
-        return boto3.client(resource, region_name=region_name)
+    def __new__(cls, resource=constants.EC2):
+        return boto3.client(resource)

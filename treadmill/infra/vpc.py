@@ -12,7 +12,7 @@ class VPC:
         domain='tw.treadmill',
         region_name='us-east-1'
     ):
-        self.conn = connection.Connection(region_name=region_name)
+        self.conn = connection.Connection()
         self.id = id
         self.domain = domain
         self.instances = []

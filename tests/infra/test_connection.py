@@ -20,15 +20,13 @@ class ConnectionTest(unittest.TestCase):
     @mock.patch('boto3.client', mock.Mock(return_value='foo'))
     def test_establish(self):
         conn = connection.Connection()
-        connection.boto3.client.assert_called_with(
-            'ec2', region_name='us-east-1'
-        )
+        connection.boto3.client.assert_called_with('ec2')
         self.assertEquals(conn, 'foo')
 
     @mock.patch('boto3.client', mock.Mock(return_value='foo'))
     def test_establish_with_region(self):
-        conn = connection.Connection(region_name='foobar')
-        connection.boto3.client.assert_called_with('ec2', region_name='foobar')
+        conn = connection.Connection()
+        connection.boto3.client.assert_called_with('ec2')
         self.assertEquals(conn, 'foo')
 
     @mock.patch('boto3.client')
@@ -38,9 +36,7 @@ class ConnectionTest(unittest.TestCase):
         client_mock.return_value = client_obj_mock
         conn1 = connection.Connection()
         conn2 = connection.Connection()
-        connection.boto3.client.assert_called_once_with(
-            'ec2', region_name='us-east-1'
-        )
+        connection.boto3.client.assert_called_once_with('ec2')
         self.assertEquals(conn1, conn2)
 
 
