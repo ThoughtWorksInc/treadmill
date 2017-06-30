@@ -15,7 +15,6 @@ class CellTest(unittest.TestCase):
         self.cell = Cell(
             region_name='us-east-1',
             domain='ms.treadmill',
-            app_root='/var/tmp'
         )
 
     def tearDown(self):
@@ -23,7 +22,12 @@ class CellTest(unittest.TestCase):
             self.cell.destroy()
 
     def test_setup_cell(self):
-        self.vpc_id = self.cell.setup(
+        self.cell.setup_vpc(
+            cidr_block='172.23.0.0/16',
+            secgroup_name='sg_common',
+            secgroup_desc='Treadmill CIDR block'
+        )
+        self.vpc_id = self.cell.setup_master(
             name='TreadmillMaster',
             image_id='ami-9e2f0988',
             count=3,
@@ -32,6 +36,7 @@ class CellTest(unittest.TestCase):
             key_name='ms_treadmill_dev',
             instance_type=constants.INSTANCE_TYPES['EC2']['small'],
             cidr_block='172.23.0.0/16',
+            app_root='/var/tmp',
         )
         output = self.cell.output
 

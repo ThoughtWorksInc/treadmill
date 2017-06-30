@@ -10,37 +10,33 @@ def init():
         pass
 
     @cloud.command(name='init')
-    @click.option('--cell', required=False, is_flag=True,
-                  help='Create a new treadmill cell')
+    @click.option('--vpc-id', required=False, help='VPC ID of cell')
     @click.option('--domain', required=False,
-                  default='tw.treadmill', help='Domain for hosted zone')
+                  default='ms.treadmill', help='Domain for hosted zone')
     @click.option('--region', required=False,
                   default='us-east-1', help='Region for the vpc')
     @click.option('--vpc-cidr-block', required=False,
-                  default='172.23.0.0/16', help='Cidr block for the vpc')
-    @click.option('--subnet-cidr-block', required=False,
-                  default='172.23.0.0/24', help='Cidr block for the subnet')
-    @click.option('--security-group-name', required=False,
-                  default='sg_common', help='Region for the vpc')
+                  default='172.23.0.0/16', help='CIDR block for the vpc')
+    @click.option('--secgroup_name', required=False,
+                  default='sg_common', help='Security group name')
     @click.option(
-        '--security-group-description',
+        '--secgroup_desc',
         required=False,
         default='Treadmill Security Group',
         help='Description for the security group')
-    def init(
-        cell, domain, region, vpc_cidr_block,
-        subnet_cidr_block, security_group_name,
-        security_group_description
-    ):
-        """Initialize treadmill cloud"""
-        cell = Cell()
-        cell.vpc_setup(
-            domain=domain,
+    def init(vpc_id, domain, region, vpc_cidr_block, secgroup_name,
+             secgroup_desc):
+        """Initialize treadmill cell"""
+        cell = Cell(
             region_name=region,
+            domain=domain,
+            vpc_id=vpc_id
+        )
+
+        cell.setup_vpc(
             vpc_cidr_block=vpc_cidr_block,
-            subnet_cidr_block=subnet_cidr_block,
-            security_group_name=security_group_name,
-            security_group_description=security_group_description
+            secgroup_name=secgroup_name,
+            secgroup_desc=secgroup_desc,
         )
 
     del init

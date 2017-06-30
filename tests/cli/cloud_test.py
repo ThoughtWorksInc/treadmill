@@ -17,20 +17,17 @@ class CloudTest(unittest.TestCase):
         result = self.runner.invoke(
             self.configure_cli, [
                 'init',
+                '--vpc-id=vpc-123',
                 '--domain=test.treadmill',
                 '--region=us-west-1',
                 '--vpc-cidr-block=172.24.0.0/16',
-                '--subnet-cidr-block=172.24.0.0/24',
-                '--security-group-name=sg_common2',
-                '--security-group-description=Test'
+                '--secgroup_name=sg_common',
+                '--secgroup_desc=Test'
             ])
 
         self.assertEqual(result.exit_code, 0)
-        cell.vpc_setup.assert_called_once_with(
-            domain='test.treadmill',
-            region_name='us-west-1',
+        cell.setup_vpc.assert_called_once_with(
             vpc_cidr_block='172.24.0.0/16',
-            subnet_cidr_block='172.24.0.0/24',
-            security_group_name='sg_common2',
-            security_group_description='Test'
+            secgroup_name='sg_common',
+            secgroup_desc='Test'
         )
