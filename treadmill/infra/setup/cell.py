@@ -1,29 +1,77 @@
 from treadmill.infra import vpc
+from treadmill.infra import instances
+from treadmill.infra import configuration
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Cell:
-    def __init__(self):
-        pass
+    def __init__(self, region_name, domain, app_root, vpc_id=None):
+        self.vpc = vpc.VPC(region_name=region_name, id=vpc_id, domain=domain)
+        self.domain = domain
+        self.app_root = app_root
+        self.region_name = region_name
 
-    def vpc_setup(
-        self,
-        domain='tw.treadmill',
-        region_name='us-east-1',
-        vpc_cidr_block='172.23.0.0/16',
-        subnet_cidr_block='172.23.0.0/24',
-        security_group_name='sg_common',
-        security_group_description='Treadmill Security Group'
-    ):
-        _vpc = vpc.VPC(domain=domain, region_name=region_name)
-        _vpc.create(cidr_block=vpc_cidr_block)
-        _vpc.create_subnet(
-            cidr_block=subnet_cidr_block,
-            region_name=region_name
+    def setup(self, name, key_name, count, image_id, instance_type, tm_release,
+              freeipa_hostname, cidr_block):
+        if not self.vpc.id:
+            self.vpc.create(cidr_block)
+
+        self.vpc.create_subnet(self.region_name, cidr_block)
+        self.vpc.create_internet_gateway()
+        self.vpc.create_route_table()
+        self.vpc.create_security_group('sg_common', 'Treadmill Security group')
+        self.vpc.create_hosted_zone(region_name=self.region_name)
+        self.vpc.create_hosted_zone(region_name=self.region_name, reverse=True)
+        self.vpc.associate_dhcp_options()
+
+        self.master_configuration = configuration.MasterConfiguration(
+            self.domain,
+            self.vpc.subnet_ids[0],
+            self.app_root,
+            freeipa_hostname,
+            tm_release
         )
-        _vpc.create_internet_gateway()
-        _vpc.create_route_table()
-        _vpc.create_security_group(
-            group_name=security_group_name,
-            description=security_group_description
+
+        _instances = instances.Instances.create_master(
+            name=name,
+            image_id=image_id,
+            count=count,
+            instance_type=instance_type,
+            subnet_id=self.vpc.subnet_ids[0],
+            secgroup_ids=self.vpc.secgroup_ids,
+            key_name=key_name,
+            user_data=self.master_configuration.get_userdata(),
         )
-        _vpc.create_hosted_zone(region_name=region_name)
+
+        for instance in _instances.instances:
+            instance.upsert_dns_record(
+                self.vpc.hosted_zone_id,
+                self.domain
+            )
+            instance.upsert_dns_record(
+                self.vpc.reverse_hosted_zone_id,
+                self.domain,
+                reverse=True
+            )
+
+        self.vpc.instance_ids = _instances.ids
+        self.ids = _instances.ids
+        self.show()
+
+        return self.vpc.id
+
+    def destroy(self):
+        self.vpc.terminate_instances()
+        self.vpc.delete_internet_gateway()
+        self.vpc.delete_security_groups()
+        self.vpc.delete_route_tables()
+        self.vpc.delete_hosted_zones()
+        self.vpc.delete()
+
+    def show(self):
+        self.output = self.vpc.show()
+        _LOGGER.info("******************************************************")
+        _LOGGER.info(self.output)
+        _LOGGER.info("******************************************************")

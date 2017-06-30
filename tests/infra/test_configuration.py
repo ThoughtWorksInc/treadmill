@@ -6,9 +6,7 @@ import unittest
 import mock
 import io
 
-from treadmill.infra.configuration import Configuration
-from treadmill.infra.setup.master import MasterConfiguration
-from treadmill.infra import SCRIPT_DIR
+from treadmill.infra import configuration, SCRIPT_DIR
 
 
 class ConfigurationTest(unittest.TestCase):
@@ -26,15 +24,15 @@ class ConfigurationTest(unittest.TestCase):
             io.StringIO('{{ CELL }}'),
         ]
 
-        configuration = Configuration([])
-        userdata = configuration.get_userdata()
+        config = configuration.Configuration([])
+        userdata = config.get_userdata()
         self.assertEquals(userdata, '')
 
-        configuration = Configuration([
+        config = configuration.Configuration([
             {'name': 'script1.sh', 'vars': {'DOMAIN': 'test.treadmill'}},
             {'name': 'script2.sh', 'vars': {'CELL': 'mycell'}},
         ])
-        userdata = configuration.get_userdata()
+        userdata = config.get_userdata()
 
         self.assertEquals(
             userdata,
@@ -47,7 +45,7 @@ class MasterConfigurationTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_master_configuration_script_data(self, open_mock):
-        configuration = MasterConfiguration('', '', '', '', '')
+        config = configuration.MasterConfiguration('', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME'],
             'install-pid1.sh': [],
@@ -59,13 +57,13 @@ class MasterConfigurationTest(unittest.TestCase):
         }
 
         self.assertCountEqual(
-            [s['name'] for s in configuration.setup_scripts],
+            [s['name'] for s in config.setup_scripts],
             expected_script_data.keys()
         )
 
         # Make sure all the scripts have required variables to replace, for
         # jinja
-        for script_data in configuration.setup_scripts:
+        for script_data in config.setup_scripts:
             self.assertCountEqual(
                 expected_script_data[script_data['name']],
                 script_data['vars'].keys()

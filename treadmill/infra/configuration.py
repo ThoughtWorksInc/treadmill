@@ -21,3 +21,29 @@ class Configuration:
                 template = Template(data.read())
                 userdata += template.render(script.get('vars', {})) + '\n'
         return userdata
+
+
+class MasterConfiguration(Configuration):
+    def __init__(self, domain, cell, app_root, freeipa_hostname, tm_release):
+        self.setup_scripts = [
+            {
+                'name': 'provision-base.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'NAME': 'TreadmillMaster',
+                },
+            },
+            {'name': 'install-pid1.sh', 'vars': {}},
+            {'name': 'install-s6.sh', 'vars': {}},
+            {
+                'name': 'configure-master.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'CELL': cell,
+                    'APPROOT': app_root,
+                    'FREEIPA_HOSTNAME': freeipa_hostname,
+                    'TREADMILL_RELEASE': tm_release,
+                },
+            },
+        ]
+        super(MasterConfiguration, self).__init__(self.setup_scripts)

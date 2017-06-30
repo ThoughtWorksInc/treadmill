@@ -1,18 +1,18 @@
 """
-Unit test for EC2 master setup.
+Unit test for EC2 cell setup.
 """
 
 import unittest
-from treadmill.infra.setup.master import Master
+from treadmill.infra.setup.cell import Cell
 from treadmill.infra import constants
 
 
-class MasterTest(unittest.TestCase):
-    """Tests EC2 master setup."""
+class CellTest(unittest.TestCase):
+    """Tests EC2 cell setup."""
 
     def setUp(self):
         self.attempted_destroy = False
-        self.master = Master(
+        self.cell = Cell(
             region_name='us-east-1',
             domain='ms.treadmill',
             app_root='/var/tmp'
@@ -20,10 +20,10 @@ class MasterTest(unittest.TestCase):
 
     def tearDown(self):
         if not self.attempted_destroy:
-            self.master.destroy()
+            self.cell.destroy()
 
-    def test_setup_master(self):
-        self.vpc_id = self.master.setup(
+    def test_setup_cell(self):
+        self.vpc_id = self.cell.setup(
             name='TreadmillMaster',
             image_id='ami-9e2f0988',
             count=3,
@@ -33,11 +33,11 @@ class MasterTest(unittest.TestCase):
             instance_type=constants.INSTANCE_TYPES['EC2']['small'],
             cidr_block='172.23.0.0/16',
         )
-        output = self.master.output
+        output = self.cell.output
 
-        self.assertEquals(len(self.master.ids), 3)
+        self.assertEquals(len(self.cell.ids), 3)
         self.assertIsNotNone(self.vpc_id)
-        self.assertIsNotNone(self.master.vpc.hosted_zone_id)
+        self.assertIsNotNone(self.cell.vpc.hosted_zone_id)
         self.assertEquals(output['VpcId'], self.vpc_id)
         self.assertEquals(len(output['Instances']), 3)
         for instance in output['Instances']:
@@ -45,16 +45,16 @@ class MasterTest(unittest.TestCase):
             self.assertIsNotNone(instance['SubnetId'])
             self.assertIsNotNone(instance['SecurityGroups'])
             self.assertIn(instance['InstanceState'], ['pending', 'running'])
-            self.assertIn(instance['SubnetId'], self.master.vpc.subnet_ids)
+            self.assertIn(instance['SubnetId'], self.cell.vpc.subnet_ids)
 
-        self.master.destroy()
+        self.cell.destroy()
         self.attempted_destroy = True
 
-        self.master.vpc.instances = None
-        self.master.vpc.instance_ids = None
-        self.master.vpc.get_instances()
+        self.cell.vpc.instances = None
+        self.cell.vpc.instance_ids = None
+        self.cell.vpc.get_instances()
 
-        self.assertIsNone(self.master.vpc.instance_ids, None)
+        self.assertIsNone(self.cell.vpc.instance_ids, None)
 
 
 if __name__ == '__main__':
