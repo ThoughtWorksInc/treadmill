@@ -557,6 +557,18 @@ class VPCTest(unittest.TestCase):
             VpcId=self.vpc_id_mock
         )
 
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_get(self, connectionMock):
+        _connectionMock = connectionMock()
+        _connectionMock.describe_vpcs = mock.Mock(
+            return_value={'Vpcs': ['foo']}
+        )
+
+        self.assertEqual(vpc.VPC.get(self.vpc_id_mock), 'foo')
+        _connectionMock.describe_vpcs.assert_called_once_with(
+            VpcIds=[self.vpc_id_mock]
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -21,6 +21,11 @@ class VPC:
         self.reverse_hosted_zone_id = None
         self.hosted_zone_ids = []
 
+    @classmethod
+    def get(cls, vpc_id):
+        _conn = connection.Connection()
+        return _conn.describe_vpcs(VpcIds=[vpc_id])['Vpcs'][0]
+
     def create(self, cidr_block):
         vpc_response = self.conn.create_vpc(CidrBlock=cidr_block)
         self.cidr_block = vpc_response['Vpc']['CidrBlock']
