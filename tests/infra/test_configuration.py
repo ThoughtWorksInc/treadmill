@@ -51,7 +51,7 @@ class MasterConfigurationTest(unittest.TestCase):
             'install-pid1.sh': [],
             'install-s6.sh': [],
             'configure-master.sh': [
-                'DOMAIN', 'CELL', 'APPROOT', 'FREEIPA_HOSTNAME',
+                'DOMAIN', 'CELL', 'APPROOT', 'IPA_HOSTNAME',
                 'TREADMILL_RELEASE',
             ],
         }

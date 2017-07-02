@@ -4,7 +4,7 @@ from treadmill.infra import vpc
 from treadmill.infra import constants
 
 
-class FreeIPA:
+class IPA:
     def __init__(self):
         pass
 
@@ -23,7 +23,7 @@ class FreeIPA:
         self._update_route53('UPSERT', vpc_id, domain)
 
     def destroy(self):
-        """Terminate freeipa instance"""
+        """Terminate ipa instance"""
         self.instances.terminate()
 
     def _update_route53(self, action, vpc_id, domain):

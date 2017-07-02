@@ -1,20 +1,20 @@
 """
-Unit test for EC2 freeipa setup.
+Unit test for EC2 ipa setup.
 """
 
 import unittest
 import mock
 
-from treadmill.infra.setup.freeipa import FreeIPA
+from treadmill.infra.setup.ipa import IPA
 
 
-class FreeIPATest(unittest.TestCase):
-    """Tests EC2 freeipa setup."""
+class IPATest(unittest.TestCase):
+    """Tests EC2 ipa setup."""
 
-    @mock.patch('treadmill.infra.setup.freeipa.connection.Connection')
-    @mock.patch('treadmill.infra.setup.freeipa.vpc.VPC')
-    @mock.patch('treadmill.infra.setup.freeipa.instances.Instances')
-    def test_setup_freeipa(self, InstancesMock, VPCMock, ConnectionMock):
+    @mock.patch('treadmill.infra.setup.ipa.connection.Connection')
+    @mock.patch('treadmill.infra.setup.ipa.vpc.VPC')
+    @mock.patch('treadmill.infra.setup.ipa.instances.Instances')
+    def test_setup_ipa(self, InstancesMock, VPCMock, ConnectionMock):
         instance_mock = mock.Mock(private_ip='1.1.1.1')
         instances_mock = mock.Mock(instances=[instance_mock])
         InstancesMock.create = mock.Mock(return_value=instances_mock)
@@ -22,9 +22,9 @@ class FreeIPATest(unittest.TestCase):
         _vpc_id_mock = 'vpc-id'
         _vpc_mock = VPCMock(_vpc_id_mock)
         _vpc_mock.hosted_zone_id = 'hosted-zone-id'
-        freeipa = FreeIPA()
-        freeipa.setup(
-            name='freeipa',
+        ipa = IPA()
+        ipa.setup(
+            name='ipa',
             image_id='foo-123',
             count=1,
             subnet_id=123,
@@ -32,10 +32,10 @@ class FreeIPATest(unittest.TestCase):
             vpc_id=_vpc_id_mock
         )
 
-        self.assertEqual(freeipa.instances, instances_mock)
+        self.assertEqual(ipa.instances, instances_mock)
         InstancesMock.create.assert_called_once_with(
             image_id='foo-123',
-            name='freeipa',
+            name='ipa',
             count=1,
             subnet_id=123,
             instance_type='t2.medium'
@@ -52,7 +52,7 @@ class FreeIPATest(unittest.TestCase):
                             'Type': 'SRV',
                             'TTL': 86400,
                             'ResourceRecords': [{
-                                'Value': '0 100 88 freeipa.foo.bar.'
+                                'Value': '0 100 88 ipa.foo.bar.'
                             }]
                         }
                     }]
@@ -68,7 +68,7 @@ class FreeIPATest(unittest.TestCase):
                             'Type': 'SRV',
                             'TTL': 86400,
                             'ResourceRecords': [{
-                                'Value': '0 100 88 freeipa.foo.bar.'
+                                'Value': '0 100 88 ipa.foo.bar.'
                             }]
                         }
                     }]
@@ -84,7 +84,7 @@ class FreeIPATest(unittest.TestCase):
                             'Type': 'SRV',
                             'TTL': 86400,
                             'ResourceRecords': [{
-                                'Value': '0 100 88 freeipa.foo.bar.'
+                                'Value': '0 100 88 ipa.foo.bar.'
                             }]
                         }
                     }]
@@ -100,7 +100,7 @@ class FreeIPATest(unittest.TestCase):
                             'Type': 'SRV',
                             'TTL': 86400,
                             'ResourceRecords': [{
-                                'Value': '0 100 88 freeipa.foo.bar.'
+                                'Value': '0 100 88 ipa.foo.bar.'
                             }]
                         }
                     }]
@@ -116,7 +116,7 @@ class FreeIPATest(unittest.TestCase):
                             'Type': 'SRV',
                             'TTL': 86400,
                             'ResourceRecords': [{
-                                'Value': '0 100 464 freeipa.foo.bar.'
+                                'Value': '0 100 464 ipa.foo.bar.'
                             }]
                         }
                     }]
@@ -132,7 +132,7 @@ class FreeIPATest(unittest.TestCase):
                             'Type': 'SRV',
                             'TTL': 86400,
                             'ResourceRecords': [{
-                                'Value': '0 100 464 freeipa.foo.bar.'
+                                'Value': '0 100 464 ipa.foo.bar.'
                             }]
                         }
                     }]
@@ -148,7 +148,7 @@ class FreeIPATest(unittest.TestCase):
                             'Type': 'SRV',
                             'TTL': 86400,
                             'ResourceRecords': [{
-                                'Value': '0 100 389 freeipa.foo.bar.'
+                                'Value': '0 100 389 ipa.foo.bar.'
                             }]
                         }
                     }]
@@ -164,7 +164,7 @@ class FreeIPATest(unittest.TestCase):
                             'Type': 'SRV',
                             'TTL': 86400,
                             'ResourceRecords': [{
-                                'Value': '0 100 123 freeipa.foo.bar.'
+                                'Value': '0 100 123 ipa.foo.bar.'
                             }]
                         }
                     }]
@@ -208,10 +208,10 @@ class FreeIPATest(unittest.TestCase):
             expected_calls
         )
 
-    @mock.patch('treadmill.infra.setup.freeipa.instances.Instances')
-    def test_freeipa_destroy(self, InstancesMock):
-        freeipa = FreeIPA()
-        freeipa.instances = InstancesMock()
-        freeipa.destroy()
+    @mock.patch('treadmill.infra.setup.ipa.instances.Instances')
+    def test_ipa_destroy(self, InstancesMock):
+        ipa = IPA()
+        ipa.instances = InstancesMock()
+        ipa.destroy()
 
-        freeipa.instances.terminate.assert_called_once()
+        ipa.instances.terminate.assert_called_once()

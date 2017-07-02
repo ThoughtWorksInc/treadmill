@@ -6,7 +6,7 @@ REVERSE_DNS_TLD = 'in-addr.arpa'
 ATTACHMENT_INSTANCE_ID = 'attachment.instance-id'
 ATTACHMENT_VPC_ID = 'attachment.vpc-id'
 DESTINATION_CIDR_BLOCK = '0.0.0.0/0'
-FREEIPA_HOSTNAME = 'treadmillfreeipa'
+IPA_HOSTNAME = 'treadmillipa'
 MASTER_INSTANCES_COUNT = 3
 INSTANCE_TYPES = {
     'EC2': {

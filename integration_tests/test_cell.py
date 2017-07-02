@@ -32,7 +32,7 @@ class CellTest(unittest.TestCase):
             image_id='ami-9e2f0988',
             count=3,
             tm_release='0.1.0',
-            freeipa_hostname='freeipa',
+            ipa_hostname='ipa',
             key_name='ms_treadmill_dev',
             instance_type=constants.INSTANCE_TYPES['EC2']['small'],
             cidr_block='172.23.0.0/16',

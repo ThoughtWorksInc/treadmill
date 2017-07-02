@@ -24,7 +24,7 @@ class Configuration:
 
 
 class MasterConfiguration(Configuration):
-    def __init__(self, domain, cell, app_root, freeipa_hostname, tm_release):
+    def __init__(self, domain, cell, app_root, ipa_hostname, tm_release):
         self.setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -41,7 +41,7 @@ class MasterConfiguration(Configuration):
                     'DOMAIN': domain,
                     'CELL': cell,
                     'APPROOT': app_root,
-                    'FREEIPA_HOSTNAME': freeipa_hostname,
+                    'IPA_HOSTNAME': ipa_hostname,
                     'TREADMILL_RELEASE': tm_release,
                 },
             },

@@ -25,12 +25,12 @@ class Cell:
         self.vpc.associate_dhcp_options()
 
     def setup_master(self, name, key_name, count, image_id, instance_type,
-                     tm_release, freeipa_hostname, cidr_block, app_root):
+                     tm_release, ipa_hostname, cidr_block, app_root):
         self.master_configuration = configuration.MasterConfiguration(
             self.domain,
             self.vpc.subnet_ids[0],
             app_root,
-            freeipa_hostname,
+            ipa_hostname,
             tm_release
         )
 

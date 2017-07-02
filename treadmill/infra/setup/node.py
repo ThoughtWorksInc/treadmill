@@ -17,5 +17,4 @@ class Node:
         return self.instances
 
     def terminate(self):
-        """Terminate freeipa instance"""
         self.instances.terminate()
