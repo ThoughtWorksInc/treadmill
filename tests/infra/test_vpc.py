@@ -224,16 +224,20 @@ class VPCTest(unittest.TestCase):
             CallerReference='786'
         )
 
-    @mock.patch('treadmill.infra.instances.connection.Connection', mock.Mock())
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     @mock.patch('treadmill.infra.instances.Instances')
-    def test_get_instances(self, instances_mock):
-        instances_mock.get = mock.Mock(
+    @mock.patch('treadmill.infra.vpc.instances.Instances')
+    def test_get_instances(self, connectionMock, instances_mock,
+                           vpc_instances_mock):
+        instances_mock.get = vpc_instances_mock.get = mock.Mock(
             return_value='foo'
+        )
+        connectionMock.describe_vpcs = mock.Mock(
+            return_value={'Vpcs': [{'VpcId': self.vpc_id_mock, 'foo': 'bar'}]}
         )
 
         _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
                        domain='foo.bar')
-        _vpc.get_instances()
 
         self.assertEquals(
             _vpc.instances,
@@ -247,10 +251,15 @@ class VPCTest(unittest.TestCase):
             }]
         )
 
-    @mock.patch('treadmill.infra.instances.connection.Connection', mock.Mock())
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     @mock.patch('treadmill.infra.instances.Instances')
-    def test_terminate_instances(self, instances_mock):
+    @mock.patch('treadmill.infra.vpc.instances.Instances')
+    def test_terminate_instances(self, connectionMock, instances_mock,
+                                 vpc_instances_mock):
         instances_obj_mock = mock.Mock()
+        connectionMock.describe_vpcs = mock.Mock(
+            return_value={'Vpcs': [{'VpcId': self.vpc_id_mock, 'foo': 'bar'}]}
+        )
 
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='domain',
                        region_name='us-east-1')
@@ -360,7 +369,6 @@ class VPCTest(unittest.TestCase):
 
         _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
                        domain='foo.bar')
-        _vpc.get_hosted_zone_ids()
 
         self.assertCountEqual(
             _vpc.hosted_zone_ids,
@@ -563,7 +571,8 @@ class VPCTest(unittest.TestCase):
         _connectionMock.describe_vpcs = mock.Mock(
             return_value={'Vpcs': [{'VpcId': self.vpc_id_mock, 'foo': 'bar'}]}
         )
-        _vpc = vpc.VPC.get(self.vpc_id_mock)
+        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
+                       domain='foo')
         self.assertIsInstance(_vpc, vpc.VPC)
         self.assertEqual(_vpc.id, self.vpc_id_mock)
         self.assertEqual(

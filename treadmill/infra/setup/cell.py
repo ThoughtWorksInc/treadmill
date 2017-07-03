@@ -7,8 +7,9 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Cell:
-    def __init__(self, region_name, domain, vpc_id=None):
+    def __init__(self, region_name, domain, subnet_id=None, vpc_id=None):
         self.vpc = vpc.VPC(region_name=region_name, id=vpc_id, domain=domain)
+        self.subnet_id = subnet_id
         self.domain = domain
         self.region_name = region_name
 
@@ -25,10 +26,10 @@ class Cell:
         self.vpc.associate_dhcp_options()
 
     def setup_master(self, name, key_name, count, image_id, instance_type,
-                     tm_release, ipa_hostname, cidr_block, app_root):
+                     tm_release, ipa_hostname, app_root):
         self.master_configuration = configuration.MasterConfiguration(
             self.domain,
-            self.vpc.subnet_ids[0],
+            self.subnet_id,
             app_root,
             ipa_hostname,
             tm_release
@@ -39,7 +40,7 @@ class Cell:
             image_id=image_id,
             count=count,
             instance_type=instance_type,
-            subnet_id=self.vpc.subnet_ids[0],
+            subnet_id=self.subnet_id,
             secgroup_ids=self.vpc.secgroup_ids,
             key_name=key_name,
             user_data=self.master_configuration.get_userdata(),

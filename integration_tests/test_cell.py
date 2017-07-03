@@ -27,6 +27,7 @@ class CellTest(unittest.TestCase):
             secgroup_name='sg_common',
             secgroup_desc='Treadmill CIDR block'
         )
+        self.cell.subnet_id = self.cell.vpc.subnet_ids[0]
         self.vpc_id = self.cell.setup_master(
             name='TreadmillMaster',
             image_id='ami-9e2f0988',
@@ -35,7 +36,6 @@ class CellTest(unittest.TestCase):
             ipa_hostname='ipa',
             key_name='ms_treadmill_dev',
             instance_type=constants.INSTANCE_TYPES['EC2']['small'],
-            cidr_block='172.23.0.0/16',
             app_root='/var/tmp',
         )
         output = self.cell.output
