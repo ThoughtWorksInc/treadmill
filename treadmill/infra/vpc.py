@@ -6,9 +6,10 @@ import time
 
 
 class VPC:
-    def __init__(self, domain, region_name, id=None):
+    def __init__(self, domain, region_name, id=None, metadata=None):
         self.conn = connection.Connection()
         self.id = id
+        self.metadata = metadata
         self.domain = domain
         self.instances = []
         self.secgroup_ids = []
@@ -24,7 +25,13 @@ class VPC:
     @classmethod
     def get(cls, vpc_id):
         _conn = connection.Connection()
-        return _conn.describe_vpcs(VpcIds=[vpc_id])['Vpcs'][0]
+        json = _conn.describe_vpcs(VpcIds=[vpc_id])['Vpcs'][0]
+        return VPC(
+            id=json['VpcId'],
+            metadata=json,
+            region_name=None,
+            domain=None
+        )
 
     def create(self, cidr_block):
         vpc_response = self.conn.create_vpc(CidrBlock=cidr_block)

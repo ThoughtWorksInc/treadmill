@@ -561,10 +561,15 @@ class VPCTest(unittest.TestCase):
     def test_get(self, connectionMock):
         _connectionMock = connectionMock()
         _connectionMock.describe_vpcs = mock.Mock(
-            return_value={'Vpcs': ['foo']}
+            return_value={'Vpcs': [{'VpcId': self.vpc_id_mock, 'foo': 'bar'}]}
         )
-
-        self.assertEqual(vpc.VPC.get(self.vpc_id_mock), 'foo')
+        _vpc = vpc.VPC.get(self.vpc_id_mock)
+        self.assertIsInstance(_vpc, vpc.VPC)
+        self.assertEqual(_vpc.id, self.vpc_id_mock)
+        self.assertEqual(
+            _vpc.metadata,
+            {'VpcId': self.vpc_id_mock, 'foo': 'bar'}
+        )
         _connectionMock.describe_vpcs.assert_called_once_with(
             VpcIds=[self.vpc_id_mock]
         )
