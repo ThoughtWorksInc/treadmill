@@ -7,8 +7,13 @@ import time
 
 class VPC:
     def __init__(self, domain, region_name, id=None, metadata=None):
-        self.conn = connection.Connection()
+        self.ec2_conn = connection.Connection(region_name=region_name)
+        self.route53_conn = connection.Connection(
+            resource=constants.ROUTE_53,
+            region_name=region_name
+        )
         self.id = id
+        self.region_name = region_name
         self.metadata = metadata
         self.domain = domain
         self.instances = []
@@ -26,31 +31,30 @@ class VPC:
             self._get(self.id)
 
     def _get(self, vpc_id):
-        _conn = connection.Connection()
-        self.metadata = _conn.describe_vpcs(VpcIds=[vpc_id])['Vpcs'][0]
+        self.metadata = self.ec2_conn.describe_vpcs(VpcIds=[vpc_id])['Vpcs'][0]
         self.get_instances()
         self.get_hosted_zone_ids()
         self.get_security_group_ids()
 
     def create(self, cidr_block):
-        vpc_response = self.conn.create_vpc(CidrBlock=cidr_block)
+        vpc_response = self.ec2_conn.create_vpc(CidrBlock=cidr_block)
         self.cidr_block = vpc_response['Vpc']['CidrBlock']
         self.id = vpc_response['Vpc']['VpcId']
-        self.conn.create_tags(
+        self.ec2_conn.create_tags(
             Resources=[self.id],
             Tags=[{
                 'Key': 'Name',
                 'Value': 'Treadmill-vpc'
             }]
         )
-        self.conn.modify_vpc_attribute(VpcId=self.id,
-                                       EnableDnsHostnames={
-                                           'Value': True
-                                       })
+        self.ec2_conn.modify_vpc_attribute(VpcId=self.id,
+                                           EnableDnsHostnames={
+                                               'Value': True
+                                           })
 
     def create_subnet(self, region_name, cidr_block):
         self.region_name = region_name
-        subnet = self.conn.create_subnet(
+        subnet = self.ec2_conn.create_subnet(
             VpcId=self.id,
             CidrBlock=cidr_block,
             AvailabilityZone=self._availability_zone_for(region_name)
@@ -58,31 +62,31 @@ class VPC:
         self.subnet_ids.append(subnet['Subnet']['SubnetId'])
 
     def create_internet_gateway(self):
-        gateway = self.conn.create_internet_gateway()
+        gateway = self.ec2_conn.create_internet_gateway()
         gateway_id = gateway['InternetGateway']['InternetGatewayId']
         self.gateway_ids.append(gateway_id)
-        self.conn.attach_internet_gateway(
+        self.ec2_conn.attach_internet_gateway(
             InternetGatewayId=gateway_id,
             VpcId=self.id
         )
 
     def create_route_table(self):
-        route_table = self.conn.create_route_table(VpcId=self.id)
+        route_table = self.ec2_conn.create_route_table(VpcId=self.id)
         self.route_table_id = route_table['RouteTable']['RouteTableId']
         for gateway_id in self.gateway_ids:
-            self.conn.create_route(
+            self.ec2_conn.create_route(
                 RouteTableId=self.route_table_id,
                 DestinationCidrBlock=constants.DESTINATION_CIDR_BLOCK,
                 GatewayId=gateway_id
             )
         for subnet_id in self.subnet_ids:
-            self.conn.associate_route_table(
+            self.ec2_conn.associate_route_table(
                 SubnetId=subnet_id,
                 RouteTableId=self.route_table_id
             )
 
     def create_security_group(self, group_name, description):
-        self.secgroup_ids.append(self.conn.create_security_group(
+        self.secgroup_ids.append(self.ec2_conn.create_security_group(
             VpcId=self.id,
             GroupName=group_name,
             Description=description
@@ -97,8 +101,7 @@ class VPC:
             name = self.domain
 
         if not getattr(self, identifier):
-            _conn = connection.Connection(constants.ROUTE_53)
-            _hosted_zone_id = _conn.create_hosted_zone(
+            _hosted_zone_id = self.route53_conn.create_hosted_zone(
                 Name=name,
                 VPC={
                     'VPCRegion': region_name,
@@ -112,11 +115,10 @@ class VPC:
             setattr(self, identifier, _hosted_zone_id)
 
     def get_hosted_zone_ids(self):
-        _conn = connection.Connection('route53')
-        hosted_zones = _conn.list_hosted_zones()['HostedZones']
+        hosted_zones = self.route53_conn.list_hosted_zones()['HostedZones']
         for hosted_zone in hosted_zones:
             _hosted_zone_id = hosted_zone['Id']
-            hosted_zone_details = _conn.get_hosted_zone(
+            hosted_zone_details = self.route53_conn.get_hosted_zone(
                 Id=_hosted_zone_id
             )
             if self.id in [_vpc['VPCId']
@@ -130,17 +132,17 @@ class VPC:
     def delete_hosted_zones(self):
         if not self.hosted_zone_ids:
             self.get_hosted_zone_ids()
-        _conn = connection.Connection(constants.ROUTE_53)
 
         for id in self.hosted_zone_ids:
-            _conn.delete_hosted_zone(
+            self.route53_conn.delete_hosted_zone(
                 Id=id
             )
 
     def get_instances(self):
         if not self.instances:
             self.instances = instances.Instances.get(
-                filters=self._filters()
+                filters=self._filters(),
+                region_name=self.region_name
             )
 
     def terminate_instances(self):
@@ -157,7 +159,7 @@ class VPC:
 
     def get_security_group_ids(self):
         if not self.secgroup_ids:
-            res = self.conn.describe_security_groups(
+            res = self.ec2_conn.describe_security_groups(
                 Filters=self._filters()
             )
             self.secgroup_ids = [sg['GroupId'] for sg in res['SecurityGroups']
@@ -167,10 +169,10 @@ class VPC:
         self.get_security_group_ids()
 
         for secgroup_id in self.secgroup_ids:
-            self.conn.delete_security_group(GroupId=secgroup_id)
+            self.ec2_conn.delete_security_group(GroupId=secgroup_id)
 
     def get_route_related_ids(self):
-        response = self.conn.describe_route_tables(Filters=self._filters())
+        response = self.ec2_conn.describe_route_tables(Filters=self._filters())
         if not self.association_ids:
             self.association_ids = self._get_ids_from_associations(
                 response['RouteTables'],
@@ -191,21 +193,21 @@ class VPC:
             self.get_route_related_ids()
 
         for ass_id in self.association_ids:
-            self.conn.disassociate_route_table(
+            self.ec2_conn.disassociate_route_table(
                 AssociationId=ass_id
             )
         for route_table_id in self.route_table_ids:
-            self.conn.delete_route_table(
+            self.ec2_conn.delete_route_table(
                 RouteTableId=route_table_id
             )
         for subnet_id in self.subnet_ids:
-            self.conn.delete_subnet(
+            self.ec2_conn.delete_subnet(
                 SubnetId=subnet_id
             )
 
     def get_internet_gateway_ids(self):
         if not self.gateway_ids:
-            response = self.conn.describe_internet_gateways(
+            response = self.ec2_conn.describe_internet_gateways(
                 Filters=[{
                     'Name': constants.ATTACHMENT_VPC_ID,
                     'Values': [self.id],
@@ -219,16 +221,16 @@ class VPC:
         self.get_internet_gateway_ids()
 
         for gateway_id in self.gateway_ids:
-            self.conn.detach_internet_gateway(
+            self.ec2_conn.detach_internet_gateway(
                 VpcId=self.id,
                 InternetGatewayId=gateway_id
             )
-            self.conn.delete_internet_gateway(
+            self.ec2_conn.delete_internet_gateway(
                 InternetGatewayId=gateway_id
             )
 
     def delete(self):
-        self.conn.delete_vpc(VpcId=self.id)
+        self.ec2_conn.delete_vpc(VpcId=self.id)
 
     def show(self):
         self.get_instances()
@@ -251,12 +253,12 @@ class VPC:
                 'Values': ['AmazonProvidedDNS']
             }
         ]
-        response = self.conn.create_dhcp_options(
+        response = self.ec2_conn.create_dhcp_options(
             DhcpConfigurations=_default_options + options
         )
 
         self.dhcp_options_id = response['DhcpOptions']['DhcpOptionsId']
-        self.conn.associate_dhcp_options(
+        self.ec2_conn.associate_dhcp_options(
             DhcpOptionsId=self.dhcp_options_id,
             VpcId=self.id
         )

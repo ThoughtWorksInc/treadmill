@@ -8,11 +8,15 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Instance:
-    def __init__(self, name=None, id=None, metadata=None):
+    def __init__(self, name=None, id=None, metadata=None, region_name=None):
         self.id = id
         self.name = name
         self.metadata = metadata
-        self.conn = connection.Connection()
+        self.ec2_conn = connection.Connection(region_name=region_name)
+        self.route53_conn = connection.Connection(
+            resource=constants.ROUTE_53,
+            region_name=region_name
+        )
 
         if self.metadata and self.metadata.get('Tags', None):
             self.name = [t['Value']
@@ -25,7 +29,7 @@ class Instance:
         self.name = self.name + str(
             self.metadata.get('AmiLaunchIndex', 0) + 1
         )
-        self.conn.create_tags(
+        self.ec2_conn.create_tags(
             Resources=[self.id],
             Tags=[{
                 'Key': 'Name',
@@ -67,9 +71,8 @@ class Instance:
         else:
             _name, _type, _value = self._forward_dns_record_attrs(domain)
 
-        _conn = connection.Connection(constants.ROUTE_53)
         try:
-            _conn.change_resource_record_sets(
+            self.route53_conn.change_resource_record_sets(
                 HostedZoneId=hosted_zone_id.split('/')[-1],
                 ChangeBatch={
                     'Changes': [{
@@ -113,19 +116,19 @@ class Instance:
 
 
 class Instances:
-    def __init__(self, instances):
+    def __init__(self, instances, region_name=None):
         self.instances = instances
         self.volume_ids = []
-        self.conn = connection.Connection()
+        self.ec2_conn = connection.Connection(region_name=region_name)
 
     @property
     def ids(self):
         return [i.id for i in self.instances]
 
     @classmethod
-    def load_json(cls, ids=None, filters=None):
+    def load_json(cls, ids=None, filters=None, region_name=None, ):
         """Fetch instance details"""
-        conn = connection.Connection()
+        conn = connection.Connection(region_name=region_name)
         response = []
 
         if ids:
@@ -142,8 +145,9 @@ class Instances:
         return sum([r['Instances'] for r in response], [])
 
     @classmethod
-    def get(cls, ids=None, filters=None):
-        json = Instances.load_json(ids=ids, filters=filters)
+    def get(cls, region_name=None, ids=None, filters=None):
+        json = Instances.load_json(ids=ids, filters=filters,
+                                   region_name=region_name)
         return Instances(
             instances=[Instance(
                 id=j['InstanceId'],
@@ -153,8 +157,8 @@ class Instances:
 
     @classmethod
     def create(cls, name, key_name, count, image_id, instance_type, subnet_id,
-               secgroup_ids, user_data):
-        conn = connection.Connection()
+               secgroup_ids, user_data, region_name=None):
+        conn = connection.Connection(region_name=region_name)
         _instances = conn.run_instances(
             ImageId=image_id,
             MinCount=count,
@@ -167,7 +171,8 @@ class Instances:
         )
 
         _ids = [i['InstanceId'] for i in _instances['Instances']]
-        _instances_json = Instances.load_json(ids=_ids)
+        _instances_json = Instances.load_json(ids=_ids,
+                                              region_name=region_name)
 
         _instances = []
         for i in _instances_json:
@@ -183,7 +188,7 @@ class Instances:
 
     def get_volume_ids(self):
         if not self.volume_ids:
-            volumes = self.conn.describe_volumes(
+            volumes = self.ec2_conn.describe_volumes(
                 Filters=[{
                     'Name': constants.ATTACHMENT_INSTANCE_ID,
                     'Values': self.ids
@@ -204,7 +209,7 @@ class Instances:
             )
 
         if self.ids:
-            self.conn.terminate_instances(
+            self.ec2_conn.terminate_instances(
                 InstanceIds=self.ids
             )
             self._wait_for_termination()
@@ -215,7 +220,7 @@ class Instances:
 
     def delete_volumes(self):
         for volume_id in self.volume_ids:
-            self.conn.delete_volume(VolumeId=volume_id)
+            self.ec2_conn.delete_volume(VolumeId=volume_id)
 
     def _wait_for_termination(self):
         if len(self.ids) == 0:
@@ -245,7 +250,7 @@ class Instances:
             )
 
         if polling.poll(
-            lambda: self.conn.describe_instance_status(
+            lambda: self.ec2_conn.describe_instance_status(
                 InstanceIds=self.ids,
                 IncludeAllInstances=True
             ),

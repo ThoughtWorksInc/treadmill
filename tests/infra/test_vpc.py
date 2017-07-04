@@ -5,6 +5,7 @@ Unit test for VPC.
 import unittest
 import mock
 from treadmill.infra import vpc
+from treadmill.infra import connection
 
 
 class VPCTest(unittest.TestCase):
@@ -23,7 +24,7 @@ class VPCTest(unittest.TestCase):
     def test_init(self):
         _vpc = vpc.VPC(region_name='us-east-1', domain='foo.bar')
 
-        self.assertEquals(_vpc.conn, 'foo')
+        self.assertEquals(_vpc.ec2_conn, 'foo')
         self.assertIsNone(_vpc.id)
 
     @mock.patch('treadmill.infra.connection.Connection')
@@ -247,8 +248,9 @@ class VPCTest(unittest.TestCase):
         instances_mock.get.assert_called_once_with(
             filters=[{
                 'Name': 'vpc-id',
-                'Values': [self.vpc_id_mock]
-            }]
+                'Values': [self.vpc_id_mock],
+            }],
+            region_name='us-east-1'
         )
 
     @mock.patch('treadmill.infra.instances.connection.Connection')

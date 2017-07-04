@@ -28,7 +28,7 @@ class InstanceTest(unittest.TestCase):
 
         self.assertEquals(instance.name, 'goo')
         self.assertEquals(instance.private_ip, '1.1.1.1')
-        self.assertEquals(instance.conn, conn_mock)
+        self.assertEquals(instance.ec2_conn, conn_mock)
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create_tags(self, ConnectionMock):

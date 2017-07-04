@@ -50,6 +50,7 @@ class Cell:
             secgroup_ids=self.vpc.secgroup_ids,
             key_name=key_name,
             user_data=self.master_configuration.get_userdata(),
+            region_name=self.region_name,
         )
 
         for instance in _instances.instances:
