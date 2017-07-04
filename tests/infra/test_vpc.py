@@ -5,7 +5,6 @@ Unit test for VPC.
 import unittest
 import mock
 from treadmill.infra import vpc
-from treadmill.infra import connection
 
 
 class VPCTest(unittest.TestCase):
