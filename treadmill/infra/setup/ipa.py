@@ -18,23 +18,35 @@ class IPA:
         self.region_name = region_name
         self.route_53_conn = connection.Connection('route53')
 
-    def setup(self,
-              image_id,
-              count,
-              subnet_id):
+    def setup(
+            self,
+            image_id,
+            count,
+            cidr_block
+    ):
+        self.vpc = vpc.VPC(
+            id=self.vpc_id,
+            domain=self.domain,
+            region_name=self.region_name
+        )
+        self.vpc.create_subnet(self.region_name, cidr_block)
         self.instances = instances.Instances.create(
             name=self.name,
             image_id=image_id,
             count=count,
-            subnet_id=subnet_id,
+            subnet_id=self.vpc.subnet_ids[0],
             instance_type=constants.INSTANCE_TYPES['EC2']['medium']
         )
-
         self._update_route53('UPSERT')
 
     def destroy(self, instance_id):
         """Terminate ipa instance"""
         self.instances = instances.Instances.get(ids=[instance_id])
+        self.vpc = vpc.VPC(
+            id=self.vpc_id,
+            domain=self.domain,
+            region_name=self.region_name
+        )
         self._update_route53('DELETE')
         self.instances.terminate(
             hosted_zone_id=self.vpc.hosted_zone_id,
@@ -43,11 +55,6 @@ class IPA:
         )
 
     def _update_route53(self, action):
-        self.vpc = vpc.VPC(
-            id=self.vpc_id,
-            domain=self.domain,
-            region_name=self.region_name
-        )
         self.vpc.get_hosted_zone_ids()
 
         srv_records = {

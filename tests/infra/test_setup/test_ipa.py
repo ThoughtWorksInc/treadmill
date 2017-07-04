@@ -24,6 +24,7 @@ class IPATest(unittest.TestCase):
                             region_name='region',
                             domain='foo.bar')
         _vpc_mock.hosted_zone_id = 'hosted-zone-id'
+        _vpc_mock.subnet_ids = [123]
         ipa = IPA(
             name='ipa',
             domain='foo.bar',
@@ -33,7 +34,7 @@ class IPATest(unittest.TestCase):
         ipa.setup(
             image_id='foo-123',
             count=1,
-            subnet_id=123,
+            cidr_block='cidr-block'
         )
 
         self.assertEqual(ipa.instances, instances_mock)
@@ -45,6 +46,9 @@ class IPATest(unittest.TestCase):
             instance_type='t2.medium'
         )
         _vpc_mock.get_hosted_zone_ids.assert_called_once()
+        _vpc_mock.create_subnet.assert_called_once_with(
+            'region', 'cidr-block'
+        )
         expected_calls = [
             mock.mock.call(
                 HostedZoneId='hosted-zone-id',
