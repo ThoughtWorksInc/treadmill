@@ -41,7 +41,7 @@ class Cell:
             tm_release
         )
 
-        _instances = instances.Instances.create_master(
+        _instances = instances.Instances.create(
             name=name,
             image_id=image_id,
             count=count,

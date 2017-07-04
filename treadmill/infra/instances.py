@@ -181,8 +181,6 @@ class Instances:
 
         return Instances(instances=_instances)
 
-    create_master = create_ipa = create_node = create
-
     def get_volume_ids(self):
         if not self.volume_ids:
             volumes = self.conn.describe_volumes(
