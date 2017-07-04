@@ -24,15 +24,16 @@ class IPATest(unittest.TestCase):
                             region_name='region',
                             domain='foo.bar')
         _vpc_mock.hosted_zone_id = 'hosted-zone-id'
-        ipa = IPA()
-        ipa.setup(
+        ipa = IPA(
             name='ipa',
-            image_id='foo-123',
-            count=1,
-            subnet_id=123,
             domain='foo.bar',
             vpc_id=_vpc_id_mock,
             region_name='region'
+        )
+        ipa.setup(
+            image_id='foo-123',
+            count=1,
+            subnet_id=123,
         )
 
         self.assertEqual(ipa.instances, instances_mock)
@@ -227,15 +228,16 @@ class IPATest(unittest.TestCase):
         vpc_mock.get_hosted_zone_ids = mock.Mock()
         vpc_mock.hosted_zone_id = 'hosted-zone-id'
         vpc_mock.reverse_hosted_zone_id = 'reverse-hosted-zone-id'
-        ipa = IPA()
-        ipa.instances = InstancesMock()
-        ipa.destroy(
-            instance_id='instance-id',
+        ipa = IPA(
             vpc_id='vpc-id',
             domain='foo.bar',
             region_name='region',
             name='ipa'
         )
+        ipa.instances = InstancesMock()
+        ipa.destroy(
+            instance_id='instance-id',
+       )
 
         InstancesMock.get.assert_called_once_with(ids=['instance-id'])
         vpc_mock.get_hosted_zone_ids.assert_called_once()

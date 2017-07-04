@@ -5,21 +5,23 @@ from treadmill.infra import constants
 
 
 class IPA:
-    def __init__(self):
-        pass
-
-    def setup(self,
-              name,
-              image_id,
-              count,
-              subnet_id,
-              vpc_id,
-              domain,
-              region_name):
-        self.conn = connection.Connection('route53')
+    def __init__(
+            self,
+            name,
+            vpc_id,
+            domain,
+            region_name
+    ):
         self.name = name
+        self.vpc_id = vpc_id
         self.domain = domain
         self.region_name = region_name
+        self.route_53_conn = connection.Connection('route53')
+
+    def setup(self,
+              image_id,
+              count,
+              subnet_id):
         self.instances = instances.Instances.create(
             name=self.name,
             image_id=image_id,
@@ -28,25 +30,21 @@ class IPA:
             instance_type=constants.INSTANCE_TYPES['EC2']['medium']
         )
 
-        self._update_route53('UPSERT', vpc_id)
+        self._update_route53('UPSERT')
 
-    def destroy(self, instance_id, vpc_id, domain, region_name, name):
+    def destroy(self, instance_id):
         """Terminate ipa instance"""
-        self.conn = connection.Connection('route53')
-        self.name = name
-        self.domain = domain
-        self.region_name = region_name
         self.instances = instances.Instances.get(ids=[instance_id])
-        self._update_route53('DELETE', vpc_id)
+        self._update_route53('DELETE')
         self.instances.terminate(
             hosted_zone_id=self.vpc.hosted_zone_id,
             reverse_hosted_zone_id=self.vpc.reverse_hosted_zone_id,
             domain=self.domain
         )
 
-    def _update_route53(self, action, vpc_id):
+    def _update_route53(self, action):
         self.vpc = vpc.VPC(
-            id=vpc_id,
+            id=self.vpc_id,
             domain=self.domain,
             region_name=self.region_name
         )
@@ -98,7 +96,7 @@ class IPA:
                            name,
                            value,
                            record_type):
-        self.conn.change_resource_record_sets(
+        self.route_53_conn.change_resource_record_sets(
             HostedZoneId=hosted_zone_id.split('/')[-1],
             ChangeBatch={
                 'Changes': [{
