@@ -11,9 +11,9 @@ from treadmill.infra.setup.ipa import IPA
 class IPATest(unittest.TestCase):
     """Tests EC2 ipa setup."""
 
-    @mock.patch('treadmill.infra.setup.ipa.connection.Connection')
-    @mock.patch('treadmill.infra.setup.ipa.vpc.VPC')
-    @mock.patch('treadmill.infra.setup.ipa.instances.Instances')
+    @mock.patch('treadmill.infra.connection.Connection')
+    @mock.patch('treadmill.infra.vpc.VPC')
+    @mock.patch('treadmill.infra.instances.Instances')
     def test_setup_ipa(self, InstancesMock, VPCMock, ConnectionMock):
         instance_mock = mock.Mock(private_ip='1.1.1.1')
         instances_mock = mock.Mock(instances=[instance_mock])
@@ -228,9 +228,9 @@ class IPATest(unittest.TestCase):
             expected_calls
         )
 
-    @mock.patch('treadmill.infra.setup.ipa.connection.Connection')
-    @mock.patch('treadmill.infra.setup.ipa.vpc.VPC')
-    @mock.patch('treadmill.infra.setup.ipa.instances.Instances')
+    @mock.patch('treadmill.infra.connection.Connection')
+    @mock.patch('treadmill.infra.vpc.VPC')
+    @mock.patch('treadmill.infra.instances.Instances')
     def test_ipa_destroy(self, InstancesMock, VPCMock, ConnectionMock):
         instance_mock = mock.Mock(private_ip='1.1.1.1')
         instances_mock = mock.Mock(instances=[instance_mock])
