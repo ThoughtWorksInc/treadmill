@@ -1,6 +1,7 @@
 import click
 from treadmill.infra.setup.cell import Cell
 from treadmill.infra import constants
+from treadmill.infra import connection
 
 
 def init():
@@ -18,6 +19,8 @@ def init():
                   default='us-east-1', help='Region for the vpc')
     @click.option('--vpc-cidr-block', required=False,
                   default='172.23.0.0/16', help='CIDR block for the vpc')
+    @click.option('--cell-cidr-block', required=False,
+                  default='172.23.0.0/24', help='CIDR block for the cell')
     @click.option('--secgroup_name', required=False,
                   default='sg_common', help='Security group name')
     @click.option(
@@ -25,17 +28,19 @@ def init():
         required=False,
         default='Treadmill Security Group',
         help='Description for the security group')
-    def init(vpc_id, domain, region, vpc_cidr_block, secgroup_name,
-             secgroup_desc):
+    def init(vpc_id, domain, region, vpc_cidr_block, cell_cidr_block,
+             secgroup_name, secgroup_desc):
         """Initialize treadmill VPC"""
+        connection.Connection.region_name = region
+
         cell = Cell(
-            region_name=region,
             domain=domain,
             vpc_id=vpc_id
         )
 
         cell.setup_vpc(
-            cidr_block=vpc_cidr_block,
+            vpc_cidr_block=vpc_cidr_block,
+            cell_cidr_block=cell_cidr_block,
             secgroup_name=secgroup_name,
             secgroup_desc=secgroup_desc,
         )
@@ -68,8 +73,9 @@ def init():
                   instance_type, tm_release, ipa_hostname, app_root,
                   subnet_id):
         """Initialize treadmill cell"""
+        connection.Connection.region_name = region
+
         cell = Cell(
-            region_name=region,
             domain=domain,
             vpc_id=vpc_id,
             subnet_id=subnet_id,

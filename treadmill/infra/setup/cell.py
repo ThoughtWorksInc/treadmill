@@ -7,11 +7,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Cell:
-    def __init__(self, region_name, domain, subnet_id=None, vpc_id=None):
-        self.vpc = vpc.VPC(region_name=region_name, id=vpc_id, domain=domain)
+    def __init__(self, domain, subnet_id=None, vpc_id=None):
+        self.vpc = vpc.VPC(id=vpc_id, domain=domain)
         self.subnet_id = subnet_id
         self.domain = domain
-        self.region_name = region_name
 
     def setup_vpc(
             self,
@@ -23,12 +22,12 @@ class Cell:
         if not self.vpc.id:
             self.vpc.create(vpc_cidr_block)
 
-        self.vpc.create_subnet(self.region_name, cell_cidr_block)
+        self.vpc.create_subnet(cell_cidr_block)
         self.vpc.create_internet_gateway()
         self.vpc.create_route_table()
         self.vpc.create_security_group(secgroup_name, secgroup_desc)
-        self.vpc.create_hosted_zone(region_name=self.region_name)
-        self.vpc.create_hosted_zone(region_name=self.region_name, reverse=True)
+        self.vpc.create_hosted_zone()
+        self.vpc.create_hosted_zone(reverse=True)
         self.vpc.associate_dhcp_options()
 
     def setup_master(self, name, key_name, count, image_id, instance_type,
@@ -50,7 +49,6 @@ class Cell:
             secgroup_ids=self.vpc.secgroup_ids,
             key_name=key_name,
             user_data=self.master_configuration.get_userdata(),
-            region_name=self.region_name,
         )
 
         for instance in _instances.instances:

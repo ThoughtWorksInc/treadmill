@@ -20,16 +20,13 @@ class Singleton(type):
 
 
 class Connection(metaclass=Singleton):
-    def __init__(self, resource=constants.EC2, region_name=None):
+    session = boto3.session.Session()
+    region_name = session.region_name
+
+    def __init__(self, resource=constants.EC2):
         pass
 
-    def __new__(cls, resource=constants.EC2, region_name=None):
+    def __new__(cls, resource=constants.EC2):
         return boto3.client(
-            resource,
-            region_name=region_name or Connection.get_default_region_name()
+            resource, region_name=cls.region_name
         )
-
-    @staticmethod
-    def get_default_region_name():
-        session = boto3.session.Session()
-        return session.region_name

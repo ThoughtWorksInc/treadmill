@@ -6,14 +6,10 @@ import time
 
 
 class VPC:
-    def __init__(self, domain, region_name, id=None, metadata=None):
-        self.ec2_conn = connection.Connection(region_name=region_name)
-        self.route53_conn = connection.Connection(
-            resource=constants.ROUTE_53,
-            region_name=region_name
-        )
+    def __init__(self, domain, id=None, metadata=None):
+        self.ec2_conn = connection.Connection()
+        self.route53_conn = connection.Connection(resource=constants.ROUTE_53)
         self.id = id
-        self.region_name = region_name
         self.metadata = metadata
         self.domain = domain
         self.instances = []
@@ -52,12 +48,13 @@ class VPC:
                                                'Value': True
                                            })
 
-    def create_subnet(self, region_name, cidr_block):
-        self.region_name = region_name
+    def create_subnet(self, cidr_block):
         subnet = self.ec2_conn.create_subnet(
             VpcId=self.id,
             CidrBlock=cidr_block,
-            AvailabilityZone=self._availability_zone_for(region_name)
+            AvailabilityZone=self._availability_zone_for(
+                connection.Connection.region_name
+            )
         )
         self.subnet_ids.append(subnet['Subnet']['SubnetId'])
 
@@ -92,7 +89,7 @@ class VPC:
             Description=description
         )['GroupId'])
 
-    def create_hosted_zone(self, region_name, reverse=False):
+    def create_hosted_zone(self, reverse=False):
         if reverse:
             identifier = 'reverse_hosted_zone_id'
             name = self._reverse_domain_name()
@@ -104,7 +101,7 @@ class VPC:
             _hosted_zone_id = self.route53_conn.create_hosted_zone(
                 Name=name,
                 VPC={
-                    'VPCRegion': region_name,
+                    'VPCRegion': connection.Connection.region_name,
                     'VPCId': self.id,
                 },
                 HostedZoneConfig={
@@ -141,8 +138,7 @@ class VPC:
     def get_instances(self):
         if not self.instances:
             self.instances = instances.Instances.get(
-                filters=self._filters(),
-                region_name=self.region_name
+                filters=self._filters()
             )
 
     def terminate_instances(self):

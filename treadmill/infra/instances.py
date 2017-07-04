@@ -8,15 +8,12 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Instance:
-    def __init__(self, name=None, id=None, metadata=None, region_name=None):
+    def __init__(self, name=None, id=None, metadata=None):
         self.id = id
         self.name = name
         self.metadata = metadata
-        self.ec2_conn = connection.Connection(region_name=region_name)
-        self.route53_conn = connection.Connection(
-            resource=constants.ROUTE_53,
-            region_name=region_name
-        )
+        self.ec2_conn = connection.Connection()
+        self.route53_conn = connection.Connection(resource=constants.ROUTE_53)
 
         if self.metadata and self.metadata.get('Tags', None):
             self.name = [t['Value']
@@ -116,19 +113,19 @@ class Instance:
 
 
 class Instances:
-    def __init__(self, instances, region_name=None):
+    def __init__(self, instances):
         self.instances = instances
         self.volume_ids = []
-        self.ec2_conn = connection.Connection(region_name=region_name)
+        self.ec2_conn = connection.Connection()
 
     @property
     def ids(self):
         return [i.id for i in self.instances]
 
     @classmethod
-    def load_json(cls, ids=None, filters=None, region_name=None, ):
+    def load_json(cls, ids=None, filters=None):
         """Fetch instance details"""
-        conn = connection.Connection(region_name=region_name)
+        conn = connection.Connection()
         response = []
 
         if ids:
@@ -145,9 +142,8 @@ class Instances:
         return sum([r['Instances'] for r in response], [])
 
     @classmethod
-    def get(cls, region_name=None, ids=None, filters=None):
-        json = Instances.load_json(ids=ids, filters=filters,
-                                   region_name=region_name)
+    def get(cls, ids=None, filters=None):
+        json = Instances.load_json(ids=ids, filters=filters)
         return Instances(
             instances=[Instance(
                 id=j['InstanceId'],
@@ -157,8 +153,8 @@ class Instances:
 
     @classmethod
     def create(cls, name, key_name, count, image_id, instance_type, subnet_id,
-               secgroup_ids, user_data, region_name=None):
-        conn = connection.Connection(region_name=region_name)
+               secgroup_ids, user_data):
+        conn = connection.Connection()
         _instances = conn.run_instances(
             ImageId=image_id,
             MinCount=count,
@@ -171,8 +167,7 @@ class Instances:
         )
 
         _ids = [i['InstanceId'] for i in _instances['Instances']]
-        _instances_json = Instances.load_json(ids=_ids,
-                                              region_name=region_name)
+        _instances_json = Instances.load_json(ids=_ids)
 
         _instances = []
         for i in _instances_json:

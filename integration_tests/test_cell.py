@@ -12,10 +12,7 @@ class CellTest(unittest.TestCase):
 
     def setUp(self):
         self.attempted_destroy = False
-        self.cell = Cell(
-            region_name='us-east-1',
-            domain='ms.treadmill',
-        )
+        self.cell = Cell(domain='ms.treadmill')
 
     def tearDown(self):
         if not self.attempted_destroy:

@@ -21,7 +21,7 @@ class VPCTest(unittest.TestCase):
     @mock.patch('treadmill.infra.connection.Connection',
                 mock.Mock(return_value='foo'))
     def test_init(self):
-        _vpc = vpc.VPC(region_name='us-east-1', domain='foo.bar')
+        _vpc = vpc.VPC(domain='foo.bar')
 
         self.assertEquals(_vpc.ec2_conn, 'foo')
         self.assertIsNone(_vpc.id)
@@ -37,7 +37,7 @@ class VPCTest(unittest.TestCase):
         )
         _connectionMock.create_tags = mock.Mock()
 
-        _vpc = vpc.VPC(region_name='us-east-1', domain='foo.bar')
+        _vpc = vpc.VPC(domain='foo.bar')
         _vpc.create(cidr_block='172.16.0.0/16')
 
         self.assertEquals(_vpc.id, self.vpc_id_mock)
@@ -61,13 +61,10 @@ class VPCTest(unittest.TestCase):
     @mock.patch('treadmill.infra.connection.Connection')
     def test_create_subnet(self, connectionMock):
         _connectionMock = connectionMock()
-        _connectionMock.create_subnet = mock.Mock(return_value={
-            'Subnet': {'SubnetId': self.subnet_id_mock}
-        })
+        connectionMock.region_name = 'us-east-1'
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
-        _vpc.create_subnet(region_name='us-east-1', cidr_block='172.23.0.0/24')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
+        _vpc.create_subnet(cidr_block='172.23.0.0/24')
 
         _connectionMock.create_subnet.assert_called_once_with(
             VpcId=self.vpc_id_mock,
@@ -85,8 +82,7 @@ class VPCTest(unittest.TestCase):
         })
         _connectionMock.attach_internet_gatway = mock.Mock()
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.create_internet_gateway()
 
         self.assertEquals(_vpc.gateway_ids, [self.gateway_id_mock])
@@ -111,8 +107,7 @@ class VPCTest(unittest.TestCase):
             'AssociationId': 'foobar'
         })
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.gateway_ids = [self.gateway_id_mock]
         _vpc.subnet_ids = [self.subnet_id_mock]
         _vpc.create_route_table()
@@ -137,8 +132,7 @@ class VPCTest(unittest.TestCase):
             'GroupId': self.security_group_id_mock
         })
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.create_security_group(
             group_name='foobar',
             description='foobar description'
@@ -155,6 +149,7 @@ class VPCTest(unittest.TestCase):
     @mock.patch('time.time', mock.Mock(return_value=786.007))
     def test_create_hosted_zone(self, connectionMock):
         _connectionMock = connectionMock('route53')
+        connectionMock.region_name = 'us-east-1'
         expected_hosted_zone = {
             'HostedZone': {
                 'Id': 'Some-Zone-Id'
@@ -167,9 +162,8 @@ class VPCTest(unittest.TestCase):
             return_value=expected_hosted_zone
         )
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar',
-                       region_name='us-east-1')
-        _vpc.create_hosted_zone(region_name='us-east-1')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
+        _vpc.create_hosted_zone()
 
         self.assertEquals(
             _vpc.hosted_zone_id,
@@ -191,6 +185,7 @@ class VPCTest(unittest.TestCase):
     @mock.patch('time.time', mock.Mock(return_value=786.007))
     def test_create_hosted_zone_reverse(self, connectionMock):
         _connectionMock = connectionMock('route53')
+        connectionMock.region_name = 'us-east-1'
         expected_hosted_zone = {
             'HostedZone': {
                 'Id': 'Some-Zone-Id'
@@ -203,10 +198,9 @@ class VPCTest(unittest.TestCase):
             return_value=expected_hosted_zone
         )
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar',
-                       region_name='us-east-1')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.cidr_block = '172.10.0.0/16'
-        _vpc.create_hosted_zone(reverse=True, region_name='us-east-1')
+        _vpc.create_hosted_zone(reverse=True)
 
         self.assertEquals(
             _vpc.reverse_hosted_zone_id,
@@ -236,8 +230,7 @@ class VPCTest(unittest.TestCase):
             return_value={'Vpcs': [{'VpcId': self.vpc_id_mock, 'foo': 'bar'}]}
         )
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
 
         self.assertEquals(
             _vpc.instances,
@@ -248,8 +241,7 @@ class VPCTest(unittest.TestCase):
             filters=[{
                 'Name': 'vpc-id',
                 'Values': [self.vpc_id_mock],
-            }],
-            region_name='us-east-1'
+            }]
         )
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
@@ -262,8 +254,7 @@ class VPCTest(unittest.TestCase):
             return_value={'Vpcs': [{'VpcId': self.vpc_id_mock, 'foo': 'bar'}]}
         )
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='domain',
-                       region_name='us-east-1')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='domain')
         _vpc.instances = instances_obj_mock
         _vpc.hosted_zone_ids = [1, 2]
         _vpc.hosted_zone_id = 1
@@ -290,8 +281,7 @@ class VPCTest(unittest.TestCase):
             }]
         })
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.get_security_group_ids()
 
         _connectionMock.describe_security_groups.assert_called_once_with(
@@ -306,8 +296,7 @@ class VPCTest(unittest.TestCase):
         _connectionMock = connectionMock()
         _connectionMock.delete_security_group = mock.Mock()
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.secgroup_ids = ['secgroup-id-0', 'secgroup-id-1']
         _vpc.delete_security_groups()
 
@@ -368,8 +357,7 @@ class VPCTest(unittest.TestCase):
             }
         ]
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
 
         self.assertCountEqual(
             _vpc.hosted_zone_ids,
@@ -398,8 +386,7 @@ class VPCTest(unittest.TestCase):
         _connectionMock = connectionMock('route53')
         _connectionMock.delete_hosted_zone = mock.Mock()
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.hosted_zone_ids = [1]
 
         _vpc.delete_hosted_zones()
@@ -442,8 +429,7 @@ class VPCTest(unittest.TestCase):
         _connectionMock.describe_route_tables = mock.Mock(
             return_value=route_table_response_mock
         )
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.get_route_related_ids()
         self.assertEquals(_vpc.association_ids, ['ass_id_0', 'ass_id_1'])
         self.assertEquals(_vpc.route_table_ids,
@@ -464,8 +450,7 @@ class VPCTest(unittest.TestCase):
         _connectionMock.delete_route_table = mock.Mock()
         _connectionMock.delete_subnet = mock.Mock()
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.route_related_ids = 'foo'
         _vpc.association_ids = ['ass-id']
         _vpc.route_table_ids = ['route-table-id']
@@ -489,8 +474,7 @@ class VPCTest(unittest.TestCase):
         _connectionMock = connectionMock()
         _connectionMock.delete_vpc = mock.Mock()
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.delete()
 
         _connectionMock.delete_vpc.assert_called_once_with(
@@ -508,8 +492,7 @@ class VPCTest(unittest.TestCase):
             ]
         })
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.get_internet_gateway_ids()
 
         self.assertEquals(_vpc.gateway_ids, [self.internet_gateway_id_mock])
@@ -526,8 +509,7 @@ class VPCTest(unittest.TestCase):
         _connectionMock = connectionMock()
         _connectionMock.delete_internet_gateway = mock.Mock()
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo.bar')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.gateway_ids = [self.internet_gateway_id_mock]
         _vpc.delete_internet_gateway()
 
@@ -545,8 +527,7 @@ class VPCTest(unittest.TestCase):
         })
         _connectionMock.associate_dhcp_options = mock.Mock()
 
-        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='cloud.ms.com',
-                       region_name='us-east-1')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='cloud.ms.com')
         _vpc.associate_dhcp_options()
 
         _connectionMock.create_dhcp_options.assert_called_once_with(
@@ -572,8 +553,7 @@ class VPCTest(unittest.TestCase):
         _connectionMock.describe_vpcs = mock.Mock(
             return_value={'Vpcs': [{'VpcId': self.vpc_id_mock, 'foo': 'bar'}]}
         )
-        _vpc = vpc.VPC(id=self.vpc_id_mock, region_name='us-east-1',
-                       domain='foo')
+        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo')
         self.assertIsInstance(_vpc, vpc.VPC)
         self.assertEqual(_vpc.id, self.vpc_id_mock)
         self.assertEqual(
