@@ -23,7 +23,8 @@ class CellTest(unittest.TestCase):
 
     def test_setup_cell(self):
         self.cell.setup_vpc(
-            cidr_block='172.23.0.0/16',
+            vpc_cidr_block='172.23.0.0/16',
+            cell_cidr_block='172.23.0.0/24',
             secgroup_name='sg_common',
             secgroup_desc='Treadmill CIDR block'
         )

@@ -13,11 +13,17 @@ class Cell:
         self.domain = domain
         self.region_name = region_name
 
-    def setup_vpc(self, cidr_block, secgroup_name, secgroup_desc):
+    def setup_vpc(
+            self,
+            vpc_cidr_block,
+            cell_cidr_block,
+            secgroup_name,
+            secgroup_desc
+    ):
         if not self.vpc.id:
-            self.vpc.create(cidr_block)
+            self.vpc.create(vpc_cidr_block)
 
-        self.vpc.create_subnet(self.region_name, cidr_block)
+        self.vpc.create_subnet(self.region_name, cell_cidr_block)
         self.vpc.create_internet_gateway()
         self.vpc.create_route_table()
         self.vpc.create_security_group(secgroup_name, secgroup_desc)

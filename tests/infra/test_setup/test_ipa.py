@@ -241,7 +241,7 @@ class IPATest(unittest.TestCase):
         ipa.instances = InstancesMock()
         ipa.destroy(
             instance_id='instance-id',
-       )
+        )
 
         InstancesMock.get.assert_called_once_with(ids=['instance-id'])
         vpc_mock.get_hosted_zone_ids.assert_called_once()
