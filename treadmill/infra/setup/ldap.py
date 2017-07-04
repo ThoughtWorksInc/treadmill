@@ -1,7 +1,7 @@
-from treadmill.infra.setup import external_dep
+from treadmill.infra.setup import base_provision
 
 
-class LDAP(external_dep.ExternalDep):
+class LDAP(base_provision.BaseProvision):
     def __init__(
             self,
             name,

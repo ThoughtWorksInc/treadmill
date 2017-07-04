@@ -1,9 +1,9 @@
 from treadmill.infra import connection
 from treadmill.infra import constants
-from treadmill.infra.setup import external_dep
+from treadmill.infra.setup import base_provision
 
 
-class IPA(external_dep.ExternalDep):
+class IPA(base_provision.BaseProvision):
     def __init__(
             self,
             name,

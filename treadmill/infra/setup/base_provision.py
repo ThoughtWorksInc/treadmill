@@ -4,7 +4,7 @@ from treadmill.infra import vpc
 from treadmill.infra import constants
 
 
-class ExternalDep:
+class BaseProvision:
     def __init__(
             self,
             name,
