@@ -62,6 +62,17 @@ class IPA:
     def _update_route53(self, action):
         self.vpc.get_hosted_zone_ids()
 
+        for i in self.instances.instances:
+            i.upsert_dns_record(
+                self.vpc.hosted_zone_id,
+                self.domain
+            )
+            i.upsert_dns_record(
+                self.vpc.reverse_hosted_zone_id,
+                self.domain,
+                reverse=True
+            )
+
         srv_records = {
             '_kerberos-master._tcp': '0 100 88',
             '_kerberos-master._udp': '0 100 88',

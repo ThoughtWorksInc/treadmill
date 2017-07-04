@@ -1,5 +1,5 @@
 """
-Unit test for EC2 ipa setup.
+Unit test for EC2 ipa.
 """
 
 import unittest
@@ -24,6 +24,7 @@ class IPATest(unittest.TestCase):
                             region_name='region',
                             domain='foo.bar')
         _vpc_mock.hosted_zone_id = 'hosted-zone-id'
+        _vpc_mock.reverse_hosted_zone_id = 'reverse-hosted-zone-id'
         _vpc_mock.subnet_ids = [123]
         ipa = IPA(
             name='ipa',
@@ -45,10 +46,21 @@ class IPATest(unittest.TestCase):
             subnet_id=123,
             instance_type='t2.medium'
         )
+        self.assertCountEqual(
+            instance_mock.upsert_dns_record.mock_calls,
+            [
+                mock.mock.call('hosted-zone-id',
+                               'foo.bar'),
+                mock.mock.call('reverse-hosted-zone-id',
+                               'foo.bar',
+                               reverse=True)
+            ]
+        )
         _vpc_mock.get_hosted_zone_ids.assert_called_once()
         _vpc_mock.create_subnet.assert_called_once_with(
             'region', 'cidr-block'
         )
+
         expected_calls = [
             mock.mock.call(
                 HostedZoneId='hosted-zone-id',
