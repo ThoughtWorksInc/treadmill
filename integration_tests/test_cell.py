@@ -11,12 +11,10 @@ class CellTest(unittest.TestCase):
     """Tests EC2 cell setup."""
 
     def setUp(self):
-        self.attempted_destroy = False
         self.cell = Cell(domain='ms.treadmill')
 
     def tearDown(self):
-        if not self.attempted_destroy:
-            self.cell.destroy()
+        self.cell.vpc.delete()
 
     def test_setup_cell(self):
         self.cell.setup_vpc(
@@ -25,7 +23,6 @@ class CellTest(unittest.TestCase):
             secgroup_name='sg_common',
             secgroup_desc='Treadmill CIDR block'
         )
-        self.cell.subnet_id = self.cell.vpc.subnet_ids[0]
         self.vpc_id = self.cell.setup_master(
             name='TreadmillMaster',
             image_id='ami-9e2f0988',
@@ -41,23 +38,22 @@ class CellTest(unittest.TestCase):
         self.assertEquals(len(self.cell.ids), 3)
         self.assertIsNotNone(self.vpc_id)
         self.assertIsNotNone(self.cell.vpc.hosted_zone_id)
+        self.assertIsNotNone(self.cell.vpc.reverse_hosted_zone_id)
         self.assertEquals(output['VpcId'], self.vpc_id)
         self.assertEquals(len(output['Instances']), 3)
         for instance in output['Instances']:
             self.assertIsNotNone(instance['InstanceId'])
-            self.assertIsNotNone(instance['SubnetId'])
+            self.assertIsNotNone(instance['CellId'])
             self.assertIsNotNone(instance['SecurityGroups'])
             self.assertIn(instance['InstanceState'], ['pending', 'running'])
-            self.assertIn(instance['SubnetId'], self.cell.vpc.subnet_ids)
+            self.assertIn(instance['CellId'], self.cell.cell.id)
 
         self.cell.destroy()
-        self.attempted_destroy = True
 
-        self.cell.vpc.instances = None
-        self.cell.vpc.instance_ids = None
-        self.cell.vpc.get_instances()
+        self.cell.cell.instances = None
+        self.cell.cell.get_instances()
 
-        self.assertIsNone(self.cell.vpc.instance_ids, None)
+        self.assertEqual(self.cell.cell.instances.ids, [])
 
 
 if __name__ == '__main__':
