@@ -2,6 +2,7 @@ from treadmill.infra import instances
 from treadmill.infra import connection
 from treadmill.infra import vpc
 from treadmill.infra import constants
+from treadmill.infra import cell
 
 
 class BaseProvision:
@@ -10,12 +11,10 @@ class BaseProvision:
             name,
             vpc_id,
             domain,
-            region_name
     ):
         self.name = name
         self.vpc_id = vpc_id
         self.domain = domain
-        self.region_name = region_name
         self.route_53_conn = connection.Connection('route53')
 
     def setup(
@@ -28,13 +27,17 @@ class BaseProvision:
         self.vpc = vpc.VPC(
             id=self.vpc_id,
             domain=self.domain,
-            region_name=self.region_name
         )
         self.vpc.get_hosted_zone_ids()
+        self.vpc.get_internet_gateway_ids()
 
         if not subnet_id:
-            self.vpc.create_subnet(self.region_name, cidr_block)
-            subnet_id = self.vpc.subnet_ids[0]
+            self.vpc.create_cell(
+                cidr_block=cidr_block,
+                name=self.name,
+                gateway_id=self.vpc.gateway_ids[0]
+            )
+            subnet_id = self.vpc.subnets[-1].id
 
         self.instances = instances.Instances.create(
             name=self.name,
@@ -55,17 +58,17 @@ class BaseProvision:
                 reverse=True
             )
 
-    def destroy(self, instance_id):
+    def destroy(self, instance_id, subnet_id):
         self.instances = instances.Instances.get(ids=[instance_id])
         self.vpc = vpc.VPC(
             id=self.vpc_id,
-            domain=self.domain,
-            region_name=self.region_name
+            domain=self.domain
         )
-        self.vpc.get_hosted_zone_ids()
 
+        self.vpc.get_hosted_zone_ids()
         self.instances.terminate(
             hosted_zone_id=self.vpc.hosted_zone_id,
             reverse_hosted_zone_id=self.vpc.reverse_hosted_zone_id,
             domain=self.domain
         )
+        cell.Cell(id=subnet_id).delete()

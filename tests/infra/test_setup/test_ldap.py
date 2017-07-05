@@ -20,16 +20,15 @@ class LDAPTest(unittest.TestCase):
         InstancesMock.create = mock.Mock(return_value=instances_mock)
         _vpc_id_mock = 'vpc-id'
         _vpc_mock = VPCMock(id=_vpc_id_mock,
-                            region_name='region',
                             domain='foo.bar')
         _vpc_mock.hosted_zone_id = 'hosted-zone-id'
         _vpc_mock.reverse_hosted_zone_id = 'reverse-hosted-zone-id'
-        _vpc_mock.subnet_ids = [123]
+        _vpc_mock.gateway_ids = [123]
+        _vpc_mock.subnets = [mock.Mock(id='subnet-id')]
         ldap = LDAP(
             name='ldap',
             domain='foo.bar',
             vpc_id=_vpc_id_mock,
-            region_name='region'
         )
         ldap.setup(
             image_id='foo-123',
@@ -42,12 +41,14 @@ class LDAPTest(unittest.TestCase):
             image_id='foo-123',
             name='ldap',
             count=1,
-            subnet_id=123,
+            subnet_id='subnet-id',
             instance_type='t2.medium'
         )
         _vpc_mock.get_hosted_zone_ids.assert_called_once()
-        _vpc_mock.create_subnet.assert_called_once_with(
-            'region', 'cidr-block'
+        _vpc_mock.create_cell.assert_called_once_with(
+            cidr_block='cidr-block',
+            name='ldap',
+            gateway_id=123
         )
 
         self.assertCountEqual(
@@ -61,17 +62,19 @@ class LDAPTest(unittest.TestCase):
             ]
         )
 
+    @mock.patch('treadmill.infra.cell.Cell')
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
     @mock.patch('treadmill.infra.instances.Instances')
-    def test_ldap_destroy(self, InstancesMock, VPCMock, ConnectionMock):
+    def test_ldap_destroy(self, InstancesMock, VPCMock, ConnectionMock,
+                          CellMock):
         instance_mock = mock.Mock(private_ip='1.1.1.1')
         instances_mock = mock.Mock(instances=[instance_mock])
         InstancesMock.get = mock.Mock(return_value=instances_mock)
+        _cell_mock = CellMock(id='subnet-id')
         vpc_mock = VPCMock(
             id='vpc-id',
             domain='foo.bar',
-            region_name='region'
         )
         vpc_mock.get_hosted_zone_ids = mock.Mock()
         vpc_mock.hosted_zone_id = 'hosted-zone-id'
@@ -79,14 +82,14 @@ class LDAPTest(unittest.TestCase):
         ldap = LDAP(
             vpc_id='vpc-id',
             domain='foo.bar',
-            region_name='region',
             name='ldap'
         )
         ldap.instances = InstancesMock()
         ldap.destroy(
             instance_id='instance-id',
+            subnet_id='subnet-id'
         )
-
+        _cell_mock.delete.assert_called_once()
         InstancesMock.get.assert_called_once_with(ids=['instance-id'])
         vpc_mock.get_hosted_zone_ids.assert_called_once()
         ldap.instances.terminate.assert_called_once_with(

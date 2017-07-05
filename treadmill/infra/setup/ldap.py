@@ -7,11 +7,9 @@ class LDAP(base_provision.BaseProvision):
             name,
             vpc_id,
             domain,
-            region_name
     ):
         super(LDAP, self).__init__(
             name=name,
             vpc_id=vpc_id,
             domain=domain,
-            region_name=region_name
         )

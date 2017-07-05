@@ -9,13 +9,11 @@ class IPA(base_provision.BaseProvision):
             name,
             vpc_id,
             domain,
-            region_name
     ):
         super(IPA, self).__init__(
             name=name,
             vpc_id=vpc_id,
             domain=domain,
-            region_name=region_name
         )
 
         self.route_53_conn = connection.Connection('route53')
@@ -36,9 +34,10 @@ class IPA(base_provision.BaseProvision):
 
         self._update_route53('UPSERT')
 
-    def destroy(self, instance_id):
+    def destroy(self, instance_id, subnet_id):
         super(IPA, self).destroy(
-            instance_id=instance_id
+            instance_id=instance_id,
+            subnet_id=subnet_id
         )
 
         self._update_route53('DELETE')
