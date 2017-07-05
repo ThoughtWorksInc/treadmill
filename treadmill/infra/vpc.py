@@ -1,6 +1,7 @@
 from treadmill.infra import connection
 from treadmill.infra import instances
 from treadmill.infra import constants
+from treadmill.infra import cell
 
 import time
 
@@ -14,10 +15,11 @@ class VPC:
         self.domain = domain
         self.instances = []
         self.secgroup_ids = []
+        self.subnet_ids = []
         self.route_table_ids = []
         self.route_related_ids = []
         self.gateway_ids = []
-        self.subnet_ids = []
+        self.cells = []
         self.association_ids = []
         self.hosted_zone_id = None
         self.reverse_hosted_zone_id = None
@@ -48,15 +50,15 @@ class VPC:
                                                'Value': True
                                            })
 
-    def create_subnet(self, cidr_block):
-        subnet = self.ec2_conn.create_subnet(
-            VpcId=self.id,
-            CidrBlock=cidr_block,
-            AvailabilityZone=self._availability_zone_for(
-                connection.Connection.region_name
+    def create_cell(self, cidr_block, name, gateway_id):
+        self.cells.append(
+            cell.Cell.create(
+                cidr_block=cidr_block,
+                name=name,
+                vpc_id=self.id,
+                gateway_id=gateway_id
             )
         )
-        self.subnet_ids.append(subnet['Subnet']['SubnetId'])
 
     def create_internet_gateway(self):
         gateway = self.ec2_conn.create_internet_gateway()
@@ -66,21 +68,7 @@ class VPC:
             InternetGatewayId=gateway_id,
             VpcId=self.id
         )
-
-    def create_route_table(self):
-        route_table = self.ec2_conn.create_route_table(VpcId=self.id)
-        self.route_table_id = route_table['RouteTable']['RouteTableId']
-        for gateway_id in self.gateway_ids:
-            self.ec2_conn.create_route(
-                RouteTableId=self.route_table_id,
-                DestinationCidrBlock=constants.DESTINATION_CIDR_BLOCK,
-                GatewayId=gateway_id
-            )
-        for subnet_id in self.subnet_ids:
-            self.ec2_conn.associate_route_table(
-                SubnetId=subnet_id,
-                RouteTableId=self.route_table_id
-            )
+        return gateway_id
 
     def create_security_group(self, group_name, description):
         self.secgroup_ids.append(self.ec2_conn.create_security_group(
@@ -226,6 +214,11 @@ class VPC:
             )
 
     def delete(self):
+        self.terminate_instances()
+        self.delete_internet_gateway()
+        self.delete_security_groups()
+        self.delete_route_tables()
+        self.delete_hosted_zones()
         self.ec2_conn.delete_vpc(VpcId=self.id)
 
     def show(self):
@@ -273,7 +266,7 @@ class VPC:
             'InstanceId': data['InstanceId'],
             'InstanceState': data['State']['Name'],
             'SecurityGroups': data['SecurityGroups'],
-            'SubnetId': data['SubnetId']
+            'CellId': data['SubnetId']
         }
 
     def _select_from_tags(self, tags, selector):
@@ -292,15 +285,3 @@ class VPC:
             'Name': 'vpc-id',
             'Values': [self.id]
         }]
-
-    def _availability_zone_for(self, region_name):
-        _map = {
-            "us-east-1": "us-east-1a",
-            "us-east-2": "us-east-2a",
-            "ap-southeast-1": "ap-southeast-1a",
-            "ap-southeast-2": "ap-southeast-2a",
-            "us-west-1": "us-west-1b",
-            "us-west-2": "us-west-2a"
-        }
-
-        return _map.get(region_name, None)

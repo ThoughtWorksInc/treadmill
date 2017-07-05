@@ -58,18 +58,21 @@ class VPCTest(unittest.TestCase):
                 'Value': True
             })
 
+    @mock.patch('treadmill.infra.cell.Cell')
     @mock.patch('treadmill.infra.connection.Connection')
-    def test_create_subnet(self, connectionMock):
-        _connectionMock = connectionMock()
-        connectionMock.region_name = 'us-east-1'
-
+    def test_create_cell(self, ConnectionMock, CellMock):
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
-        _vpc.create_subnet(cidr_block='172.23.0.0/24')
+        _vpc.create_cell(
+            name='cell-name',
+            cidr_block='172.23.0.0/24',
+            gateway_id='gateway-id'
+        )
 
-        _connectionMock.create_subnet.assert_called_once_with(
-            VpcId=self.vpc_id_mock,
-            CidrBlock='172.23.0.0/24',
-            AvailabilityZone='us-east-1a'
+        CellMock.create.assert_called_once_with(
+            name='cell-name',
+            vpc_id=self.vpc_id_mock,
+            cidr_block='172.23.0.0/24',
+            gateway_id='gateway-id'
         )
 
     @mock.patch('treadmill.infra.connection.Connection')
@@ -90,39 +93,6 @@ class VPCTest(unittest.TestCase):
         _connectionMock.attach_internet_gateway.assert_called_once_with(
             InternetGatewayId=self.gateway_id_mock,
             VpcId=self.vpc_id_mock
-        )
-
-    @mock.patch('treadmill.infra.connection.Connection')
-    def test_create_route_table(self, connectionMock):
-        _connectionMock = connectionMock()
-        _connectionMock.create_route_table = mock.Mock(return_value={
-            'RouteTable': {
-                'RouteTableId': self.route_table_id_mock
-            }
-        })
-        _connectionMock.create_route = mock.Mock(return_value={
-            'Return': True
-        })
-        _connectionMock.associate_route_table = mock.Mock(return_value={
-            'AssociationId': 'foobar'
-        })
-
-        _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
-        _vpc.gateway_ids = [self.gateway_id_mock]
-        _vpc.subnet_ids = [self.subnet_id_mock]
-        _vpc.create_route_table()
-
-        _connectionMock.create_route_table.assert_called_once_with(
-            VpcId=self.vpc_id_mock
-        )
-        _connectionMock.create_route.assert_called_once_with(
-            RouteTableId=self.route_table_id_mock,
-            DestinationCidrBlock="0.0.0.0/0",
-            GatewayId=self.gateway_id_mock
-        )
-        _connectionMock.associate_route_table.assert_called_once_with(
-            SubnetId=self.subnet_id_mock,
-            RouteTableId=self.route_table_id_mock
         )
 
     @mock.patch('treadmill.infra.connection.Connection')
@@ -469,14 +439,32 @@ class VPCTest(unittest.TestCase):
             SubnetId='subnet-id'
         )
 
+    @mock.patch.object(vpc.VPC, 'delete_hosted_zones')
+    @mock.patch.object(vpc.VPC, 'delete_route_tables')
+    @mock.patch.object(vpc.VPC, 'delete_security_groups')
+    @mock.patch.object(vpc.VPC, 'delete_internet_gateway')
+    @mock.patch.object(vpc.VPC, 'terminate_instances')
     @mock.patch('treadmill.infra.connection.Connection')
-    def test_delete(self, connectionMock):
+    def test_delete(
+            self,
+            connectionMock,
+            terminate_instances_mock,
+            delete_internet_gateway_mock,
+            delete_security_groups_mock,
+            delete_route_tables_mock,
+            delete_hosted_zones_mock
+    ):
         _connectionMock = connectionMock()
         _connectionMock.delete_vpc = mock.Mock()
 
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
         _vpc.delete()
 
+        terminate_instances_mock.assert_called_once()
+        delete_internet_gateway_mock.assert_called_once()
+        delete_security_groups_mock.assert_called_once()
+        delete_route_tables_mock.assert_called_once()
+        delete_hosted_zones_mock.assert_called_once()
         _connectionMock.delete_vpc.assert_called_once_with(
             VpcId=self.vpc_id_mock
         )
