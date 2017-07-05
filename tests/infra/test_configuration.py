@@ -48,11 +48,9 @@ class MasterConfigurationTest(unittest.TestCase):
         config = configuration.MasterConfiguration('', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME'],
-            'install-pid1.sh': [],
-            'install-s6.sh': [],
+            'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-master.sh': [
                 'DOMAIN', 'CELL', 'APPROOT', 'IPA_HOSTNAME',
-                'TREADMILL_RELEASE',
             ],
         }
 

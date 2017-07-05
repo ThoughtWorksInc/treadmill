@@ -32,17 +32,16 @@ class MasterConfiguration(Configuration):
                     'DOMAIN': domain,
                     'NAME': 'TreadmillMaster',
                 },
-            },
-            {'name': 'install-pid1.sh', 'vars': {}},
-            {'name': 'install-s6.sh', 'vars': {}},
-            {
+            }, {
+                'name': 'install-treadmill.sh',
+                'vars': {'TREADMILL_RELEASE': tm_release}
+            }, {
                 'name': 'configure-master.sh',
                 'vars': {
                     'DOMAIN': domain,
                     'CELL': cell,
                     'APPROOT': app_root,
                     'IPA_HOSTNAME': ipa_hostname,
-                    'TREADMILL_RELEASE': tm_release,
                 },
             },
         ]

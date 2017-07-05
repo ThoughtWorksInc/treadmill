@@ -4,10 +4,6 @@ ZK_URL=zookeeper://foo@TreadmillZookeeper1.{{ DOMAIN }}:2181,TreadmillZookeeper2
 AMI_LAUNCH_INDEX=$(curl -s http://169.254.169.254/latest/meta-data/ami-launch-index)
 MASTER_ID=$(expr $AMI_LAUNCH_INDEX + 1) # AMI_LAUNCH_INDEX is 0 indexed, master cannot be set to 0.
 
-curl -L "https://github.com/ThoughtWorksInc/treadmill/releases/download/{{ TREADMILL_RELEASE }}/treadmill" -o /bin/treadmill
-
-chmod +x /bin/treadmill
-
 (
 cat <<EOF
 export TREADMILL_ZOOKEEPER=$ZK_URL
