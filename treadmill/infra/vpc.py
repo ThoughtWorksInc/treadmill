@@ -25,11 +25,10 @@ class VPC:
         self.reverse_hosted_zone_id = None
         self.hosted_zone_ids = []
 
-        if self.id:
-            self._get(self.id)
-
-    def _get(self, vpc_id):
-        self.metadata = self.ec2_conn.describe_vpcs(VpcIds=[vpc_id])['Vpcs'][0]
+    def refresh(self):
+        self.metadata, = self.ec2_conn.describe_vpcs(
+            VpcIds=[self.id]
+        )['Vpcs']
         self.get_instances()
         self.get_hosted_zone_ids()
         self.get_security_group_ids()

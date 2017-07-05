@@ -201,6 +201,7 @@ class VPCTest(unittest.TestCase):
         )
 
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
+        _vpc.get_instances()
 
         self.assertEquals(
             _vpc.instances,
@@ -328,6 +329,7 @@ class VPCTest(unittest.TestCase):
         ]
 
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
+        _vpc.get_hosted_zone_ids()
 
         self.assertCountEqual(
             _vpc.hosted_zone_ids,
@@ -535,13 +537,21 @@ class VPCTest(unittest.TestCase):
             VpcId=self.vpc_id_mock
         )
 
+    @mock.patch.object(vpc.VPC, 'get_instances')
+    @mock.patch.object(vpc.VPC, 'get_hosted_zone_ids')
+    @mock.patch.object(vpc.VPC, 'get_security_group_ids')
     @mock.patch('treadmill.infra.connection.Connection')
-    def test_get(self, connectionMock):
+    def test_refresh(self,
+                     connectionMock,
+                     security_group_ids_mock,
+                     hosted_zone_ids_mock,
+                     instances_mock):
         _connectionMock = connectionMock()
         _connectionMock.describe_vpcs = mock.Mock(
             return_value={'Vpcs': [{'VpcId': self.vpc_id_mock, 'foo': 'bar'}]}
         )
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo')
+        _vpc.refresh()
         self.assertIsInstance(_vpc, vpc.VPC)
         self.assertEqual(_vpc.id, self.vpc_id_mock)
         self.assertEqual(
@@ -551,6 +561,9 @@ class VPCTest(unittest.TestCase):
         _connectionMock.describe_vpcs.assert_called_once_with(
             VpcIds=[self.vpc_id_mock]
         )
+        instances_mock.assert_called_once()
+        hosted_zone_ids_mock.assert_called_once()
+        security_group_ids_mock.assert_called_once()
 
 
 if __name__ == '__main__':
