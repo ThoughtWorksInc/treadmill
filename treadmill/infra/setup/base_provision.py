@@ -13,7 +13,7 @@ class BaseProvision:
             domain,
     ):
         self.name = name
-        self.vpc_id = vpc_id
+        self.vpc = vpc.VPC(id=vpc_id, domain=domain)
         self.domain = domain
         self.route_53_conn = connection.Connection('route53')
         self.instances = None
@@ -25,10 +25,6 @@ class BaseProvision:
             cidr_block,
             subnet_id=None,
     ):
-        self.vpc = vpc.VPC(
-            id=self.vpc_id,
-            domain=self.domain,
-        )
         self.vpc.get_hosted_zone_ids()
         self.vpc.get_internet_gateway_ids()
 
@@ -61,11 +57,6 @@ class BaseProvision:
 
     def destroy(self, instance_id, subnet_id):
         self.instances = instances.Instances.get(ids=[instance_id])
-        self.vpc = vpc.VPC(
-            id=self.vpc_id,
-            domain=self.domain
-        )
-
         self.vpc.get_hosted_zone_ids()
         self.instances.terminate(
             hosted_zone_id=self.vpc.hosted_zone_id,
