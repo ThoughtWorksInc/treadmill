@@ -1,4 +1,5 @@
 from treadmill.infra import connection
+from treadmill.infra import ec2object
 from treadmill.infra import constants
 import logging
 
@@ -7,32 +8,20 @@ import polling
 _LOGGER = logging.getLogger(__name__)
 
 
-class Instance:
+class Instance(ec2object.EC2Object):
     def __init__(self, name=None, id=None, metadata=None):
-        self.id = id
-        self.name = name
-        self.metadata = metadata
-        self.ec2_conn = connection.Connection()
-        self.route53_conn = connection.Connection(resource=constants.ROUTE_53)
-
-        if self.metadata and self.metadata.get('Tags', None):
-            self.name = [t['Value']
-                         for t in self.metadata['Tags']
-                         if t['Key'] == 'Name'][0]
-
+        super(Instance, self).__init__(
+            id=id,
+            name=name,
+            metadata=metadata,
+        )
         self.private_ip = self._get_private_ip()
 
     def create_tags(self):
         self.name = self.name + str(
             self.metadata.get('AmiLaunchIndex', 0) + 1
         )
-        self.ec2_conn.create_tags(
-            Resources=[self.id],
-            Tags=[{
-                'Key': 'Name',
-                'Value': self.name
-            }]
-        )
+        super(Instance, self).create_tags()
 
     def upsert_dns_record(self, hosted_zone_id, domain='', reverse=False):
         self._change_resource_record_sets(
