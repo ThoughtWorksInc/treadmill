@@ -33,7 +33,7 @@ class CloudTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         cell.setup_vpc.assert_called_once_with(
-            cell_cidr_block='172.24.0.0/24',
+            subnet_cidr_block='172.24.0.0/24',
             vpc_cidr_block='172.24.0.0/16',
             secgroup_name='sg_common',
             secgroup_desc='Test'
