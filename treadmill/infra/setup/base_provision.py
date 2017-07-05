@@ -16,6 +16,7 @@ class BaseProvision:
         self.vpc_id = vpc_id
         self.domain = domain
         self.route_53_conn = connection.Connection('route53')
+        self.instances = None
 
     def setup(
             self,
