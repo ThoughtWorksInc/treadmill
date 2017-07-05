@@ -115,7 +115,6 @@ class Instances:
     def load_json(cls, ids=None, filters=None):
         """Fetch instance details"""
         conn = connection.Connection()
-        response = []
 
         if ids:
             response = conn.describe_instances(
