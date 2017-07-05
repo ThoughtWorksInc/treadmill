@@ -19,7 +19,7 @@ class CellTest(unittest.TestCase):
     def test_setup_cell(self):
         self.cell.setup_vpc(
             vpc_cidr_block='172.23.0.0/16',
-            cell_cidr_block='172.23.0.0/24',
+            subnet_cidr_block='172.23.0.0/24',
             secgroup_name='sg_common',
             secgroup_desc='Treadmill CIDR block'
         )
@@ -43,17 +43,17 @@ class CellTest(unittest.TestCase):
         self.assertEquals(len(output['Instances']), 3)
         for instance in output['Instances']:
             self.assertIsNotNone(instance['InstanceId'])
-            self.assertIsNotNone(instance['CellId'])
+            self.assertIsNotNone(instance['SubnetId'])
             self.assertIsNotNone(instance['SecurityGroups'])
             self.assertIn(instance['InstanceState'], ['pending', 'running'])
-            self.assertIn(instance['CellId'], self.cell.cell.id)
+            self.assertIn(instance['SubnetId'], self.cell.subnet.id)
 
         self.cell.destroy()
 
-        self.cell.cell.instances = None
-        self.cell.cell.get_instances()
+        self.cell.subnet.instances = None
+        self.cell.subnet.get_instances()
 
-        self.assertEqual(self.cell.cell.instances.ids, [])
+        self.assertEqual(self.cell.subnet.instances.ids, [])
 
 
 if __name__ == '__main__':

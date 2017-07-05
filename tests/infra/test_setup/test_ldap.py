@@ -45,7 +45,7 @@ class LDAPTest(unittest.TestCase):
             instance_type='t2.medium'
         )
         _vpc_mock.get_hosted_zone_ids.assert_called_once()
-        _vpc_mock.create_cell.assert_called_once_with(
+        _vpc_mock.create_subnet.assert_called_once_with(
             cidr_block='cidr-block',
             name='ldap',
             gateway_id=123
@@ -62,16 +62,16 @@ class LDAPTest(unittest.TestCase):
             ]
         )
 
-    @mock.patch('treadmill.infra.cell.Cell')
+    @mock.patch('treadmill.infra.subnet.Subnet')
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
     @mock.patch('treadmill.infra.instances.Instances')
     def test_ldap_destroy(self, InstancesMock, VPCMock, ConnectionMock,
-                          CellMock):
+                          SubnetMock):
         instance_mock = mock.Mock(private_ip='1.1.1.1')
         instances_mock = mock.Mock(instances=[instance_mock])
         InstancesMock.get = mock.Mock(return_value=instances_mock)
-        _cell_mock = CellMock(id='subnet-id')
+        _subnet_mock = SubnetMock(id='subnet-id')
         vpc_mock = VPCMock(
             id='vpc-id',
             domain='foo.bar',
@@ -89,7 +89,7 @@ class LDAPTest(unittest.TestCase):
             instance_id='instance-id',
             subnet_id='subnet-id'
         )
-        _cell_mock.delete.assert_called_once()
+        _subnet_mock.delete.assert_called_once()
         InstancesMock.get.assert_called_once_with(ids=['instance-id'])
         vpc_mock.get_hosted_zone_ids.assert_called_once()
         ldap.instances.terminate.assert_called_once_with(

@@ -1,19 +1,19 @@
 """
-Unit test for EC2 cell.
+Unit test for EC2 subnet.
 """
 
 import unittest
 import mock
 
-from treadmill.infra.cell import Cell
+from treadmill.infra.subnet import Subnet
 
 
-class CellTest(unittest.TestCase):
+class SubnetTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.connection.Connection')
     def test_init(self, ConnectionMock):
         conn_mock = ConnectionMock()
-        cell = Cell(
+        subnet = Subnet(
             id=1,
             vpc_id='vpc-id',
             metadata={
@@ -24,21 +24,21 @@ class CellTest(unittest.TestCase):
             }
         )
 
-        self.assertEquals(cell.vpc_id, 'vpc-id')
-        self.assertEquals(cell.name, 'goo')
-        self.assertEquals(cell.ec2_conn, conn_mock)
+        self.assertEquals(subnet.vpc_id, 'vpc-id')
+        self.assertEquals(subnet.name, 'goo')
+        self.assertEquals(subnet.ec2_conn, conn_mock)
 
     @mock.patch('treadmill.infra.connection.Connection')
     def test_create_tags(self, ConnectionMock):
         conn_mock = ConnectionMock()
         conn_mock.create_tags = mock.Mock()
 
-        cell = Cell(
+        subnet = Subnet(
             name='foo',
             id='1',
             vpc_id='vpc-id'
         )
-        cell.create_tags()
+        subnet.create_tags()
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
@@ -52,25 +52,25 @@ class CellTest(unittest.TestCase):
     def test_create(self, ConnectionMock):
         ConnectionMock.region_name = 'us-east-1'
         conn_mock = ConnectionMock()
-        cell_json_mock = {
+        subnet_json_mock = {
             'Subnet': {
                 'SubnetId': '1'
             }
         }
-        conn_mock.create_subnet = mock.Mock(return_value=cell_json_mock)
+        conn_mock.create_subnet = mock.Mock(return_value=subnet_json_mock)
         conn_mock.create_route_table = mock.Mock(return_value={
             'RouteTable': {'RouteTableId': 'route-table-id'}
         })
 
-        _cell = Cell.create(
+        _subnet = Subnet.create(
             cidr_block='172.23.0.0/24',
             vpc_id='vpc-id',
             name='foo',
             gateway_id='gateway-id'
         )
-        self.assertEqual(_cell.id, '1')
-        self.assertEqual(_cell.name, 'foo')
-        self.assertEqual(_cell.metadata, cell_json_mock)
+        self.assertEqual(_subnet.id, '1')
+        self.assertEqual(_subnet.name, 'foo')
+        self.assertEqual(_subnet.metadata, subnet_json_mock)
         conn_mock.create_subnet.assert_called_once_with(
             VpcId='vpc-id',
             CidrBlock='172.23.0.0/24',

@@ -4,10 +4,10 @@ from treadmill.infra import constants
 from treadmill.infra import instances
 
 
-class Cell(ec2object.EC2Object):
+class Subnet(ec2object.EC2Object):
     def __init__(self, name=None, id=None, metadata=None,
                  vpc_id=None, instances=None):
-        super(Cell, self).__init__(
+        super(Subnet, self).__init__(
             name=name,
             id=id,
             metadata=metadata
@@ -21,17 +21,17 @@ class Cell(ec2object.EC2Object):
         response = _ec2_conn.create_subnet(
             VpcId=vpc_id,
             CidrBlock=cidr_block,
-            AvailabilityZone=Cell._availability_zone()
+            AvailabilityZone=Subnet._availability_zone()
         )
-        _cell = Cell(
+        _subnet = Subnet(
             id=response['Subnet']['SubnetId'],
             name=name,
             metadata=response,
             vpc_id=vpc_id
         )
-        _cell.create_tags()
-        _cell._create_route_table(gateway_id)
-        return _cell
+        _subnet.create_tags()
+        _subnet._create_route_table(gateway_id)
+        return _subnet
 
     def get_route_related_ids(self):
         response = self.ec2_conn.describe_route_tables(
@@ -86,7 +86,7 @@ class Cell(ec2object.EC2Object):
         self.get_instances(refresh=True)
         return {
             'VpcId': self.vpc_id,
-            'CellId': self.id,
+            'SubnetId': self.id,
             'Instances': list(map(
                 self._instance_details,
                 [i.metadata for i in self.instances.instances])
@@ -112,7 +112,7 @@ class Cell(ec2object.EC2Object):
             'InstanceId': data['InstanceId'],
             'InstanceState': data['State']['Name'],
             'SecurityGroups': data['SecurityGroups'],
-            'CellId': data['SubnetId']
+            'SubnetId': data['SubnetId']
         }
 
     def _select_from_tags(self, tags, selector):

@@ -58,18 +58,18 @@ class VPCTest(unittest.TestCase):
                 'Value': True
             })
 
-    @mock.patch('treadmill.infra.cell.Cell')
+    @mock.patch('treadmill.infra.subnet.Subnet')
     @mock.patch('treadmill.infra.connection.Connection')
-    def test_create_cell(self, ConnectionMock, CellMock):
+    def test_create_subnet(self, ConnectionMock, SubnetMock):
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
-        _vpc.create_cell(
-            name='cell-name',
+        _vpc.create_subnet(
+            name='subnet-name',
             cidr_block='172.23.0.0/24',
             gateway_id='gateway-id'
         )
 
-        CellMock.create.assert_called_once_with(
-            name='cell-name',
+        SubnetMock.create.assert_called_once_with(
+            name='subnet-name',
             vpc_id=self.vpc_id_mock,
             cidr_block='172.23.0.0/24',
             gateway_id='gateway-id'

@@ -1,7 +1,7 @@
 from treadmill.infra import connection
 from treadmill.infra import instances
 from treadmill.infra import constants
-from treadmill.infra import cell
+from treadmill.infra import subnet
 
 import time
 
@@ -19,7 +19,7 @@ class VPC:
         self.route_table_ids = []
         self.route_related_ids = []
         self.gateway_ids = []
-        self.cells = []
+        self.subnets = []
         self.association_ids = []
         self.hosted_zone_id = None
         self.reverse_hosted_zone_id = None
@@ -50,9 +50,9 @@ class VPC:
                                                'Value': True
                                            })
 
-    def create_cell(self, cidr_block, name, gateway_id):
-        self.cells.append(
-            cell.Cell.create(
+    def create_subnet(self, cidr_block, name, gateway_id):
+        self.subnets.append(
+            subnet.Subnet.create(
                 cidr_block=cidr_block,
                 name=name,
                 vpc_id=self.id,
@@ -266,7 +266,7 @@ class VPC:
             'InstanceId': data['InstanceId'],
             'InstanceState': data['State']['Name'],
             'SecurityGroups': data['SecurityGroups'],
-            'CellId': data['SubnetId']
+            'SubnetId': data['SubnetId']
         }
 
     def _select_from_tags(self, tags, selector):

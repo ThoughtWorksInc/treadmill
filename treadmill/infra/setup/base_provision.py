@@ -2,7 +2,7 @@ from treadmill.infra import instances
 from treadmill.infra import connection
 from treadmill.infra import vpc
 from treadmill.infra import constants
-from treadmill.infra import cell
+from treadmill.infra import subnet
 
 
 class BaseProvision:
@@ -32,7 +32,7 @@ class BaseProvision:
         self.vpc.get_internet_gateway_ids()
 
         if not subnet_id:
-            self.vpc.create_cell(
+            self.vpc.create_subnet(
                 cidr_block=cidr_block,
                 name=self.name,
                 gateway_id=self.vpc.gateway_ids[0]
@@ -71,4 +71,4 @@ class BaseProvision:
             reverse_hosted_zone_id=self.vpc.reverse_hosted_zone_id,
             domain=self.domain
         )
-        cell.Cell(id=subnet_id).delete()
+        subnet.Subnet(id=subnet_id).delete()

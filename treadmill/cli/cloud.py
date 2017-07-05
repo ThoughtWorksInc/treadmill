@@ -40,7 +40,7 @@ def init():
 
         cell.setup_vpc(
             vpc_cidr_block=vpc_cidr_block,
-            cell_cidr_block=cell_cidr_block,
+            subnet_cidr_block=cell_cidr_block,
             secgroup_name=secgroup_name,
             secgroup_desc=secgroup_desc,
         )
