@@ -34,9 +34,9 @@ class IPA(base_provision.BaseProvision):
 
         self._update_route53('UPSERT')
 
-    def destroy(self, instance_id, subnet_id):
+    def destroy(self, instance_ids, subnet_id):
         super(IPA, self).destroy(
-            instance_id=instance_id,
+            instance_ids=instance_ids,
             subnet_id=subnet_id
         )
 

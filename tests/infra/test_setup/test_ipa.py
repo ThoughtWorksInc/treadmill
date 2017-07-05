@@ -254,7 +254,7 @@ class IPATest(unittest.TestCase):
         )
         ipa.instances = InstancesMock()
         ipa.destroy(
-            instance_id='instance-id',
+            instance_ids=['instance-id'],
             subnet_id='subnet-id'
         )
 

@@ -86,7 +86,7 @@ class LDAPTest(unittest.TestCase):
         )
         ldap.instances = InstancesMock()
         ldap.destroy(
-            instance_id='instance-id',
+            instance_ids=['instance-id'],
             subnet_id='subnet-id'
         )
         _subnet_mock.delete.assert_called_once()

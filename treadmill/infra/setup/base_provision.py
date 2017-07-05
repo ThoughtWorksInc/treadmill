@@ -55,8 +55,8 @@ class BaseProvision:
                 reverse=True
             )
 
-    def destroy(self, instance_id, subnet_id):
-        self.instances = instances.Instances.get(ids=[instance_id])
+    def destroy(self, instance_ids, subnet_id):
+        self.instances = instances.Instances.get(ids=instance_ids)
         self.vpc.get_hosted_zone_ids()
         self.instances.terminate(
             hosted_zone_id=self.vpc.hosted_zone_id,
