@@ -36,3 +36,4 @@ EOF
 chmod 755 /etc/cron.hourly/tmhostadm-kinit
 /etc/cron.hourly/tmhostadm-kinit
 
+nohup su -c "/binCelltreadmillCellsprocCellrestapi -p 8000 --title 'Treadmill_Cloud_Host_API' -m cloud_host --cors-origin='.*'" tmhostadm &> cloud_host.out
