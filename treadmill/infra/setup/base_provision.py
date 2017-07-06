@@ -23,6 +23,7 @@ class BaseProvision:
             image_id,
             count,
             cidr_block,
+            key,
             subnet_id=None,
     ):
         self.vpc.get_hosted_zone_ids()
@@ -41,7 +42,9 @@ class BaseProvision:
             image_id=image_id,
             count=count,
             subnet_id=subnet_id,
-            instance_type=constants.INSTANCE_TYPES['EC2']['medium']
+            instance_type=constants.INSTANCE_TYPES['EC2']['medium'],
+            key_name=key,
+            user_data=self.configuration.get_userdata()
         )
 
         for i in self.instances.instances:

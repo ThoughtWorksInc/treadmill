@@ -11,10 +11,12 @@ from treadmill.infra.setup.ipa import IPA
 class IPATest(unittest.TestCase):
     """Tests EC2 ipa setup."""
 
+    @mock.patch('treadmill.infra.configuration.IPAConfiguration')
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
     @mock.patch('treadmill.infra.instances.Instances')
-    def test_setup_ipa(self, InstancesMock, VPCMock, ConnectionMock):
+    def test_setup_ipa(self, InstancesMock,
+                       VPCMock, ConnectionMock, IPAConfigurationMock):
         instance_mock = mock.Mock(private_ip='1.1.1.1')
         instances_mock = mock.Mock(instances=[instance_mock])
         InstancesMock.create = mock.Mock(return_value=instances_mock)
@@ -26,6 +28,10 @@ class IPATest(unittest.TestCase):
         _vpc_mock.reverse_hosted_zone_id = 'reverse-hosted-zone-id'
         _vpc_mock.gateway_ids = [123]
         _vpc_mock.subnets = [mock.Mock(id='subnet-id')]
+        _ipa_configuration_mock = IPAConfigurationMock()
+        _ipa_configuration_mock.get_userdata = mock.Mock(
+            return_value='user-data-script'
+        )
         ipa = IPA(
             name='ipa',
             domain='foo.bar',
@@ -34,7 +40,10 @@ class IPATest(unittest.TestCase):
         ipa.setup(
             image_id='foo-123',
             count=1,
-            cidr_block='cidr-block'
+            cidr_block='cidr-block',
+            key='some-key',
+            tm_release='release',
+            ipa_admin_password='ipa-admin-password'
         )
 
         self.assertEqual(ipa.instances, instances_mock)
@@ -43,7 +52,9 @@ class IPATest(unittest.TestCase):
             name='ipa',
             count=1,
             subnet_id='subnet-id',
-            instance_type='t2.medium'
+            instance_type='t2.medium',
+            key_name='some-key',
+            user_data='user-data-script'
         )
         self.assertCountEqual(
             instance_mock.upsert_dns_record.mock_calls,
@@ -61,6 +72,16 @@ class IPATest(unittest.TestCase):
             name='ipa',
             gateway_id=123
         )
+
+        self.assertEqual(
+            IPAConfigurationMock.mock_calls[1],
+            mock.mock.call(
+                domain='foo.bar',
+                ipa_admin_password='ipa-admin-password',
+                tm_release='release'
+            )
+        )
+        _ipa_configuration_mock.get_userdata.assert_called_once()
 
         expected_calls = [
             mock.mock.call(

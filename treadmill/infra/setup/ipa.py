@@ -1,6 +1,7 @@
 from treadmill.infra import connection
 from treadmill.infra import constants
 from treadmill.infra.setup import base_provision
+from treadmill.infra import configuration
 
 
 class IPA(base_provision.BaseProvision):
@@ -23,13 +24,23 @@ class IPA(base_provision.BaseProvision):
             image_id,
             count,
             cidr_block,
+            ipa_admin_password,
+            tm_release,
+            key,
             subnet_id=None,
     ):
+
+        self.configuration = configuration.IPAConfiguration(
+            ipa_admin_password=ipa_admin_password,
+            domain=self.domain,
+            tm_release=tm_release
+        )
         super(IPA, self).setup(
             image_id=image_id,
             count=count,
             cidr_block=cidr_block,
-            subnet_id=subnet_id
+            subnet_id=subnet_id,
+            key=key
         )
 
         self._update_route53('UPSERT')
