@@ -3,9 +3,7 @@ Treadmill Cloud Host REST api.
 """
 
 
-import flask
 import flask_restplus as restplus
-from flask_restplus import fields
 
 # Disable E0611: No 'name' in module
 from treadmill import webutils  # pylint: disable=E0611
@@ -26,9 +24,7 @@ def init(api, cors, impl):
     class _CloudHostResource(restplus.Resource):
         """Treadmill Cloud Host resource"""
 
-        @webutils.post_api(api, cors,
-                          marshal=api.marshal_list_with)
+        @webutils.post_api(api, cors, marshal=api.marshal_list_with)
         def post(self, hostname):
             """Adds host to IPA."""
             return impl.create(hostname)
-

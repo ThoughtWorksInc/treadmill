@@ -3,7 +3,7 @@ import subprocess
 
 
 class API(object):
-    """Treadmill Cell REST api."""
+    """Treadmill Cloud Host REST API."""
 
     def __init__(self):
 

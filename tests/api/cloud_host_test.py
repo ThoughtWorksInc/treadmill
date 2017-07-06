@@ -1,4 +1,4 @@
-"""Cell API tests."""
+"""Cloud Host API tests."""
 
 import unittest
 
@@ -9,7 +9,7 @@ import subprocess
 
 
 class ApiCellTest(unittest.TestCase):
-    """treadmill.api.cell tests."""
+    """treadmill.api.cloud_host tests."""
 
     def setUp(self):
         self.cloud_host = cloud_host.API()
