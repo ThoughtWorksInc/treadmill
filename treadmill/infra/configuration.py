@@ -46,3 +46,26 @@ class MasterConfiguration(Configuration):
             },
         ]
         super(MasterConfiguration, self).__init__(self.setup_scripts)
+
+
+class IPAConfiguration(Configuration):
+    def __init__(self, ipa_admin_password, domain, tm_release):
+        self.setup_scripts = [
+            {
+                'name': 'provision-base.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'NAME': 'IPA',
+                },
+            }, {
+                'name': 'install-treadmill.sh',
+                'vars': {'TREADMILL_RELEASE': tm_release}
+            }, {
+                'name': 'install-ipa-server.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'IPA_ADMIN_PASSWORD': ipa_admin_password,
+                },
+            },
+        ]
+        super(IPAConfiguration, self).__init__(self.setup_scripts)

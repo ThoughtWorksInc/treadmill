@@ -66,3 +66,35 @@ class MasterConfigurationTest(unittest.TestCase):
                 expected_script_data[script_data['name']],
                 script_data['vars'].keys()
             )
+
+
+class IPAConfigurationTest(unittest.TestCase):
+    """Tests ipa configuration"""
+
+    @mock.patch('builtins.open', create=True)
+    def test_ipa_configuration_script_data(self, open_mock):
+        config = configuration.IPAConfiguration(
+            ipa_admin_password='admin-password',
+            domain='foo.bar',
+            tm_release='some-release'
+        )
+        expected_script_data = {
+            'provision-base.sh': ['DOMAIN', 'NAME'],
+            'install-treadmill.sh': ['TREADMILL_RELEASE'],
+            'install-ipa-server.sh': [
+                'DOMAIN', 'IPA_ADMIN_PASSWORD',
+            ],
+        }
+
+        self.assertCountEqual(
+            [s['name'] for s in config.setup_scripts],
+            expected_script_data.keys()
+        )
+
+        # Make sure all the scripts have required variables to replace, for
+        # jinja
+        for script_data in config.setup_scripts:
+            self.assertCountEqual(
+                expected_script_data[script_data['name']],
+                script_data['vars'].keys()
+            )
