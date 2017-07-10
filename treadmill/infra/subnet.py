@@ -131,7 +131,7 @@ class Subnet(ec2object.EC2Object):
             "us-west-2": "us-west-2a"
         }
 
-        return _map.get(connection.Connection.region_name, None)
+        return _map.get(connection.Connection.context['region_name'], None)
 
     def _association_filters(self):
         return [{

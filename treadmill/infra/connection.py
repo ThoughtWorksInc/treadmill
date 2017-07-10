@@ -21,12 +21,14 @@ class Singleton(type):
 
 class Connection(metaclass=Singleton):
     session = boto3.session.Session()
-    region_name = session.region_name
+    context = {
+        'region_name': session.region_name
+    }
 
     def __init__(self, resource=constants.EC2):
         pass
 
     def __new__(cls, resource=constants.EC2):
         return boto3.client(
-            resource, region_name=cls.region_name
+            resource, region_name=cls.context['region_name']
         )

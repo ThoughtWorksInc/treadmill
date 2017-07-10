@@ -30,7 +30,7 @@ def init():
              secgroup_name, secgroup_desc):
         """Initialize treadmill VPC"""
         if region:
-            connection.Connection.region_name = region
+            connection.Connection.context['region_name'] = region
 
         cell = Cell(
             domain=domain,

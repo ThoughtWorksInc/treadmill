@@ -88,7 +88,7 @@ class VPC:
             _hosted_zone_id = self.route53_conn.create_hosted_zone(
                 Name=name,
                 VPC={
-                    'VPCRegion': connection.Connection.region_name,
+                    'VPCRegion': connection.Connection.context['region_name'],
                     'VPCId': self.id,
                 },
                 HostedZoneConfig={

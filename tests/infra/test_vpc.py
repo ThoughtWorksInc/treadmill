@@ -119,7 +119,9 @@ class VPCTest(unittest.TestCase):
     @mock.patch('time.time', mock.Mock(return_value=786.007))
     def test_create_hosted_zone(self, connectionMock):
         _connectionMock = connectionMock('route53')
-        connectionMock.region_name = 'us-east-1'
+        connectionMock.context = {
+           'region_name': 'us-east-1'
+        }
         expected_hosted_zone = {
             'HostedZone': {
                 'Id': 'Some-Zone-Id'
@@ -155,7 +157,9 @@ class VPCTest(unittest.TestCase):
     @mock.patch('time.time', mock.Mock(return_value=786.007))
     def test_create_hosted_zone_reverse(self, connectionMock):
         _connectionMock = connectionMock('route53')
-        connectionMock.region_name = 'us-east-1'
+        connectionMock.context = {
+            'region_name': 'us-east-1'
+        }
         expected_hosted_zone = {
             'HostedZone': {
                 'Id': 'Some-Zone-Id'
