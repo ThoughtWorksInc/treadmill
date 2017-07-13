@@ -3,7 +3,7 @@ from pprint import pprint
 from treadmill.infra.setup.cell import Cell
 from treadmill.infra.setup.ipa import IPA
 from treadmill.infra import constants, connection, vpc, subnet
-from treadmill.infra.setup import ldap
+from treadmill.infra.setup import ldap, node
 
 
 def init():
@@ -66,7 +66,7 @@ def init():
     @click.option('--ldap-hostname', required=True,
                   default='ldapserver', help='LDAP hostname')
     @click.option('--app-root', required=True,
-                  default='/var/tmp/', help='Treadmill app root')
+                  default='/var/tmp', help='Treadmill app root')
     @click.option('--cell-cidr-block', required=False,
                   default='172.23.0.0/24', help='CIDR block for the cell')
     @click.option('--ldap-cidr-block', required=False,
@@ -170,6 +170,48 @@ def init():
 
         click.echo(
             pprint(ipa.show())
+        )
+
+    @cloud.command(name='add-node')
+    @click.option('--vpc-id', required=True, help='VPC ID of cell')
+    @click.option('--region', required=False, help='Region for the vpc')
+    @click.option('--domain', required=False,
+                  default=constants.DEFAULT_DOMAIN,
+                  help='Domain for hosted zone')
+    @click.option('--name', required=False, default='TreadmillNode',
+                  help='Node name')
+    @click.option('--key', required=True, help='SSH Key Name')
+    @click.option('--count', required=True, default='1', type=int,
+                  help='Number of treadmill nodes to spin up')
+    @click.option('--image-id', required=True,
+                  help='AMI ID to use for new node instance')
+    @click.option('--instance-type', required=True,
+                  default=constants.INSTANCE_TYPES['EC2']['micro'],
+                  help='AWS ec2 instance type')
+    @click.option('--tm-release', required=True,
+                  default='0.1.0', help='Treadmill release to use')
+    @click.option('--ldap-hostname', required=True,
+                  default='ldapserver', help='LDAP hostname')
+    @click.option('--app-root', required=True,
+                  default='/var/tmp', help='Treadmill app root')
+    @click.option('--subnet-id', required=True, help='Subnet ID')
+    def add_node(vpc_id, region, domain, name, key, count, image_id,
+                 instance_type, tm_release, ldap_hostname, app_root,
+                 subnet_id):
+        """Add new node"""
+        _node = node.Node(name, vpc_id, domain)
+        _node.setup(
+            key=key,
+            count=count,
+            image_id=image_id,
+            instance_type=instance_type,
+            tm_release=tm_release,
+            app_root=app_root,
+            ldap_hostname=ldap_hostname,
+            subnet_id=subnet_id
+        )
+        click.echo(
+            pprint(_node.subnet.show())
         )
 
     @cloud.group()
