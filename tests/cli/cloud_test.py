@@ -69,7 +69,7 @@ class CloudTest(unittest.TestCase):
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
             tm_release='0.1.0',
             ldap_hostname='ldapserver',
-            app_root='/var/tmp/',
+            app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
         )
         self.assertEqual(
@@ -87,9 +87,37 @@ class CloudTest(unittest.TestCase):
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
             tm_release='0.1.0',
             ldap_hostname='ldapserver',
-            app_root='/var/tmp/',
+            app_root='/var/tmp',
             cidr_block='172.23.1.0/24',
             subnet_id=None
+        )
+
+    @mock.patch('treadmill.cli.cloud.node.Node')
+    def test_add_node(self, NodeMock):
+        """
+        Test add node
+        """
+        node_mock = NodeMock()
+        result = self.runner.invoke(
+            self.configure_cli, [
+                'add-node',
+                '--key=key',
+                '--image-id=img-123',
+                '--vpc-id=vpc-123',
+                '--subnet-id=sub-123',
+                '--count=2',
+            ])
+
+        self.assertEqual(result.exit_code, 0)
+        node_mock.setup.assert_called_once_with(
+            app_root='/var/tmp',
+            count=2,
+            image_id='img-123',
+            instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
+            key='key',
+            ldap_hostname='ldapserver',
+            subnet_id='sub-123',
+            tm_release='0.1.0'
         )
 
     @mock.patch('treadmill.cli.cloud.IPA')

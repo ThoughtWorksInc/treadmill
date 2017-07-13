@@ -1,20 +1,25 @@
-from treadmill.infra import instances
+from treadmill.infra.setup import base_provision
+from treadmill.infra import configuration
 
 
-class Node:
-    def __init__(self):
-        self.instances = None
+class Node(base_provision.BaseProvision):
+    def __init__(self, name, vpc_id, domain):
+        super(Node, self).__init__(name=name, vpc_id=vpc_id, domain=domain)
 
-    def setup(self, name, image_id, count, subnet_id, secgroup_ids):
-        self.instances = instances.Instances.create(
-            name=name,
+    def setup(self, image_id, count, key, tm_release, instance_type, app_root,
+              ldap_hostname, subnet_id):
+        self.configuration = configuration.Node(
+            domain=self.domain,
+            name=self.name,
+            tm_release=tm_release,
+            app_root=app_root,
+            subnet_id=subnet_id,
+            ldap_hostname=ldap_hostname,
+        )
+        super(Node, self).setup(
             image_id=image_id,
             count=count,
             subnet_id=subnet_id,
-            secgroup_ids=secgroup_ids
+            key=key,
+            instance_type=instance_type
         )
-
-        return self.instances
-
-    def terminate(self):
-        self.instances.terminate()

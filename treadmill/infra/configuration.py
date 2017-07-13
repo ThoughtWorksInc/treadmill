@@ -32,7 +32,7 @@ class Master(Configuration):
                 'vars': {
                     'DOMAIN': domain,
                     'SUBNET_ID': subnet_id,
-                    'APPROOT': app_root,
+                    'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                     'NAME': name,
                 },
@@ -44,7 +44,7 @@ class Master(Configuration):
                 'vars': {},
             },
         ]
-        super(Master, self).__init__(setup_scripts)
+        super().__init__(setup_scripts)
 
 
 class LDAP(Configuration):
@@ -57,7 +57,7 @@ class LDAP(Configuration):
                     'DOMAIN': domain,
                     'NAME': name,
                     'SUBNET_ID': subnet_id,
-                    'APPROOT': app_root,
+                    'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                 },
             }, {
@@ -67,12 +67,12 @@ class LDAP(Configuration):
                 'name': 'configure-ldap.sh',
                 'vars': {
                     'SUBNET_ID': subnet_id,
-                    'APPROOT': app_root,
+                    'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                 },
             },
         ]
-        super(LDAP, self).__init__(setup_scripts)
+        super().__init__(setup_scripts)
 
 
 class IPA(Configuration):
@@ -96,7 +96,7 @@ class IPA(Configuration):
                 },
             },
         ]
-        super(IPA, self).__init__(setup_scripts)
+        super().__init__(setup_scripts)
 
 
 class Zookeeper(Configuration):
@@ -115,4 +115,32 @@ class Zookeeper(Configuration):
                 },
             },
         ]
-        super(Zookeeper, self).__init__(setup_scripts)
+        super().__init__(setup_scripts)
+
+
+class Node(Configuration):
+    def __init__(self, name, domain, tm_release, app_root, subnet_id,
+                 ldap_hostname):
+        setup_scripts = [
+            {
+                'name': 'provision-base.sh',
+                'vars': {
+                    'DOMAIN': domain,
+                    'NAME': name,
+                    'APP_ROOT': app_root,
+                    'SUBNET_ID': subnet_id,
+                    'LDAP_HOSTNAME': ldap_hostname,
+                }
+            }, {
+                'name': 'install-treadmill.sh',
+                'vars': {
+                    'TREADMILL_RELEASE': tm_release
+                }
+            }, {
+                'name': 'configure-node.sh',
+                'vars': {
+                    'APP_ROOT': app_root,
+                },
+            }
+        ]
+        super().__init__(setup_scripts)

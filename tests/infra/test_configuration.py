@@ -48,7 +48,7 @@ class MasterTest(unittest.TestCase):
         config = configuration.Master('', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
-                'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APPROOT',
+                'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
             ],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-master.sh': [],
@@ -76,10 +76,10 @@ class LDAPTest(unittest.TestCase):
         config = configuration.LDAP('', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
-                'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APPROOT',
+                'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
             ],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
-            'configure-ldap.sh': ['SUBNET_ID', 'APPROOT', 'LDAP_HOSTNAME'],
+            'configure-ldap.sh': ['SUBNET_ID', 'APP_ROOT', 'LDAP_HOSTNAME'],
         }
 
         self.assertCountEqual(
@@ -142,6 +142,40 @@ class ZookeeperTest(unittest.TestCase):
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME'],
             'provision-zookeeper.sh': ['DOMAIN'],
+        }
+
+        self.assertCountEqual(
+            [s['name'] for s in config.setup_scripts],
+            expected_script_data.keys()
+        )
+
+        # Make sure all the scripts have required variables to replace, for
+        # jinja
+        for script_data in config.setup_scripts:
+            self.assertCountEqual(
+                expected_script_data[script_data['name']],
+                script_data['vars'].keys()
+            )
+
+
+class NodeTest(unittest.TestCase):
+    """Tests node configuration"""
+
+    @mock.patch('builtins.open', create=True)
+    def test_node_configuration_script_data(self, open_mock):
+        config = configuration.Node(
+            name='node',
+            domain='ms.treadmill',
+            tm_release='tm_release',
+            app_root='/var/tmp',
+            subnet_id='sub-123',
+            ldap_hostname='ldap_host',
+        )
+        expected_script_data = {
+            'provision-base.sh': ['DOMAIN', 'NAME', 'APP_ROOT', 'SUBNET_ID',
+                                  'LDAP_HOSTNAME'],
+            'install-treadmill.sh': ['TREADMILL_RELEASE'],
+            'configure-node.sh': ['APP_ROOT'],
         }
 
         self.assertCountEqual(
