@@ -39,7 +39,6 @@ class CellCLITest(unittest.TestCase):
         vpc_info = {}
 
         try:
-            print(result_init.output)
             vpc_info = ast.literal_eval(result_init.output)
         except Exception as e:
             if result_init.exception:
@@ -63,7 +62,6 @@ class CellCLITest(unittest.TestCase):
 
         result = {}
         try:
-            print(result_cell_init.output)
             result = ast.literal_eval(result_cell_init.output)
         except Exception as e:
             if result_cell_init.exception:

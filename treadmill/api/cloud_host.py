@@ -1,4 +1,4 @@
-from .. import authz
+from treadmill import authz
 import subprocess
 
 
