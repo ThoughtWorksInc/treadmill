@@ -160,10 +160,14 @@ class Instances:
             MinCount=count,
             MaxCount=count,
             InstanceType=instance_type,
-            SubnetId=subnet_id,
-            SecurityGroupIds=secgroup_ids,
             KeyName=key_name,
             UserData=user_data,
+            NetworkInterfaces=[{
+                'DeviceIndex': 0,
+                'SubnetId': subnet_id,
+                'Groups': secgroup_ids,
+                'AssociatePublicIpAddress': True
+            }]
         )
 
         _ids = [i['InstanceId'] for i in _instances['Instances']]

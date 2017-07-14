@@ -244,8 +244,12 @@ class InstancesTest(unittest.TestCase):
             KeyName='key',
             MaxCount=2,
             MinCount=2,
-            SecurityGroupIds=None,
-            SubnetId='',
+            NetworkInterfaces=[{
+                'Groups': None,
+                'AssociatePublicIpAddress': True,
+                'SubnetId': '',
+                'DeviceIndex': 0
+            }],
             UserData='',
         )
         conn_mock.describe_instances.assert_called_with(
