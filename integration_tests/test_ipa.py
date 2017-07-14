@@ -8,7 +8,7 @@ import importlib
 import click
 import click.testing
 from botocore.exceptions import ClientError
-from treadmill.infra import vpc
+from treadmill.infra import vpc, constants
 
 
 class IPATest(unittest.TestCase):
@@ -47,7 +47,7 @@ class IPATest(unittest.TestCase):
 
         self.vpc_id = vpc_info['VpcId']
         self.assertIsNotNone(vpc_info['VpcId'])
-        self.assertEqual(vpc_info['Cells'], [])
+        self.assertEqual(vpc_info['Subnets'], [])
 
         result_domain_init = self.runner.invoke(
             self.configure_cli, [
@@ -68,7 +68,7 @@ class IPATest(unittest.TestCase):
             else:
                 print(e)
 
-        _vpc = vpc.VPC(id=vpc_info['VpcId'], domain='ms.treadmill')
+        _vpc = vpc.VPC(id=vpc_info['VpcId'], domain=constants.DEFAULT_DOMAIN)
         _vpc_info = _vpc.show()
         self.assertEqual(subnet_info['VpcId'], vpc_info['VpcId'])
         self.assertEqual(len(subnet_info['Instances']), 1)
@@ -77,8 +77,8 @@ class IPATest(unittest.TestCase):
             ['TreadmillIPA1']
         )
         self.assertIsNotNone(subnet_info['SubnetId'])
-        self.assertEqual(len(_vpc_info['Cells']), 1)
-        self.assertEqual(_vpc_info['Cells'][0], subnet_info['SubnetId'])
+        self.assertEqual(len(_vpc_info['Subnets']), 1)
+        self.assertEqual(_vpc_info['Subnets'][0], subnet_info['SubnetId'])
 
         self.runner.invoke(
             self.configure_cli, [

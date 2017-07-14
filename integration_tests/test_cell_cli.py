@@ -9,7 +9,7 @@ import click
 import click.testing
 from botocore.exceptions import ClientError
 
-from treadmill.infra import vpc
+from treadmill.infra import vpc, constants
 
 
 class CellCLITest(unittest.TestCase):
@@ -72,7 +72,7 @@ class CellCLITest(unittest.TestCase):
         cell_info = result['Cell']
         ldap_info = result['Ldap']
 
-        _vpc = vpc.VPC(id=vpc_info['VpcId'], domain='ms.treadmill')
+        _vpc = vpc.VPC(id=vpc_info['VpcId'], domain=constants.DEFAULT_DOMAIN)
         _vpc_info = _vpc.show()
 
         self.assertEqual(cell_info['VpcId'], vpc_info['VpcId'])
