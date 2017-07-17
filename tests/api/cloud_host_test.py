@@ -5,7 +5,7 @@ import unittest
 import mock
 
 from treadmill.api import cloud_host
-import subprocess
+from treadmill import subproc
 
 
 class ApiCellTest(unittest.TestCase):
@@ -19,8 +19,8 @@ class ApiCellTest(unittest.TestCase):
 
     def test_create(self):
         _ipa_result_mock = b'foo\n bar\n goo\n tao\n random password: tao-pass-goo-foo' # noqa :E501
-        subprocess.check_output = mock.create_autospec(
-            subprocess.check_output,
+        subproc.check_output = mock.create_autospec(
+            subproc.check_output,
             return_value=_ipa_result_mock
         )
 
@@ -29,7 +29,7 @@ class ApiCellTest(unittest.TestCase):
             'tao-pass-goo-foo'
         )
 
-        subprocess.check_output.assert_called_once_with([
+        subproc.check_output.assert_called_once_with([
             "ipa",
             "host-add",
             'some-host',
