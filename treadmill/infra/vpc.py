@@ -151,8 +151,8 @@ class VPC:
                 Id=id
             )
 
-    def get_instances(self):
-        if not self.instances:
+    def get_instances(self, refresh=False):
+        if refresh or not self.instances:
             self.instances = instances.Instances.get(
                 filters=self._filters()
             )
@@ -250,7 +250,7 @@ class VPC:
         self.ec2_conn.delete_vpc(VpcId=self.id)
 
     def show(self):
-        self.get_instances()
+        self.get_instances(refresh=True)
         self.get_route_related_ids()
         return {
             'VpcId': self.id,

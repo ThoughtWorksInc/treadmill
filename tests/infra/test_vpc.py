@@ -211,7 +211,7 @@ class VPCTest(unittest.TestCase):
         )
 
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
-        _vpc.get_instances()
+        _vpc.get_instances(refresh=True)
 
         self.assertEquals(
             _vpc.instances,

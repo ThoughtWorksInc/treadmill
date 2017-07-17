@@ -11,17 +11,17 @@ class EC2Object:
         self.route53_conn = connection.Connection(
             resource=constants.ROUTE_53
         )
-
         if self.metadata:
             if self.metadata.get('Tags', None):
                 self.name = [t['Value']
                              for t in self.metadata['Tags']
                              if t['Key'] == 'Name'][0]
 
-            if self.metadata.get('AmiLaunchIndex', None):
-                    self.name = self.name + str(
-                        self.metadata.get('AmiLaunchIndex', 0) + 1
-                    )
+            _ami_launch_index = self.metadata.get('AmiLaunchIndex', None)
+            if self.name and _ami_launch_index is not None:
+                self.name = self.name + str(
+                    self.metadata['AmiLaunchIndex'] + 1
+                )
 
     def create_tags(self):
         self.ec2_conn.create_tags(

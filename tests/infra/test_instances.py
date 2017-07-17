@@ -191,7 +191,7 @@ class InstancesTest(unittest.TestCase):
     def test_create(self, ConnectionMock):
         instance1_metadata_mock = {
             'InstanceId': 1,
-            'AmiLaunchIndex': 999
+            'AmiLaunchIndex': 0
         }
         instance2_metadata_mock = {
             'InstanceId': 2,
@@ -265,7 +265,7 @@ class InstancesTest(unittest.TestCase):
                                 'ResourceRecords': [{
                                     'Value': ''
                                 }],
-                                'Name': 'foo1000.joo.goo.',
+                                'Name': 'foo1.joo.goo.',
                                 'TTL': 3600,
                                 'Type': 'A'
                             },
@@ -279,7 +279,7 @@ class InstancesTest(unittest.TestCase):
                         'Changes': [{
                             'ResourceRecordSet': {
                                 'ResourceRecords': [{
-                                    'Value': 'foo1000.joo.goo.'
+                                    'Value': 'foo1.joo.goo.'
                                 }],
                                 'Name': '.in-addr.arpa',
                                 'TTL': 3600,
@@ -331,7 +331,7 @@ class InstancesTest(unittest.TestCase):
                     Resources=[1],
                     Tags=[{
                         'Key': 'Name',
-                        'Value': 'foo1000'
+                        'Value': 'foo1'
                     }]
                 ),
                 mock.mock.call(
