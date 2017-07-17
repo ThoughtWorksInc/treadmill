@@ -37,7 +37,6 @@ class IPATest(unittest.TestCase):
         vpc_info = {}
 
         try:
-            print(result_init.output)
             vpc_info = ast.literal_eval(result_init.output)
         except Exception as e:
             if result_init.exception:
