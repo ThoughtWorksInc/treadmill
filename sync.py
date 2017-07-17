@@ -9,4 +9,4 @@ subprocess.call(['git', 'checkout', '-b', branch_name])
 terminal_commit = sys.argv[1]
 subprocess.call(['git', 'reset', '--soft', terminal_commit])
 subprocess.call(['git', 'commit', '--amend', '--no-edit'])
-subprocess.call(['git', 'push', 'origin', branch_name])
+subprocess.call(['git', 'push', 'origin', branch_name, '-f'])
