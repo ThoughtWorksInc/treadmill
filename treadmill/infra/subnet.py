@@ -119,12 +119,19 @@ class Subnet(ec2object.EC2Object):
 
     def _instance_details(self, data):
         return {
-            'Name': self._select_from_tags(data['Tags'], 'Name'),
+            'Name': self._select_from_tags(
+                data['Tags'], 'Name'
+            ) + self._ami_launch_index(
+                data
+            ),
             'InstanceId': data['InstanceId'],
             'InstanceState': data['State']['Name'],
             'SecurityGroups': data['SecurityGroups'],
             'SubnetId': data['SubnetId']
         }
+
+    def _ami_launch_index(self, data):
+        return str(data['AmiLaunchIndex'] + 1)
 
     def _select_from_tags(self, tags, selector):
         for t in tags:

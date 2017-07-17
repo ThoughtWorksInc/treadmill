@@ -64,35 +64,35 @@ class IPA(base_provision.BaseProvision):
             '_ldap._tcp': '0 100 389',
             '_ntp._udp': '0 100 123'
         }
-
-        for _rec, _value in srv_records.items():
+        for instance in self.subnet.instances.instances:
+            for _rec, _value in srv_records.items():
+                self._change_srv_record(
+                    action=action,
+                    hosted_zone_id=self.vpc.hosted_zone_id,
+                    name=self._rec_name(_rec),
+                    value=self._srv_rec_value(_value, instance.name),
+                    record_type='SRV'
+                )
             self._change_srv_record(
                 action=action,
                 hosted_zone_id=self.vpc.hosted_zone_id,
-                name=self._rec_name(_rec),
-                value=self._srv_rec_value(_value),
-                record_type='SRV'
+                name=self._rec_name('ipa-ca'),
+                value=self.subnet.instances.instances[0].private_ip,
+                record_type='A'
             )
-        self._change_srv_record(
-            action=action,
-            hosted_zone_id=self.vpc.hosted_zone_id,
-            name=self._rec_name('ipa-ca'),
-            value=self.subnet.instances.instances[0].private_ip,
-            record_type='A'
-        )
-        self._change_srv_record(
-            action=action,
-            hosted_zone_id=self.vpc.hosted_zone_id,
-            name=self._rec_name('_kerberos'),
-            value='"{0}"'.format(self.domain.upper()),
-            record_type='TXT'
-        )
+            self._change_srv_record(
+                action=action,
+                hosted_zone_id=self.vpc.hosted_zone_id,
+                name=self._rec_name('_kerberos'),
+                value='"{0}"'.format(self.domain.upper()),
+                record_type='TXT'
+            )
 
-    def _rec_name(self, name):
-        return name + '.' + self.domain + '.'
+    def _rec_name(self, rec):
+        return rec + '.' + self.domain + '.'
 
-    def _srv_rec_value(self, value):
-        return value + ' ' + self.name + '.' + self.domain + '.'
+    def _srv_rec_value(self, value, instance_name):
+        return value + ' ' + instance_name + '.' + self.domain + '.'
 
     def _change_srv_record(self,
                            action,

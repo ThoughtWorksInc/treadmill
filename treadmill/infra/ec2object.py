@@ -12,10 +12,16 @@ class EC2Object:
             resource=constants.ROUTE_53
         )
 
-        if self.metadata and self.metadata.get('Tags', None):
-            self.name = [t['Value']
-                         for t in self.metadata['Tags']
-                         if t['Key'] == 'Name'][0]
+        if self.metadata:
+            if self.metadata.get('Tags', None):
+                self.name = [t['Value']
+                             for t in self.metadata['Tags']
+                             if t['Key'] == 'Name'][0]
+
+            if self.metadata.get('AmiLaunchIndex', None):
+                    self.name = self.name + str(
+                        self.metadata.get('AmiLaunchIndex', 0) + 1
+                    )
 
     def create_tags(self):
         self.ec2_conn.create_tags(

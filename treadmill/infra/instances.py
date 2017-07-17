@@ -17,12 +17,6 @@ class Instance(ec2object.EC2Object):
         )
         self.private_ip = self._get_private_ip()
 
-    def create_tags(self):
-        self.name = self.name + str(
-            self.metadata.get('AmiLaunchIndex', 0) + 1
-        )
-        super(Instance, self).create_tags()
-
     def upsert_dns_record(self, hosted_zone_id, domain='', reverse=False):
         self._change_resource_record_sets(
             'UPSERT',

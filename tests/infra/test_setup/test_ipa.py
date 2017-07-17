@@ -18,6 +18,7 @@ class IPATest(unittest.TestCase):
     def test_setup_ipa(self, InstancesMock,
                        VPCMock, ConnectionMock, IPAConfigurationMock):
         instance_mock = mock.Mock(private_ip='1.1.1.1')
+        instance_mock.name = 'ipa'
         instances_mock = mock.Mock(instances=[instance_mock])
         InstancesMock.create = mock.Mock(return_value=instances_mock)
         conn_mock = ConnectionMock('route53')
@@ -257,9 +258,12 @@ class IPATest(unittest.TestCase):
         _subnet_mock = SubnetMock(
             id='subnet-id'
         )
+        _instance = mock.Mock(private_ip='1.1.1.1')
+        _instance.name = 'ipa'
         _subnet_mock.instances = mock.Mock(instances=[
-            mock.Mock(private_ip='1.1.1.1')
+            _instance
         ])
+
         vpc_mock = VPCMock(
             id='vpc-id',
             domain='foo.bar',
@@ -270,8 +274,9 @@ class IPATest(unittest.TestCase):
         ipa = IPA(
             vpc_id='vpc-id',
             domain='foo.bar',
-            name='ipa'
+            name='ipa-setup'
         )
+        ipa.subnet = _subnet_mock
         ipa.destroy(
             subnet_id='subnet-id'
         )
