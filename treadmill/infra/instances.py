@@ -17,7 +17,7 @@ class Instance(ec2object.EC2Object):
         )
         self.private_ip = self._get_private_ip()
 
-    def upsert_dns_record(self, hosted_zone_id, domain='', reverse=False):
+    def configure_dns_record(self, hosted_zone_id, domain='', reverse=False):
         self._change_resource_record_sets(
             'UPSERT',
             hosted_zone_id,
@@ -175,11 +175,11 @@ class Instances:
                 metadata=i
             )
             _instance.create_tags()
-            _instance.upsert_dns_record(
+            _instance.configure_dns_record(
                 hosted_zone_id,
                 domain
             )
-            _instance.upsert_dns_record(
+            _instance.configure_dns_record(
                 reverse_hosted_zone_id,
                 domain,
                 reverse=True

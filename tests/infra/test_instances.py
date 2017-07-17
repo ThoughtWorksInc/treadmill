@@ -52,7 +52,7 @@ class InstanceTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
-    def test_upsert_dns_record(self, ConnectionMock):
+    def test_configure_dns_record(self, ConnectionMock):
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
 
@@ -61,7 +61,7 @@ class InstanceTest(unittest.TestCase):
             id='1',
             metadata={'PrivateIpAddress': '10.1.2.3'}
         )
-        instance.upsert_dns_record(
+        instance.configure_dns_record(
             hosted_zone_id='zone-id',
             domain='joo.goo'
         )
@@ -85,7 +85,7 @@ class InstanceTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
-    def test_upsert_dns_record_reverse(self, ConnectionMock):
+    def test_confgiure_dns_record_reverse(self, ConnectionMock):
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
 
@@ -94,7 +94,7 @@ class InstanceTest(unittest.TestCase):
             id='1',
             metadata={'PrivateIpAddress': '10.1.2.3'}
         )
-        instance.upsert_dns_record(
+        instance.configure_dns_record(
             hosted_zone_id='reverse-zone-id',
             domain='joo.goo',
             reverse=True
