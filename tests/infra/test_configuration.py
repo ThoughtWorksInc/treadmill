@@ -137,7 +137,7 @@ class ZookeeperTest(unittest.TestCase):
     def test_zookeeper_configuration_script_data(self, open_mock):
         config = configuration.Zookeeper(
             name='zookeeper',
-            domain='ms.treadmill',
+            domain='treadmill.org',
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME'],
@@ -165,7 +165,7 @@ class NodeTest(unittest.TestCase):
     def test_node_configuration_script_data(self, open_mock):
         config = configuration.Node(
             name='node',
-            domain='ms.treadmill',
+            domain='treadmill.org',
             tm_release='tm_release',
             app_root='/var/tmp',
             subnet_id='sub-123',
