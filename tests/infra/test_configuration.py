@@ -50,6 +50,7 @@ class MasterTest(unittest.TestCase):
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
             ],
+            'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-master.sh': [],
         }
@@ -78,6 +79,7 @@ class LDAPTest(unittest.TestCase):
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
             ],
+            'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-ldap.sh': ['SUBNET_ID', 'APP_ROOT', 'LDAP_HOSTNAME'],
         }
@@ -141,6 +143,7 @@ class ZookeeperTest(unittest.TestCase):
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME'],
+            'install-ipa-client.sh': [],
             'provision-zookeeper.sh': ['DOMAIN'],
         }
 
@@ -174,6 +177,7 @@ class NodeTest(unittest.TestCase):
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'APP_ROOT', 'SUBNET_ID',
                                   'LDAP_HOSTNAME'],
+            'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-node.sh': ['APP_ROOT'],
         }

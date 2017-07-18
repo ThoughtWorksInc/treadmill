@@ -37,6 +37,9 @@ class Master(Configuration):
                     'NAME': name,
                 },
             }, {
+                'name': 'install-ipa-client.sh',
+                'vars': {}
+            }, {
                 'name': 'install-treadmill.sh',
                 'vars': {'TREADMILL_RELEASE': tm_release}
             }, {
@@ -60,6 +63,9 @@ class LDAP(Configuration):
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                 },
+            }, {
+                'name': 'install-ipa-client.sh',
+                'vars': {}
             }, {
                 'name': 'install-treadmill.sh',
                 'vars': {'TREADMILL_RELEASE': tm_release}
@@ -109,6 +115,9 @@ class Zookeeper(Configuration):
                     'NAME': name,
                 },
             }, {
+                'name': 'install-ipa-client.sh',
+                'vars': {}
+            }, {
                 'name': 'provision-zookeeper.sh',
                 'vars': {
                     'DOMAIN': domain,
@@ -131,6 +140,9 @@ class Node(Configuration):
                     'SUBNET_ID': subnet_id,
                     'LDAP_HOSTNAME': ldap_hostname,
                 }
+            }, {
+                'name': 'install-ipa-client.sh',
+                'vars': {}
             }, {
                 'name': 'install-treadmill.sh',
                 'vars': {
