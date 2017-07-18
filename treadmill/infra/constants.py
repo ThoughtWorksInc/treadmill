@@ -20,4 +20,12 @@ INSTANCE_TYPES = {
 
     }
 }
+ROLES = {
+    'MASTER': 'MASTER',
+    'NODE': 'NODE',
+    'LDAP': 'LDAP',
+    'IPA': 'IPA',
+    'ZOOKEEPER': 'ZOOKEEPER',
+    'DEFAULT': 'DEFAULT'
+}
 DEFAULT_DOMAIN = 'treadmill.org'
