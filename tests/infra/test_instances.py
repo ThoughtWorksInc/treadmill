@@ -52,6 +52,31 @@ class InstanceTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
+    def test_create_tags_with_role(self, ConnectionMock):
+        conn_mock = ConnectionMock()
+        conn_mock.create_tags = mock.Mock()
+
+        instance = Instance(
+            name='foo',
+            id='1',
+            metadata={'AmiLaunchIndex': 100},
+            role='role-name'
+        )
+        instance.create_tags()
+        self.assertEquals(instance.name, 'foo101')
+
+        conn_mock.create_tags.assert_called_once_with(
+            Resources=['1'],
+            Tags=[{
+                'Key': 'Name',
+                'Value': 'foo101'
+            }, {
+                'Key': 'Role',
+                'Value': 'role-name'
+            }]
+        )
+
+    @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_configure_dns_record(self, ConnectionMock):
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
@@ -226,7 +251,8 @@ class InstancesTest(unittest.TestCase):
             user_data='',
             hosted_zone_id='zone-id',
             reverse_hosted_zone_id='reverse-zone-id',
-            domain='joo.goo'
+            domain='joo.goo',
+            role='role'
         ).instances
 
         instance_ids = [i.id for i in instances]
@@ -237,6 +263,8 @@ class InstancesTest(unittest.TestCase):
         self.assertCountEqual(instance_ids, [1, 2])
         self.assertEquals(instances[0].metadata, instance1_metadata_mock)
         self.assertEquals(instances[1].metadata, instance2_metadata_mock)
+        self.assertEquals(instances[0].role, 'role')
+        self.assertEquals(instances[1].role, 'role')
 
         conn_mock.run_instances.assert_called_with(
             ImageId='foo-123',
@@ -332,6 +360,9 @@ class InstancesTest(unittest.TestCase):
                     Tags=[{
                         'Key': 'Name',
                         'Value': 'foo1'
+                    }, {
+                        'Value': 'role',
+                        'Key': 'Role'
                     }]
                 ),
                 mock.mock.call(
@@ -339,9 +370,11 @@ class InstancesTest(unittest.TestCase):
                     Tags=[{
                         'Key': 'Name',
                         'Value': 'foo600'
+                    }, {
+                        'Value': 'role',
+                        'Key': 'Role'
                     }]
                 )
-
             ]
         )
 
