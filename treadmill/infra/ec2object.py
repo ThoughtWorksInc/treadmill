@@ -18,13 +18,14 @@ class EC2Object:
                              for t in self.metadata['Tags']
                              if t['Key'] == 'Name'][0]
 
+    def create_tags(self):
+        if self.metadata:
             _ami_launch_index = self.metadata.get('AmiLaunchIndex', None)
-            if self.name and _ami_launch_index is not None:
+            if _ami_launch_index is not None:
                 self.name = self.name + str(
                     self.metadata['AmiLaunchIndex'] + 1
                 )
 
-    def create_tags(self):
         tags = self._prepare_tag_attributes_for('name')
 
         if self.role:
