@@ -148,7 +148,7 @@ def init():
     @click.option('--tm-release', default='0.1.0', help='Treadmill Release')
     @click.option('--key', required=True, help='SSH key name')
     @click.option('--instance-type',
-                  default=constants.INSTANCE_TYPES['EC2']['micro'],
+                  default=constants.INSTANCE_TYPES['EC2']['medium'],
                   help='Instance type')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for new master instance')
