@@ -120,7 +120,7 @@ class CloudTest(unittest.TestCase):
             tm_release='0.1.0'
         )
 
-    @mock.patch('treadmill.cli.cloud.IPA')
+    @mock.patch('treadmill.cli.cloud.ipa.IPA')
     def test_init_domain(self, ipa_mock):
         """
         Test cloud init domain
@@ -148,7 +148,7 @@ class CloudTest(unittest.TestCase):
             subnet_id=None
         )
 
-    @mock.patch('treadmill.cli.cloud.IPA')
+    @mock.patch('treadmill.cli.cloud.ipa.IPA')
     def test_delete_domain(self, ipa_mock):
         """
         Test cloud init domain

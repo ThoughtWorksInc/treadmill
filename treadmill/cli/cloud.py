@@ -1,9 +1,8 @@
 import click
 from pprint import pprint
 from treadmill.infra.setup.cell import Cell
-from treadmill.infra.setup.ipa import IPA
 from treadmill.infra import constants, connection, vpc, subnet
-from treadmill.infra.setup import ldap, node
+from treadmill.infra.setup import ipa, ldap, node
 
 
 def init():
@@ -44,6 +43,60 @@ def init():
             pprint(_vpc.show())
         )
 
+    @cloud.command(name='init-ldap')
+    @click.option('--vpc-id', required=True, help='VPC ID of cell')
+    @click.option('--region', required=False, help='Region for the vpc')
+    @click.option('--domain', required=False,
+                  default=constants.DEFAULT_DOMAIN,
+                  help='Domain for hosted zone')
+    @click.option('--key', required=True, help='SSH Key Name')
+    @click.option('--count', required=True, default='1', type=int,
+                  help='Number of treadmill ldap instances to spin up')
+    @click.option('--image-id', required=True,
+                  help='AMI ID to use for instances')
+    @click.option('--instance-type', required=True,
+                  default=constants.INSTANCE_TYPES['EC2']['micro'],
+                  help='AWS ec2 instance type')
+    # TODO: Pick the current treadmill release by default.
+    @click.option('--tm-release', required=True,
+                  default='0.1.0', help='Treadmill release to use')
+    @click.option('--ldap-hostname', required=True,
+                  default='ldapserver', help='LDAP hostname')
+    @click.option('--app-root', required=True,
+                  default='/var/tmp', help='Treadmill app root')
+    @click.option('--ldap-cidr-block', required=False,
+                  default='172.23.1.0/24', help='CIDR block for LDAP')
+    @click.option('--ldap-subnet-id', required=False,
+                  help='Subnet ID for LDAP')
+    def init_ldap(vpc_id, region, domain, key, count, image_id,
+                  instance_type, tm_release, ldap_hostname, app_root,
+                  ldap_cidr_block, ldap_subnet_id):
+        """Initialize treadmill cell"""
+        if region:
+            connection.Connection.region_name = region
+
+        _ldap = ldap.LDAP(
+            name='TreadmillLDAP',
+            vpc_id=vpc_id,
+            domain=domain
+        )
+
+        _ldap.setup(
+            key=key,
+            count=1,
+            image_id=image_id,
+            instance_type=instance_type,
+            tm_release=tm_release,
+            app_root=app_root,
+            ldap_hostname=ldap_hostname,
+            cidr_block=ldap_cidr_block,
+            subnet_id=ldap_subnet_id
+        )
+
+        click.echo(
+            pprint(_ldap.subnet.show())
+        )
+
     @cloud.command(name='init-cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', required=False, help='Region for the vpc')
@@ -56,7 +109,7 @@ def init():
     @click.option('--count', required=True, default='3', type=int,
                   help='Number of treadmill masters to spin up')
     @click.option('--image-id', required=True,
-                  help='AMI ID to use for new master instance')
+                  help='AMI ID to use for new instances')
     @click.option('--instance-type', required=True,
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -156,8 +209,8 @@ def init():
                     ipa_admin_password, tm_release, key,
                     instance_type, image_id):
         """Initialize treadmill domain"""
-        ipa = IPA(name=name, vpc_id=vpc_id, domain=domain)
-        ipa.setup(
+        _ipa = ipa.IPA(name=name, vpc_id=vpc_id, domain=domain)
+        _ipa.setup(
             subnet_id=subnet_id,
             count=count,
             ipa_admin_password=ipa_admin_password,
@@ -169,7 +222,7 @@ def init():
         )
 
         click.echo(
-            pprint(ipa.show())
+            pprint(_ipa.show())
         )
 
     @cloud.command(name='add-node')
@@ -251,9 +304,21 @@ def init():
     @click.option('--name', required=False, help='Name of Instance',
                   default="TreadmillIPA")
     def delete_domain(vpc_id, domain, subnet_id, name):
-        """Delete Subnet"""
-        ipa = IPA(name=name, vpc_id=vpc_id, domain=domain)
-        ipa.destroy(subnet_id=subnet_id)
+        """Delete IPA"""
+        _ipa = ipa.IPA(name=name, vpc_id=vpc_id, domain=domain)
+        _ipa.destroy(subnet_id=subnet_id)
+
+    @delete.command(name='ldap')
+    @click.option('--vpc-id', required=True, help='VPC ID of cell')
+    @click.option('--domain', required=True, default=constants.DEFAULT_DOMAIN,
+                  help='Domain for hosted zone')
+    @click.option('--subnet-id', required=True, help='Subnet ID of LDAP')
+    @click.option('--name', required=False, help='Name of Instance',
+                  default="TreadmillLDAP")
+    def delete_ldap(vpc_id, domain, subnet_id, name):
+        """Delete LDAP"""
+        _ldap = ldap.LDAP(name=name, vpc_id=vpc_id, domain=domain)
+        _ldap.destroy(subnet_id=subnet_id)
 
     @cloud.group()
     def list():
