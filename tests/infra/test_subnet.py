@@ -133,7 +133,7 @@ class SubnetTest(unittest.TestCase):
             }
         )
 
-        get_instances_mock.assert_called_once_with(refresh=True)
+        get_instances_mock.assert_called_once_with(refresh=True, role=None)
         refresh_mock.assert_called_once()
 
 
