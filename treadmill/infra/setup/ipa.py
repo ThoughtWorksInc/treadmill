@@ -68,21 +68,18 @@ class IPA(base_provision.BaseProvision):
             for _rec, _value in srv_records.items():
                 self._change_srv_record(
                     action=action,
-                    hosted_zone_id=self.vpc.hosted_zone_id,
                     name=self._rec_name(_rec),
                     value=self._srv_rec_value(_value, instance.name),
                     record_type='SRV'
                 )
             self._change_srv_record(
                 action=action,
-                hosted_zone_id=self.vpc.hosted_zone_id,
                 name=self._rec_name('ipa-ca'),
                 value=self.subnet.instances.instances[0].private_ip,
                 record_type='A'
             )
             self._change_srv_record(
                 action=action,
-                hosted_zone_id=self.vpc.hosted_zone_id,
                 name=self._rec_name('_kerberos'),
                 value='"{0}"'.format(self.domain.upper()),
                 record_type='TXT'
@@ -96,12 +93,11 @@ class IPA(base_provision.BaseProvision):
 
     def _change_srv_record(self,
                            action,
-                           hosted_zone_id,
                            name,
                            value,
                            record_type):
         self.route_53_conn.change_resource_record_sets(
-            HostedZoneId=hosted_zone_id.split('/')[-1],
+            HostedZoneId=self.vpc.hosted_zone_id.split('/')[-1],
             ChangeBatch={
                 'Changes': [{
                     'Action': action,
