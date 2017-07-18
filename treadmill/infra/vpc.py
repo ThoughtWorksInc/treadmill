@@ -4,6 +4,9 @@ from treadmill.infra import constants
 from treadmill.infra import subnet
 
 import time
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class VPC:
@@ -191,10 +194,9 @@ class VPC:
                 'RouteTableAssociationId'
             )
         if not self.route_table_ids:
-            self.route_table_ids = self._get_ids_from_associations(
-                response['RouteTables'],
-                'RouteTableId'
-            )
+            self.route_table_ids = [
+                route['RouteTableId'] for route in response['RouteTables']
+            ]
         if not self.subnet_ids:
             self.subnet_ids = self._get_ids_from_associations(
                 response['RouteTables'],
@@ -209,9 +211,12 @@ class VPC:
                 AssociationId=ass_id
             )
         for route_table_id in self.route_table_ids:
-            self.ec2_conn.delete_route_table(
-                RouteTableId=route_table_id
-            )
+            try:
+                self.ec2_conn.delete_route_table(
+                    RouteTableId=route_table_id
+                )
+            except Exception as ex:
+                _LOGGER.info(ex)
         for subnet_id in self.subnet_ids:
             self.ec2_conn.delete_subnet(
                 SubnetId=subnet_id
