@@ -191,7 +191,7 @@ class Instances:
 
         return Instances(instances=_instances)
 
-    def get_volume_ids(self):
+    def load_volume_ids(self):
         if not self.volume_ids:
             volumes = self.ec2_conn.describe_volumes(
                 Filters=[{
@@ -219,7 +219,7 @@ class Instances:
             )
             self._wait_for_termination()
 
-        self.get_volume_ids()
+        self.load_volume_ids()
         if self.volume_ids:
             self.delete_volumes()
 

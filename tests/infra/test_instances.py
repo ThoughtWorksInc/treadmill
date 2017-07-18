@@ -417,7 +417,7 @@ class InstancesTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
-    def test_get_volume_ids(self, connectionMock):
+    def test_load_volume_ids(self, connectionMock):
         conn_mock = connectionMock()
         conn_mock.describe_volumes = mock.Mock(return_value={
             'Volumes': [{
@@ -426,7 +426,7 @@ class InstancesTest(unittest.TestCase):
         })
 
         instance = Instances([Instance(id=1)])
-        instance.get_volume_ids()
+        instance.load_volume_ids()
 
         self.assertEquals(instance.volume_ids, ['vol-id'])
         conn_mock.describe_volumes.assert_called_once_with(

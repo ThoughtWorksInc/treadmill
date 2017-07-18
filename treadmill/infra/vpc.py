@@ -186,7 +186,7 @@ class VPC:
         for secgroup_id in self.secgroup_ids:
             self.ec2_conn.delete_security_group(GroupId=secgroup_id)
 
-    def get_route_related_ids(self):
+    def load_route_related_ids(self):
         response = self.ec2_conn.describe_route_tables(Filters=self._filters())
         if not self.association_ids:
             self.association_ids = self._get_ids_from_associations(
@@ -204,7 +204,7 @@ class VPC:
 
     def delete_route_tables(self):
         if not self.route_related_ids:
-            self.get_route_related_ids()
+            self.load_route_related_ids()
 
         for ass_id in self.association_ids:
             self.ec2_conn.disassociate_route_table(
@@ -256,7 +256,7 @@ class VPC:
 
     def show(self):
         self.get_instances(refresh=True)
-        self.get_route_related_ids()
+        self.load_route_related_ids()
         return {
             'VpcId': self.id,
             'Subnets': self.subnet_ids,

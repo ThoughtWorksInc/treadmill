@@ -37,7 +37,7 @@ class Subnet(ec2object.EC2Object):
         _subnet._create_route_table(gateway_id)
         return _subnet
 
-    def get_route_related_ids(self):
+    def load_route_related_ids(self):
         response = self.ec2_conn.describe_route_tables(
             Filters=self._association_filters()
         )
@@ -66,7 +66,7 @@ class Subnet(ec2object.EC2Object):
             domain,
             role
         )
-        self.get_route_related_ids()
+        self.load_route_related_ids()
 
         try:
             self.ec2_conn.delete_subnet(

@@ -378,7 +378,7 @@ class VPCTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.infra.connection.Connection')
-    def test_get_route_related_ids(self, connectionMock):
+    def test_load_route_related_ids(self, connectionMock):
         route_table_response_mock = {
             'RouteTables': [{
                 'RouteTableId': 'route_table_id_0',
@@ -412,7 +412,7 @@ class VPCTest(unittest.TestCase):
             return_value=route_table_response_mock
         )
         _vpc = vpc.VPC(id=self.vpc_id_mock, domain='foo.bar')
-        _vpc.get_route_related_ids()
+        _vpc.load_route_related_ids()
         self.assertEquals(_vpc.association_ids, ['ass_id_0', 'ass_id_1'])
         self.assertEquals(_vpc.route_table_ids,
                           ['route_table_id_0', 'route_table_id_1'])
