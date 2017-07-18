@@ -9,11 +9,12 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Instance(ec2object.EC2Object):
-    def __init__(self, name=None, id=None, metadata=None):
+    def __init__(self, name=None, id=None, metadata=None, role=None):
         super(Instance, self).__init__(
             id=id,
             name=name,
             metadata=metadata,
+            role=role
         )
         self.private_ip = self._get_private_ip()
 
@@ -146,7 +147,8 @@ class Instances:
             user_data,
             hosted_zone_id,
             reverse_hosted_zone_id,
-            domain
+            domain,
+            role
     ):
         conn = connection.Connection()
         _instances = conn.run_instances(
@@ -172,7 +174,8 @@ class Instances:
             _instance = Instance(
                 id=i['InstanceId'],
                 name=name,
-                metadata=i
+                metadata=i,
+                role=role
             )
             _instance.create_tags()
             _instance.configure_dns_record(
