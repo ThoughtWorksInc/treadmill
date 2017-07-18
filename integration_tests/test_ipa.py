@@ -8,7 +8,7 @@ import importlib
 import click
 import click.testing
 from botocore.exceptions import ClientError
-from treadmill.infra import vpc, constants
+from treadmill.infra import vpc, constants, subnet
 
 
 class IPATest(unittest.TestCase):
@@ -26,7 +26,7 @@ class IPATest(unittest.TestCase):
                     'delete',
                     'vpc',
                     '--vpc-id=' + self.vpc_id,
-                    '--domain=ms.treadmill'
+                    '--domain=treadmill.org'
                 ]
             )
 
@@ -68,7 +68,7 @@ class IPATest(unittest.TestCase):
                 print(e)
 
         _vpc = vpc.VPC(id=vpc_info['VpcId'], domain=constants.DEFAULT_DOMAIN)
-        _vpc_info = _vpc.show()
+        vpc_info = _vpc.show()
         self.assertEqual(subnet_info['VpcId'], vpc_info['VpcId'])
         self.assertEqual(len(subnet_info['Instances']), 1)
         self.assertCountEqual(
@@ -76,8 +76,33 @@ class IPATest(unittest.TestCase):
             ['TreadmillIPA1']
         )
         self.assertIsNotNone(subnet_info['SubnetId'])
-        self.assertEqual(len(_vpc_info['Subnets']), 1)
-        self.assertEqual(_vpc_info['Subnets'][0], subnet_info['SubnetId'])
+        self.assertEqual(len(vpc_info['Subnets']), 1)
+        self.assertEqual(vpc_info['Subnets'][0], subnet_info['SubnetId'])
+
+        result_ldap_init = self.runner.invoke(
+            self.configure_cli, [
+                'init-ldap',
+                '--key=ms_treadmill_dev',
+                '--image-id=ami-9e2f0988',
+                '--vpc-id=' + vpc_info['VpcId'],
+                '--ldap-subnet-id=' + subnet_info['SubnetId'],
+            ]
+        )
+
+        try:
+            ldap_subnet_info = ast.literal_eval(result_ldap_init.output)
+        except Exception as e:
+            if result_ldap_init.exception:
+                print(result_ldap_init.exception)
+            else:
+                print(e)
+
+        self.assertEqual(ldap_subnet_info['SubnetId'], subnet_info['SubnetId'])
+        self.assertEqual(len(ldap_subnet_info['Instances']), 2)
+        self.assertCountEqual(
+            [i['Name'] for i in ldap_subnet_info['Instances']],
+            ['TreadmillIPA1', 'TreadmillLDAP1']
+        )
 
         self.runner.invoke(
             self.configure_cli, [
@@ -88,11 +113,33 @@ class IPATest(unittest.TestCase):
             ]
         )
 
+        _subnet = subnet.Subnet(id=subnet_info['SubnetId'])
+        _subnet_resources = _subnet.show()
+
+        self.assertEqual(len(_subnet_resources['Instances']), 1)
+        self.assertCountEqual(
+            [i['Name'] for i in _subnet_resources['Instances']],
+            ['TreadmillLDAP1']
+        )
+
+        self.runner.invoke(
+            self.configure_cli, [
+                'delete',
+                'ldap',
+                '--vpc-id=' + vpc_info['VpcId'],
+                '--subnet-id=' + subnet_info['SubnetId']
+            ]
+        )
+        _vpc.subnet_ids = []
+        vpc_info = _vpc.show()
+
+        self.assertEqual(len(vpc_info['Subnets']), 0)
+
         self.runner.invoke(
             self.configure_cli, [
                 'delete',
                 'vpc',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-id=' + _vpc.id,
                 '--domain=' + _vpc.domain
             ]
         )
