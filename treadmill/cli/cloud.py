@@ -13,17 +13,15 @@ def init():
         pass
 
     @cloud.command(name='init')
-    @click.option('--domain', required=False, default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
-    @click.option('--region', required=False,
-                  help='Region for the vpc')
-    @click.option('--vpc-cidr-block', required=False,
-                  default='172.23.0.0/16', help='CIDR block for the vpc')
-    @click.option('--secgroup_name', required=False,
-                  default='sg_common', help='Security group name')
+    @click.option('--region', help='Region for the vpc')
+    @click.option('--vpc-cidr-block', default='172.23.0.0/16',
+                  help='CIDR block for the vpc')
+    @click.option('--secgroup_name', default='sg_common',
+                  help='Security group name')
     @click.option(
         '--secgroup_desc',
-        required=False,
         default='Treadmill Security Group',
         help='Description for the security group')
     def init(domain, region, vpc_cidr_block,
@@ -45,9 +43,8 @@ def init():
 
     @cloud.command(name='init-ldap')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--region', required=False, help='Region for the vpc')
-    @click.option('--domain', required=False,
-                  default=constants.DEFAULT_DOMAIN,
+    @click.option('--region', help='Region for the vpc')
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', required=True, default='1', type=int,
@@ -64,10 +61,9 @@ def init():
                   default='treadmillldap1', help='LDAP hostname')
     @click.option('--app-root', required=True,
                   default='/var/tmp', help='Treadmill app root')
-    @click.option('--ldap-cidr-block', required=False,
-                  default='172.23.1.0/24', help='CIDR block for LDAP')
-    @click.option('--ldap-subnet-id', required=False,
-                  help='Subnet ID for LDAP')
+    @click.option('--ldap-cidr-block', default='172.23.1.0/24',
+                  help='CIDR block for LDAP')
+    @click.option('--ldap-subnet-id', help='Subnet ID for LDAP')
     def init_ldap(vpc_id, region, domain, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id):
@@ -99,33 +95,31 @@ def init():
 
     @cloud.command(name='init-cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--region', required=False, help='Region for the vpc')
-    @click.option('--domain', required=False,
-                  default=constants.DEFAULT_DOMAIN,
+    @click.option('--region', help='Region for the vpc')
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
-    @click.option('--name', required=False, default='TreadmillMaster',
+    @click.option('--name', default='TreadmillMaster',
                   help='Treadmill master name')
     @click.option('--key', required=True, help='SSH Key Name')
-    @click.option('--count', required=True, default='3', type=int,
+    @click.option('--count', default='3', type=int,
                   help='Number of treadmill masters to spin up')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for new instances')
-    @click.option('--instance-type', required=True,
+    @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
     # TODO: Pick the current treadmill release by default.
-    @click.option('--tm-release', required=True,
-                  default='0.1.0', help='Treadmill release to use')
-    @click.option('--ldap-hostname', required=True,
-                  default='treadmillldap1', help='LDAP hostname')
-    @click.option('--app-root', required=True,
-                  default='/var/tmp', help='Treadmill app root')
-    @click.option('--cell-cidr-block', required=False,
-                  default='172.23.0.0/24', help='CIDR block for the cell')
-    @click.option('--ldap-cidr-block', required=False,
-                  default='172.23.1.0/24', help='CIDR block for LDAP')
-    @click.option('--subnet-id', required=False, help='Subnet ID')
-    @click.option('--ldap-subnet-id', required=False,
+    @click.option('--tm-release', default='0.1.0',
+                  help='Treadmill release to use')
+    @click.option('--ldap-hostname', default='treadmillldap1',
+                  help='LDAP hostname')
+    @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
+    @click.option('--cell-cidr-block', default='172.23.0.0/24',
+                  help='CIDR block for the cell')
+    @click.option('--ldap-cidr-block', default='172.23.1.0/24',
+                  help='CIDR block for LDAP')
+    @click.option('--subnet-id', help='Subnet ID')
+    @click.option('--ldap-subnet-id',
                   help='Subnet ID for LDAP')
     def init_cell(vpc_id, region, domain, name, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
@@ -189,8 +183,7 @@ def init():
     @click.option('--name', default='TreadmillIPA',
                   help='Name of the instance')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--subnet-cidr-block', help='Cidr block of subnet for IPA',
                   default='172.23.2.0/24')
@@ -227,11 +220,10 @@ def init():
 
     @cloud.command(name='add-node')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--region', required=False, help='Region for the vpc')
-    @click.option('--domain', required=False,
-                  default=constants.DEFAULT_DOMAIN,
+    @click.option('--region', help='Region for the vpc')
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
-    @click.option('--name', required=False, default='TreadmillNode',
+    @click.option('--name', default='TreadmillNode',
                   help='Node name')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', required=True, default='1', type=int,
@@ -301,7 +293,7 @@ def init():
     @click.option('--domain', required=True, default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of IPA')
-    @click.option('--name', required=False, help='Name of Instance',
+    @click.option('--name', help='Name of Instance',
                   default="TreadmillIPA")
     def delete_domain(vpc_id, domain, subnet_id, name):
         """Delete IPA"""
@@ -313,7 +305,7 @@ def init():
     @click.option('--domain', required=True, default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of LDAP')
-    @click.option('--name', required=False, help='Name of Instance',
+    @click.option('--name', help='Name of Instance',
                   default="TreadmillLDAP")
     def delete_ldap(vpc_id, domain, subnet_id, name):
         """Delete LDAP"""
