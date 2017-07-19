@@ -58,7 +58,7 @@ class Subnet(ec2object.EC2Object):
             hosted_zone_id,
             reverse_hosted_zone_id,
             domain,
-            role
+            role=None
     ):
         self.terminate_instances(
             hosted_zone_id,
