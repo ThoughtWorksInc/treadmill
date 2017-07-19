@@ -46,20 +46,20 @@ def init():
     @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--key', required=True, help='SSH Key Name')
-    @click.option('--count', required=True, default='1', type=int,
+    @click.option('--count', default='1', type=int,
                   help='Number of treadmill ldap instances to spin up')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for instances')
-    @click.option('--instance-type', required=True,
+    @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
     # TODO: Pick the current treadmill release by default.
-    @click.option('--tm-release', required=True,
-                  default='0.1.0', help='Treadmill release to use')
-    @click.option('--ldap-hostname', required=True,
-                  default='treadmillldap1', help='LDAP hostname')
-    @click.option('--app-root', required=True,
-                  default='/var/tmp', help='Treadmill app root')
+    @click.option('--tm-release', default='0.1.0',
+                  help='Treadmill release to use')
+    @click.option('--ldap-hostname', default='treadmillldap1',
+                  help='LDAP hostname')
+    @click.option('--app-root', default='/var/tmp',
+                  help='Treadmill app root')
     @click.option('--ldap-cidr-block', default='172.23.1.0/24',
                   help='CIDR block for LDAP')
     @click.option('--ldap-subnet-id', help='Subnet ID for LDAP')
@@ -232,19 +232,18 @@ def init():
     @click.option('--name', default='TreadmillNode',
                   help='Node name')
     @click.option('--key', required=True, help='SSH Key Name')
-    @click.option('--count', required=True, default='1', type=int,
+    @click.option('--count', default='1', type=int,
                   help='Number of treadmill nodes to spin up')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for new node instance')
-    @click.option('--instance-type', required=True,
+    @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
-    @click.option('--tm-release', required=True,
+    @click.option('--tm-release',
                   default='0.1.0', help='Treadmill release to use')
-    @click.option('--ldap-hostname', required=True,
-                  default='treadmillldap1', help='LDAP hostname')
-    @click.option('--app-root', required=True,
-                  default='/var/tmp', help='Treadmill app root')
+    @click.option('--ldap-hostname', default='treadmillldap1',
+                  help='LDAP hostname')
+    @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
     @click.option('--subnet-id', required=True, help='Subnet ID')
     def add_node(vpc_id, region, domain, name, key, count, image_id,
                  instance_type, tm_release, ldap_hostname, app_root,
@@ -272,8 +271,7 @@ def init():
 
     @delete.command(name='vpc')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     def delete_vpc(vpc_id, domain):
         """Delete VPC"""
@@ -281,7 +279,7 @@ def init():
 
     @delete.command(name='cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True, default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of cell')
     def delete_cell(vpc_id, domain, subnet_id):
@@ -296,7 +294,7 @@ def init():
 
     @delete.command(name='domain')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True, default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of IPA')
     @click.option('--name', help='Name of Instance',
@@ -308,7 +306,7 @@ def init():
 
     @delete.command(name='ldap')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True, default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of LDAP')
     @click.option('--name', help='Name of Instance',
@@ -325,7 +323,7 @@ def init():
 
     @list.command(name='vpc')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True, default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     def vpc_resources(vpc_id, domain):
         """Show VPC"""
