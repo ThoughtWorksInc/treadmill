@@ -61,7 +61,7 @@ def init():
     @click.option('--tm-release', required=True,
                   default='0.1.0', help='Treadmill release to use')
     @click.option('--ldap-hostname', required=True,
-                  default='ldapserver', help='LDAP hostname')
+                  default='treadmillldap1', help='LDAP hostname')
     @click.option('--app-root', required=True,
                   default='/var/tmp', help='Treadmill app root')
     @click.option('--ldap-cidr-block', required=False,
@@ -117,7 +117,7 @@ def init():
     @click.option('--tm-release', required=True,
                   default='0.1.0', help='Treadmill release to use')
     @click.option('--ldap-hostname', required=True,
-                  default='ldapserver', help='LDAP hostname')
+                  default='treadmillldap1', help='LDAP hostname')
     @click.option('--app-root', required=True,
                   default='/var/tmp', help='Treadmill app root')
     @click.option('--cell-cidr-block', required=False,
@@ -193,7 +193,7 @@ def init():
                   default=constants.DEFAULT_DOMAIN,
                   help='Domain for hosted zone')
     @click.option('--subnet-cidr-block', help='Cidr block of subnet for IPA',
-                  default='172.23.0.0/24')
+                  default='172.23.2.0/24')
     @click.option('--subnet-id', help='Subnet ID')
     @click.option('--count', help='Count of the instances', default=1)
     @click.option('--ipa-admin-password', required=True,
@@ -244,7 +244,7 @@ def init():
     @click.option('--tm-release', required=True,
                   default='0.1.0', help='Treadmill release to use')
     @click.option('--ldap-hostname', required=True,
-                  default='ldapserver', help='LDAP hostname')
+                  default='treadmillldap1', help='LDAP hostname')
     @click.option('--app-root', required=True,
                   default='/var/tmp', help='Treadmill app root')
     @click.option('--subnet-id', required=True, help='Subnet ID')
