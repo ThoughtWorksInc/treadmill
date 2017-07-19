@@ -41,10 +41,12 @@ class BaseProvision:
         self.vpc.load_internet_gateway_ids()
         self.vpc.load_security_group_ids()
 
+        if not getattr(self, 'subnet_name', None):
+            self.subnet_name = self.name
         if not subnet_id:
             self.vpc.create_subnet(
                 cidr_block=cidr_block,
-                name=self.name,
+                name=self.subnet_name,
                 gateway_id=self.vpc.gateway_ids[0]
             )
             self.subnet = self.vpc.subnets[-1]

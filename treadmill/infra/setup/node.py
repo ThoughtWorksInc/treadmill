@@ -1,10 +1,11 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration
+from treadmill.infra import configuration, constants
 
 
 class Node(base_provision.BaseProvision):
     def __init__(self, name, vpc_id, domain):
         super(Node, self).__init__(name=name, vpc_id=vpc_id, domain=domain)
+        self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
 
     def setup(self, image_id, count, key, tm_release, instance_type, app_root,
               ldap_hostname, subnet_id):

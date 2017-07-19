@@ -1,5 +1,5 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration
+from treadmill.infra import configuration, constants
 
 
 class Zookeeper(base_provision.BaseProvision):
@@ -9,6 +9,7 @@ class Zookeeper(base_provision.BaseProvision):
             vpc_id=vpc_id,
             domain=domain,
         )
+        self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
 
     def setup(self, image_id, key, cidr_block, instance_type, subnet_id=None):
         self.configuration = configuration.Zookeeper(

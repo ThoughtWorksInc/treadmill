@@ -37,6 +37,7 @@ class LDAPTest(unittest.TestCase):
             domain='foo.bar',
             vpc_id=_vpc_id_mock,
         )
+        ldap.subnet_name = 'ldap-subnet-name'
         ldap.setup(
             image_id='foo-123',
             count=1,
@@ -67,7 +68,7 @@ class LDAPTest(unittest.TestCase):
         _vpc_mock.load_security_group_ids.assert_called_once()
         _vpc_mock.create_subnet.assert_called_once_with(
             cidr_block='cidr-block',
-            name='ldap',
+            name='ldap-subnet-name',
             gateway_id=123
         )
 
