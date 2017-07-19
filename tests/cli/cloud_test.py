@@ -36,7 +36,7 @@ class CloudTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.cli.cloud.ldap.LDAP')
-    @mock.patch('treadmill.cli.cloud.Cell')
+    @mock.patch('treadmill.cli.cloud.cell.Cell')
     def test_init_cell(self, cell_mock, ldap_mock):
         """
         Test cloud init cell
@@ -93,7 +93,7 @@ class CloudTest(unittest.TestCase):
         )
 
     @mock.patch('treadmill.cli.cloud.ldap.LDAP')
-    @mock.patch('treadmill.cli.cloud.Cell')
+    @mock.patch('treadmill.cli.cloud.cell.Cell')
     def test_init_cell_without_ldap(self, cell_mock, ldap_mock):
         """
         Test cloud init cell without ldap

@@ -1,8 +1,7 @@
 import click
 from pprint import pprint
-from treadmill.infra.setup.cell import Cell
 from treadmill.infra import constants, connection, vpc, subnet
-from treadmill.infra.setup import ipa, ldap, node
+from treadmill.infra.setup import ipa, ldap, node, cell
 
 
 def init():
@@ -131,13 +130,13 @@ def init():
         if region:
             connection.Connection.region_name = region
 
-        cell = Cell(
+        _cell = cell.Cell(
             domain=domain,
             vpc_id=vpc_id,
             subnet_id=subnet_id,
         )
 
-        cell.setup_zookeeper(
+        _cell.setup_zookeeper(
             name='TreadmillZookeeper',
             key=key,
             image_id=image_id,
@@ -145,7 +144,7 @@ def init():
             subnet_cidr_block=cell_cidr_block,
         )
 
-        cell.setup_master(
+        _cell.setup_master(
             name=name,
             key=key,
             count=count,
@@ -158,7 +157,7 @@ def init():
         )
 
         result = {
-            'Cell': cell.show()
+            'Cell': _cell.show()
         }
 
         if not without_ldap:
