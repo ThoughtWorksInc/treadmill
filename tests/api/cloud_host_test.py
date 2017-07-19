@@ -5,7 +5,7 @@ import unittest
 import mock
 
 from treadmill.api import cloud_host
-from treadmill import subproc
+import subprocess
 
 
 class ApiCloudHostTest(unittest.TestCase):
@@ -19,14 +19,14 @@ class ApiCloudHostTest(unittest.TestCase):
 
     def test_create(self):
         _ipa_result_mock = b'foo\n bar\n goo\n tao\n random password: tao-pass-goo-foo' # noqa :E501
-        subproc.check_output = mock.Mock(return_value=_ipa_result_mock)
+        subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         self.assertEqual(
             self.cloud_host.create('some-host'),
             'tao-pass-goo-foo'
         )
 
-        subproc.check_output.assert_called_once_with([
+        subprocess.check_output.assert_called_once_with([
             "ipa",
             "host-add",
             'some-host',
@@ -36,11 +36,11 @@ class ApiCloudHostTest(unittest.TestCase):
 
     def test_delete(self):
         _ipa_result_mock = b'------------------\nDeleted host "some-host"\n------------------\n' # noqa :E501
-        subproc.check_output = mock.Mock(return_value=_ipa_result_mock)
+        subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         self.cloud_host.delete('some-host')
 
-        subproc.check_output.assert_called_once_with([
+        subprocess.check_output.assert_called_once_with([
             "ipa",
             "host-del",
             'some-host'
@@ -48,12 +48,12 @@ class ApiCloudHostTest(unittest.TestCase):
 
     def test_delete_failure(self):
         _ipa_result_mock = b'------------------\nCould not Delete host "some-host"\n------------------\n' # noqa :E501
-        subproc.check_output = mock.Mock(return_value=_ipa_result_mock)
+        subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         with self.assertRaises(AssertionError):
             self.cloud_host.delete('some-host')
 
-        subproc.check_output.assert_called_once_with([
+        subprocess.check_output.assert_called_once_with([
             "ipa",
             "host-del",
             'some-host'

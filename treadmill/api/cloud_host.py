@@ -1,4 +1,5 @@
-from treadmill import authz, subproc
+from treadmill import authz
+import subprocess
 
 
 class API(object):
@@ -7,7 +8,7 @@ class API(object):
     def __init__(self):
 
         def create(hostname):
-            result = subproc.check_output([
+            result = subprocess.check_output([
                 "ipa",
                 "host-add",
                 hostname,
@@ -18,7 +19,7 @@ class API(object):
             return password_string.split("password:")[-1].strip()
 
         def delete(hostname):
-            result = subproc.check_output([
+            result = subprocess.check_output([
                 "ipa",
                 "host-del",
                 hostname,
