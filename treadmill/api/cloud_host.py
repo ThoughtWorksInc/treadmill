@@ -17,7 +17,17 @@ class API(object):
             password_string = result.decode('utf-8').split("\n")[4]
             return password_string.split("password:")[-1].strip()
 
+        def delete(hostname):
+            result = subproc.check_output([
+                "ipa",
+                "host-del",
+                hostname,
+            ]).decode('utf-8')
+
+            assert 'Deleted host "'+ hostname +'"' in result
+
         self.create = create
+        self.delete = delete
 
 
 def init(authorizer):
