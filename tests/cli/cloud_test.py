@@ -144,7 +144,7 @@ class CloudTest(unittest.TestCase):
             ipa_admin_password='secret',
             tm_release='0.1.0',
             key='key',
-            instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
+            instance_type=constants.INSTANCE_TYPES['EC2']['medium'],
             subnet_id=None
         )
 
