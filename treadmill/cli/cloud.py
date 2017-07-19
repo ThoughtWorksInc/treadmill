@@ -121,9 +121,12 @@ def init():
     @click.option('--subnet-id', help='Subnet ID')
     @click.option('--ldap-subnet-id',
                   help='Subnet ID for LDAP')
+    @click.option('--without-ldap', required=False, is_flag=True,
+                  default=False, help='Subnet ID for LDAP')
     def init_cell(vpc_id, region, domain, name, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
-                  cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id):
+                  cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
+                  without_ldap):
         """Initialize treadmill cell"""
         if region:
             connection.Connection.region_name = region
@@ -154,29 +157,33 @@ def init():
             subnet_cidr_block=cell_cidr_block,
         )
 
-        _ldap = ldap.LDAP(
-            name='TreadmillLDAP',
-            vpc_id=vpc_id,
-            domain=domain
-        )
+        result = {
+            'Cell': cell.show()
+        }
 
-        _ldap.setup(
-            key=key,
-            count=1,
-            image_id=image_id,
-            instance_type=instance_type,
-            tm_release=tm_release,
-            app_root=app_root,
-            ldap_hostname=ldap_hostname,
-            cidr_block=ldap_cidr_block,
-            subnet_id=ldap_subnet_id
-        )
+        if not without_ldap:
+            _ldap = ldap.LDAP(
+                name='TreadmillLDAP',
+                vpc_id=vpc_id,
+                domain=domain
+            )
+
+            _ldap.setup(
+                key=key,
+                count=1,
+                image_id=image_id,
+                instance_type=instance_type,
+                tm_release=tm_release,
+                app_root=app_root,
+                ldap_hostname=ldap_hostname,
+                cidr_block=ldap_cidr_block,
+                subnet_id=ldap_subnet_id
+            )
+
+            result['Ldap'] = _ldap.subnet.show()
 
         click.echo(
-            pprint({
-                'Cell': cell.show(),
-                'Ldap': _ldap.subnet.show()
-            })
+            pprint(result)
         )
 
     @cloud.command(name='init-domain')

@@ -92,6 +92,47 @@ class CloudTest(unittest.TestCase):
             subnet_id=None
         )
 
+    @mock.patch('treadmill.cli.cloud.ldap.LDAP')
+    @mock.patch('treadmill.cli.cloud.Cell')
+    def test_init_cell_without_ldap(self, cell_mock, ldap_mock):
+        """
+        Test cloud init cell without ldap
+        """
+        cell = cell_mock()
+        _ldap_mock = ldap_mock()
+        result = self.runner.invoke(
+            self.configure_cli, [
+                'init-cell',
+                '--key=key',
+                '--image-id=img-123',
+                '--subnet-id=sub-123',
+                '--vpc-id=vpc-123',
+                '--cell-cidr-block=172.24.0.0/24',
+                '--without-ldap'
+            ])
+
+        self.assertEqual(result.exit_code, 0)
+        cell.setup_zookeeper.assert_called_once_with(
+            name='TreadmillZookeeper',
+            key='key',
+            image_id='img-123',
+            instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
+            subnet_cidr_block='172.24.0.0/24',
+        )
+        cell.setup_master.assert_called_once_with(
+            name='TreadmillMaster',
+            key='key',
+            count=3,
+            image_id='img-123',
+            instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
+            tm_release='0.1.0',
+            ldap_hostname='treadmillldap1',
+            app_root='/var/tmp',
+            subnet_cidr_block='172.24.0.0/24',
+        )
+
+        _ldap_mock.setup.assert_not_called()
+
     @mock.patch('treadmill.cli.cloud.node.Node')
     def test_add_node(self, NodeMock):
         """
