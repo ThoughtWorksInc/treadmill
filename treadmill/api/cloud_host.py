@@ -24,7 +24,7 @@ class API(object):
                 hostname,
             ]).decode('utf-8')
 
-            assert 'Deleted host "'+ hostname +'"' in result
+            assert 'Deleted host "' + hostname + '"' in result
 
         self.create = create
         self.delete = delete
