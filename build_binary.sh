@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-yum install rpm-build rpmdevtools python-devel -y
-yum groupinstall "Development Tools" -y
+sudo yum install rpm-build rpmdevtools python-devel -y
+sudo yum groupinstall "Development Tools" -y
 
 rpmdev-setuptree
 
