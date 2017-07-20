@@ -15,7 +15,7 @@ class BaseProvision:
         self.name = name
         self.vpc = vpc.VPC(id=vpc_id, domain=domain)
         self.domain = domain
-        self.route_53_conn = connection.Connection('route53')
+        self.route_53_conn = connection.Connection(constants.ROUTE_53)
         self.instances = None
         _role = constants.ROLES.get(
             self.__class__.__name__.upper(),
