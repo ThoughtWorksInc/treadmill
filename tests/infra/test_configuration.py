@@ -45,7 +45,7 @@ class MasterTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_master_configuration_script_data(self, open_mock):
-        config = configuration.Master('', '', '', '', '', '')
+        config = configuration.Master('', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
@@ -74,7 +74,7 @@ class LDAPTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_ldap_configuration_script_data(self, open_mock):
-        config = configuration.LDAP('', '', '', '', '', '')
+        config = configuration.LDAP('', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
@@ -105,7 +105,6 @@ class IPATest(unittest.TestCase):
     def test_ipa_configuration_script_data(self, open_mock):
         config = configuration.IPA(
             ipa_admin_password='admin-password',
-            domain='foo.bar',
             tm_release='some-release',
             name='ipa',
             cell='subnet-id',
@@ -139,7 +138,6 @@ class ZookeeperTest(unittest.TestCase):
     def test_zookeeper_configuration_script_data(self, open_mock):
         config = configuration.Zookeeper(
             name='zookeeper',
-            domain='treadmill.org',
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME'],
@@ -168,7 +166,6 @@ class NodeTest(unittest.TestCase):
     def test_node_configuration_script_data(self, open_mock):
         config = configuration.Node(
             name='node',
-            domain='treadmill.org',
             tm_release='tm_release',
             app_root='/var/tmp',
             subnet_id='sub-123',

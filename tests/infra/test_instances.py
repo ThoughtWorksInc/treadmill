@@ -78,6 +78,7 @@ class InstanceTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_configure_dns_record(self, ConnectionMock):
+        ConnectionMock.context.domain = 'joo.goo'
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
 
@@ -88,7 +89,6 @@ class InstanceTest(unittest.TestCase):
         )
         instance.configure_dns_record(
             hosted_zone_id='zone-id',
-            domain='joo.goo'
         )
         self.assertEquals(instance.private_ip, '10.1.2.3')
 
@@ -111,6 +111,7 @@ class InstanceTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_confgiure_dns_record_reverse(self, ConnectionMock):
+        ConnectionMock.context.domain = 'joo.goo'
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
 
@@ -121,7 +122,6 @@ class InstanceTest(unittest.TestCase):
         )
         instance.configure_dns_record(
             hosted_zone_id='reverse-zone-id',
-            domain='joo.goo',
             reverse=True
         )
 
@@ -144,6 +144,7 @@ class InstanceTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_delete_dns_record(self, ConnectionMock):
+        ConnectionMock.context.domain = 'joo.goo'
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
 
@@ -154,7 +155,6 @@ class InstanceTest(unittest.TestCase):
         )
         instance.delete_dns_record(
             hosted_zone_id='zone-id',
-            domain='joo.goo'
         )
         self.assertEquals(instance.private_ip, '10.1.2.3')
 
@@ -177,6 +177,7 @@ class InstanceTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_delete_dns_record_reverse(self, ConnectionMock):
+        ConnectionMock.context.domain = 'joo.goo'
         conn_mock = ConnectionMock('route53')
         conn_mock.change_resource_record_sets = mock.Mock()
 
@@ -187,7 +188,6 @@ class InstanceTest(unittest.TestCase):
         )
         instance.delete_dns_record(
             hosted_zone_id='reverse-zone-id',
-            domain='joo.goo',
             reverse=True
         )
 
@@ -214,6 +214,7 @@ class InstancesTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create(self, ConnectionMock):
+        ConnectionMock.context.domain = 'joo.goo'
         instance1_metadata_mock = {
             'InstanceId': 1,
             'AmiLaunchIndex': 0
@@ -251,7 +252,6 @@ class InstancesTest(unittest.TestCase):
             user_data='',
             hosted_zone_id='zone-id',
             reverse_hosted_zone_id='reverse-zone-id',
-            domain='joo.goo',
             role='role'
         ).instances
 
@@ -388,7 +388,7 @@ class InstancesTest(unittest.TestCase):
         instance = Instances(instances=[instance_1_mock])
         instance.volume_ids = ['vol-id0']
 
-        instance.terminate('zone-id', 'reverse-zone-id', 'tw.treadmill.test')
+        instance.terminate('zone-id', 'reverse-zone-id')
 
         conn_mock.describe_instance_status.assert_called()
         self.assertCountEqual(
@@ -396,11 +396,9 @@ class InstancesTest(unittest.TestCase):
             [
                 mock.mock.call(
                     'zone-id',
-                    'tw.treadmill.test'
                 ),
                 mock.mock.call(
                     reverse=True,
-                    domain='tw.treadmill.test',
                     hosted_zone_id='reverse-zone-id'
                 )
             ]

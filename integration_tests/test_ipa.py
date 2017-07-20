@@ -8,7 +8,7 @@ import importlib
 import click
 import click.testing
 from botocore.exceptions import ClientError
-from treadmill.infra import vpc, constants, subnet
+from treadmill.infra import vpc, subnet
 
 
 class IPATest(unittest.TestCase):
@@ -67,7 +67,7 @@ class IPATest(unittest.TestCase):
             else:
                 print(e)
 
-        _vpc = vpc.VPC(id=vpc_info['VpcId'], domain=constants.DEFAULT_DOMAIN)
+        _vpc = vpc.VPC(id=vpc_info['VpcId'])
         vpc_info = _vpc.show()
         self.assertEqual(subnet_info['VpcId'], vpc_info['VpcId'])
         self.assertEqual(len(subnet_info['Instances']), 1)
@@ -140,7 +140,7 @@ class IPATest(unittest.TestCase):
                 'delete',
                 'vpc',
                 '--vpc-id=' + _vpc.id,
-                '--domain=' + _vpc.domain
+                '--domain=treadmill.org'
             ]
         )
 

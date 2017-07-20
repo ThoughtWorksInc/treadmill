@@ -10,12 +10,11 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class VPC:
-    def __init__(self, domain, id=None, metadata=None):
+    def __init__(self, id=None, metadata=None):
         self.ec2_conn = connection.Connection()
         self.route53_conn = connection.Connection(resource=constants.ROUTE_53)
         self.id = id
         self.metadata = metadata
-        self.domain = domain
         self.instances = []
         self.secgroup_ids = []
         self.subnet_ids = []
@@ -59,9 +58,8 @@ class VPC:
             cidr_block,
             secgroup_name,
             secgroup_desc,
-            domain
     ):
-        _vpc = VPC(domain=domain)
+        _vpc = VPC()
         _vpc.create(cidr_block=cidr_block)
         _vpc.create_internet_gateway()
         _vpc.create_security_group(secgroup_name, secgroup_desc)
@@ -114,13 +112,13 @@ class VPC:
             name = self._reverse_domain_name()
         else:
             identifier = 'hosted_zone_id'
-            name = self.domain
+            name = connection.Connection.context.domain
 
         if not getattr(self, identifier):
             _hosted_zone_id = self.route53_conn.create_hosted_zone(
                 Name=name,
                 VPC={
-                    'VPCRegion': connection.Connection.region_name,
+                    'VPCRegion': connection.Connection.context.region_name,
                     'VPCId': self.id,
                 },
                 HostedZoneConfig={
@@ -169,7 +167,6 @@ class VPC:
         self.instances.terminate(
             hosted_zone_id=self.hosted_zone_id,
             reverse_hosted_zone_id=self.reverse_hosted_zone_id,
-            domain=self.domain
         )
 
     def load_security_group_ids(self):
@@ -270,7 +267,7 @@ class VPC:
         _default_options = [
             {
                 'Key': 'domain-name',
-                'Values': [self.domain]
+                'Values': [connection.Connection.context.domain]
             },
             {
                 'Key': 'domain-name-servers',

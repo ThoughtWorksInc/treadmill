@@ -32,7 +32,6 @@ class CloudTest(unittest.TestCase):
             cidr_block='172.24.0.0/16',
             secgroup_name='sg_common',
             secgroup_desc='Test',
-            domain='test.treadmill'
         )
 
     @mock.patch('treadmill.cli.cloud.ldap.LDAP')
@@ -77,7 +76,6 @@ class CloudTest(unittest.TestCase):
             mock.mock.call(
                 name='TreadmillLDAP',
                 vpc_id='vpc-123',
-                domain='treadmill.org'
             )
         )
         _ldap_mock.setup.assert_called_once_with(

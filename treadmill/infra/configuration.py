@@ -1,6 +1,7 @@
 from jinja2 import Template
 
 from treadmill.infra import SCRIPT_DIR
+from treadmill.infra import connection
 
 
 class Configuration:
@@ -24,13 +25,13 @@ class Configuration:
 
 
 class Master(Configuration):
-    def __init__(self, name, domain, subnet_id,
+    def __init__(self, name, subnet_id,
                  app_root, ldap_hostname, tm_release):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': connection.Connection.context.domain,
                     'SUBNET_ID': subnet_id,
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
@@ -51,13 +52,13 @@ class Master(Configuration):
 
 
 class LDAP(Configuration):
-    def __init__(self, name, domain, subnet_id, tm_release, app_root,
+    def __init__(self, name, subnet_id, tm_release, app_root,
                  ldap_hostname):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
                     'SUBNET_ID': subnet_id,
                     'APP_ROOT': app_root,
@@ -82,12 +83,12 @@ class LDAP(Configuration):
 
 
 class IPA(Configuration):
-    def __init__(self, name, cell, ipa_admin_password, domain, tm_release):
+    def __init__(self, name, cell, ipa_admin_password, tm_release):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
                 },
             }, {
@@ -96,7 +97,7 @@ class IPA(Configuration):
             }, {
                 'name': 'install-ipa-server.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': connection.Connection.context.domain,
                     'IPA_ADMIN_PASSWORD': ipa_admin_password,
                     'CELL': cell
                 },
@@ -106,12 +107,12 @@ class IPA(Configuration):
 
 
 class Zookeeper(Configuration):
-    def __init__(self, name, domain):
+    def __init__(self, name):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
                 },
             }, {
@@ -120,7 +121,7 @@ class Zookeeper(Configuration):
             }, {
                 'name': 'provision-zookeeper.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': connection.Connection.context.domain,
                 },
             },
         ]
@@ -128,13 +129,13 @@ class Zookeeper(Configuration):
 
 
 class Node(Configuration):
-    def __init__(self, name, domain, tm_release, app_root, subnet_id,
+    def __init__(self, name, tm_release, app_root, subnet_id,
                  ldap_hostname):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
-                    'DOMAIN': domain,
+                    'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
                     'APP_ROOT': app_root,
                     'SUBNET_ID': subnet_id,

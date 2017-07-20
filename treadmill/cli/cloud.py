@@ -27,10 +27,11 @@ def init():
              secgroup_name, secgroup_desc):
         """Initialize treadmill VPC"""
         if region:
-            connection.Connection.region_name = region
+            connection.Connection.context.region_name = region
+
+        connection.Connection.context.domain = domain
 
         _vpc = vpc.VPC.setup(
-            domain=domain,
             cidr_block=vpc_cidr_block,
             secgroup_name=secgroup_name,
             secgroup_desc=secgroup_desc
@@ -68,12 +69,13 @@ def init():
                   ldap_cidr_block, ldap_subnet_id):
         """Initialize treadmill cell"""
         if region:
-            connection.Connection.region_name = region
+            connection.Connection.context.region_name = region
+
+        connection.Connection.context.domain = domain
 
         _ldap = ldap.LDAP(
             name='TreadmillLDAP',
             vpc_id=vpc_id,
-            domain=domain
         )
 
         _ldap.setup(
@@ -128,10 +130,11 @@ def init():
                   without_ldap):
         """Initialize treadmill cell"""
         if region:
-            connection.Connection.region_name = region
+            connection.Connection.context.region_name = region
+
+        connection.Connection.context.domain = domain
 
         _cell = cell.Cell(
-            domain=domain,
             vpc_id=vpc_id,
             subnet_id=subnet_id,
         )
@@ -164,7 +167,6 @@ def init():
             _ldap = ldap.LDAP(
                 name='TreadmillLDAP',
                 vpc_id=vpc_id,
-                domain=domain
             )
 
             _ldap.setup(
@@ -208,7 +210,8 @@ def init():
                     ipa_admin_password, tm_release, key,
                     instance_type, image_id):
         """Initialize treadmill domain"""
-        _ipa = ipa.IPA(name=name, vpc_id=vpc_id, domain=domain)
+        connection.Connection.context.domain = domain
+        _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
         _ipa.setup(
             subnet_id=subnet_id,
             count=count,
@@ -249,7 +252,8 @@ def init():
                  instance_type, tm_release, ldap_hostname, app_root,
                  subnet_id):
         """Add new node"""
-        _node = node.Node(name, vpc_id, domain)
+        connection.Connection.context.domain = domain
+        _node = node.Node(name, vpc_id)
         _node.setup(
             key=key,
             count=count,
@@ -275,7 +279,9 @@ def init():
                   help='Domain for hosted zone')
     def delete_vpc(vpc_id, domain):
         """Delete VPC"""
-        vpc.VPC(id=vpc_id, domain=domain).delete()
+        connection.Connection.context.domain = domain
+
+        vpc.VPC(id=vpc_id).delete()
 
     @delete.command(name='cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
@@ -284,12 +290,12 @@ def init():
     @click.option('--subnet-id', required=True, help='Subnet ID of cell')
     def delete_cell(vpc_id, domain, subnet_id):
         """Delete Cell (Subnet)"""
-        _vpc = vpc.VPC(id=vpc_id, domain=domain)
+        connection.Connection.context.domain = domain
+        _vpc = vpc.VPC(id=vpc_id)
         _vpc.load_hosted_zone_ids()
         subnet.Subnet(id=subnet_id).destroy(
             hosted_zone_id=_vpc.hosted_zone_id,
-            reverse_hosted_zone_id=_vpc.reverse_hosted_zone_id,
-            domain=_vpc.domain
+            reverse_hosted_zone_id=_vpc.reverse_hosted_zone_id
         )
 
     @delete.command(name='domain')
@@ -301,7 +307,10 @@ def init():
                   default="TreadmillIPA")
     def delete_domain(vpc_id, domain, subnet_id, name):
         """Delete IPA"""
-        _ipa = ipa.IPA(name=name, vpc_id=vpc_id, domain=domain)
+
+        connection.Connection.context.domain = domain
+
+        _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
         _ipa.destroy(subnet_id=subnet_id)
 
     @delete.command(name='ldap')
@@ -313,7 +322,9 @@ def init():
                   default="TreadmillLDAP")
     def delete_ldap(vpc_id, domain, subnet_id, name):
         """Delete LDAP"""
-        _ldap = ldap.LDAP(name=name, vpc_id=vpc_id, domain=domain)
+        connection.Connection.context.domain = domain
+
+        _ldap = ldap.LDAP(name=name, vpc_id=vpc_id)
         _ldap.destroy(subnet_id=subnet_id)
 
     @cloud.group()
@@ -327,8 +338,11 @@ def init():
                   help='Domain for hosted zone')
     def vpc_resources(vpc_id, domain):
         """Show VPC"""
+
+        connection.Connection.context.domain = domain
+
         click.echo(
-            pprint(vpc.VPC(id=vpc_id, domain=domain).show())
+            pprint(vpc.VPC(id=vpc_id).show())
         )
 
     @list.command(name='cell')

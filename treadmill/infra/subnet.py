@@ -57,13 +57,11 @@ class Subnet(ec2object.EC2Object):
             self,
             hosted_zone_id,
             reverse_hosted_zone_id,
-            domain,
             role=None
     ):
         self.terminate_instances(
             hosted_zone_id,
             reverse_hosted_zone_id,
-            domain,
             role
         )
         self.load_route_related_ids()
@@ -107,7 +105,6 @@ class Subnet(ec2object.EC2Object):
             self,
             hosted_zone_id,
             reverse_hosted_zone_id,
-            domain,
             role
     ):
         if not self.instances:
@@ -117,7 +114,6 @@ class Subnet(ec2object.EC2Object):
             self.instances.terminate(
                 hosted_zone_id=hosted_zone_id,
                 reverse_hosted_zone_id=reverse_hosted_zone_id,
-                domain=domain
             )
 
     def refresh(self):
@@ -180,7 +176,7 @@ class Subnet(ec2object.EC2Object):
             "us-west-2": "us-west-2a"
         }
 
-        return _map.get(connection.Connection.region_name, None)
+        return _map.get(connection.Connection.context.region_name, None)
 
     def _role_filter(self, role):
         return [

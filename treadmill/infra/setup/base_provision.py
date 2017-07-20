@@ -9,12 +9,10 @@ class BaseProvision:
     def __init__(
             self,
             name,
-            vpc_id,
-            domain,
+            vpc_id
     ):
         self.name = name
-        self.vpc = vpc.VPC(id=vpc_id, domain=domain)
-        self.domain = domain
+        self.vpc = vpc.VPC(id=vpc_id)
         self.route_53_conn = connection.Connection(constants.ROUTE_53)
         self.instances = None
         _role = constants.ROLES.get(
@@ -72,7 +70,6 @@ class BaseProvision:
             user_data=user_data,
             hosted_zone_id=self.vpc.hosted_zone_id,
             reverse_hosted_zone_id=self.vpc.reverse_hosted_zone_id,
-            domain=self.domain,
             role=self.role
         )
 
@@ -82,7 +79,6 @@ class BaseProvision:
         self.subnet.destroy(
             hosted_zone_id=self.vpc.hosted_zone_id,
             reverse_hosted_zone_id=self.vpc.reverse_hosted_zone_id,
-            domain=self.domain,
             role=self.role
         )
 

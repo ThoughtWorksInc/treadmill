@@ -1,6 +1,6 @@
 from treadmill.infra import constants
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration
+from treadmill.infra import configuration, connection
 
 
 class IPA(base_provision.BaseProvision):
@@ -8,12 +8,10 @@ class IPA(base_provision.BaseProvision):
             self,
             name,
             vpc_id,
-            domain,
     ):
         super(IPA, self).__init__(
             name=name,
             vpc_id=vpc_id,
-            domain=domain,
         )
 
     def setup(
@@ -32,7 +30,6 @@ class IPA(base_provision.BaseProvision):
             name=self.name,
             cell=subnet_id,
             ipa_admin_password=ipa_admin_password,
-            domain=self.domain,
             tm_release=tm_release
         )
         super(IPA, self).setup(
@@ -81,15 +78,18 @@ class IPA(base_provision.BaseProvision):
             self._change_srv_record(
                 action=action,
                 name=self._rec_name('_kerberos'),
-                value='"{0}"'.format(self.domain.upper()),
+                value='"{0}"'.format(
+                    connection.Connection.context.domain.upper()
+                ),
                 record_type='TXT'
             )
 
     def _rec_name(self, rec):
-        return rec + '.' + self.domain + '.'
+        return rec + '.' + connection.Connection.context.domain + '.'
 
     def _srv_rec_value(self, value, instance_name):
-        return value + ' ' + instance_name + '.' + self.domain + '.'
+        return value + ' ' + instance_name + '.' \
+            + connection.Connection.context.domain + '.'
 
     def _change_srv_record(self,
                            action,

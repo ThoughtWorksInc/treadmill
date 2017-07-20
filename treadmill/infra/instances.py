@@ -18,19 +18,17 @@ class Instance(ec2object.EC2Object):
         )
         self.private_ip = self._get_private_ip()
 
-    def configure_dns_record(self, hosted_zone_id, domain='', reverse=False):
+    def configure_dns_record(self, hosted_zone_id, reverse=False):
         self._change_resource_record_sets(
             'UPSERT',
             hosted_zone_id,
-            domain,
             reverse
         )
 
-    def delete_dns_record(self, hosted_zone_id, domain='', reverse=False):
+    def delete_dns_record(self, hosted_zone_id, reverse=False):
         self._change_resource_record_sets(
             'DELETE',
             hosted_zone_id,
-            domain,
             reverse
         )
 
@@ -44,13 +42,12 @@ class Instance(ec2object.EC2Object):
             self,
             action,
             hosted_zone_id,
-            domain='',
             reverse=False
     ):
         if reverse:
-            _name, _type, _value = self._reverse_dns_record_attrs(domain)
+            _name, _type, _value = self._reverse_dns_record_attrs()
         else:
-            _name, _type, _value = self._forward_dns_record_attrs(domain)
+            _name, _type, _value = self._forward_dns_record_attrs()
 
         try:
             self.route53_conn.change_resource_record_sets(
@@ -72,18 +69,20 @@ class Instance(ec2object.EC2Object):
         except Exception as ex:
             _LOGGER.info(ex)
 
-    def _reverse_dns_record_attrs(self, domain):
-        forward_dns_name = self.name.lower() + '.' + domain + '.'
+    def _reverse_dns_record_attrs(self):
         return [
             self._reverse_dns_record_name(),
             'PTR',
-            forward_dns_name
+            self._forward_dns_name()
         ]
 
-    def _forward_dns_record_attrs(self, domain):
-        forward_dns_name = self.name.lower() + '.' + domain + '.'
+    def _forward_dns_name(self):
+        return self.name.lower(
+        ) + '.' + connection.Connection.context.domain + '.'
+
+    def _forward_dns_record_attrs(self):
         return [
-            forward_dns_name,
+            self._forward_dns_name(),
             'A',
             self.private_ip
         ]
@@ -147,7 +146,6 @@ class Instances:
             user_data,
             hosted_zone_id,
             reverse_hosted_zone_id,
-            domain,
             role
     ):
         conn = connection.Connection()
@@ -179,12 +177,10 @@ class Instances:
             )
             _instance.create_tags()
             _instance.configure_dns_record(
-                hosted_zone_id,
-                domain
+                hosted_zone_id
             )
             _instance.configure_dns_record(
                 reverse_hosted_zone_id,
-                domain,
                 reverse=True
             )
             _instances.append(_instance)
@@ -201,15 +197,13 @@ class Instances:
             )
             self.volume_ids = [v['VolumeId'] for v in volumes['Volumes']]
 
-    def terminate(self, hosted_zone_id, reverse_hosted_zone_id, domain):
+    def terminate(self, hosted_zone_id, reverse_hosted_zone_id):
         for instance in self.instances:
             instance.delete_dns_record(
-                hosted_zone_id,
-                domain
+                hosted_zone_id
             )
             instance.delete_dns_record(
                 hosted_zone_id=reverse_hosted_zone_id,
-                domain=domain,
                 reverse=True
             )
 

@@ -17,14 +17,14 @@ class IPATest(unittest.TestCase):
     @mock.patch('treadmill.infra.instances.Instances')
     def test_setup_ipa(self, InstancesMock,
                        VPCMock, ConnectionMock, IPAConfigurationMock):
+        ConnectionMock.context.domain = 'foo.bar'
         instance_mock = mock.Mock(private_ip='1.1.1.1')
         instance_mock.name = 'ipa'
         instances_mock = mock.Mock(instances=[instance_mock])
         InstancesMock.create = mock.Mock(return_value=instances_mock)
         conn_mock = ConnectionMock('route53')
         _vpc_id_mock = 'vpc-id'
-        _vpc_mock = VPCMock(id=_vpc_id_mock,
-                            domain='foo.bar')
+        _vpc_mock = VPCMock(id=_vpc_id_mock)
         _vpc_mock.hosted_zone_id = 'hosted-zone-id'
         _vpc_mock.reverse_hosted_zone_id = 'reverse-hosted-zone-id'
         _vpc_mock.secgroup_ids = ['secgroup_id']
@@ -36,7 +36,6 @@ class IPATest(unittest.TestCase):
         )
         ipa = IPA(
             name='ipa',
-            domain='foo.bar',
             vpc_id=_vpc_id_mock,
         )
         ipa.setup(
@@ -61,7 +60,6 @@ class IPATest(unittest.TestCase):
             user_data='user-data-script',
             hosted_zone_id='hosted-zone-id',
             reverse_hosted_zone_id='reverse-hosted-zone-id',
-            domain='foo.bar',
             role='IPA'
         )
         _vpc_mock.load_hosted_zone_ids.assert_called_once()
@@ -75,7 +73,6 @@ class IPATest(unittest.TestCase):
         self.assertEqual(
             IPAConfigurationMock.mock_calls[1],
             mock.mock.call(
-                domain='foo.bar',
                 ipa_admin_password='ipa-admin-password',
                 tm_release='release',
                 cell=None,
@@ -255,6 +252,7 @@ class IPATest(unittest.TestCase):
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
     def test_ipa_destroy(self, VPCMock, ConnectionMock, SubnetMock):
+        ConnectionMock.context.domain = 'foo.bar'
         conn_mock = ConnectionMock('route53')
         _subnet_mock = SubnetMock(
             id='subnet-id'
@@ -267,14 +265,12 @@ class IPATest(unittest.TestCase):
 
         vpc_mock = VPCMock(
             id='vpc-id',
-            domain='foo.bar',
         )
         vpc_mock.load_hosted_zone_ids = mock.Mock()
         vpc_mock.hosted_zone_id = 'hosted-zone-id'
         vpc_mock.reverse_hosted_zone_id = 'reverse-hosted-zone-id'
         ipa = IPA(
             vpc_id='vpc-id',
-            domain='foo.bar',
             name='ipa-setup'
         )
         ipa.subnet = _subnet_mock
@@ -286,7 +282,6 @@ class IPATest(unittest.TestCase):
         _subnet_mock.destroy.assert_called_once_with(
             hosted_zone_id='hosted-zone-id',
             reverse_hosted_zone_id='reverse-hosted-zone-id',
-            domain='foo.bar',
             role='IPA'
         )
         expected_calls = [

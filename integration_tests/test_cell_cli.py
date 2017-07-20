@@ -9,7 +9,7 @@ import click
 import click.testing
 from botocore.exceptions import ClientError
 
-from treadmill.infra import vpc, constants
+from treadmill.infra import vpc
 
 
 class CellCLITest(unittest.TestCase):
@@ -72,7 +72,7 @@ class CellCLITest(unittest.TestCase):
         cell_info = result['Cell']
         ldap_info = result['Ldap']
 
-        _vpc = vpc.VPC(id=vpc_info['VpcId'], domain=constants.DEFAULT_DOMAIN)
+        _vpc = vpc.VPC(id=vpc_info['VpcId'])
         _vpc_info = _vpc.show()
 
         self.assertEqual(cell_info['VpcId'], vpc_info['VpcId'])
@@ -116,7 +116,7 @@ class CellCLITest(unittest.TestCase):
                 'cell',
                 '--subnet-id=' + cell_info['SubnetId'],
                 '--vpc-id=' + vpc_info['VpcId'],
-                '--domain=' + _vpc.domain
+                '--domain=treadmill.org'
             ]
         )
         self.runner.invoke(
@@ -125,7 +125,7 @@ class CellCLITest(unittest.TestCase):
                 'cell',
                 '--subnet-id=' + ldap_info['SubnetId'],
                 '--vpc-id=' + vpc_info['VpcId'],
-                '--domain=' + _vpc.domain
+                '--domain=treadmill.org'
             ]
         )
         _vpc.instances = None
@@ -139,7 +139,7 @@ class CellCLITest(unittest.TestCase):
                 'delete',
                 'vpc',
                 '--vpc-id=' + vpc_info['VpcId'],
-                '--domain=' + _vpc.domain
+                '--domain=treadmill.org'
             ]
         )
         self.destroy_attempted = True
