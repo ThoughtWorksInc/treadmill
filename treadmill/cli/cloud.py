@@ -123,7 +123,7 @@ def init():
     @click.option('--ldap-subnet-id',
                   help='Subnet ID for LDAP')
     @click.option('--without-ldap', required=False, is_flag=True,
-                  default=False, help='Subnet ID for LDAP')
+                  default=False, help='Flag for LDAP Server')
     def init_cell(vpc_id, region, domain, name, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
                   cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
