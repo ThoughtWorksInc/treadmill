@@ -106,44 +106,5 @@ Initialize Cell
 
 This will setup 3 masters and 3 zookeeper boxes by default.
 
-----------------------------------------------------------
-
-Delete Domain
-^^^^^^^^^^^^^
-
-::
-
-  treadmill cloud delete domain --vpc-id=<vpc_id> --subnet-id=<subnet_id>
-
-This will delete the subnet having IPA Server.
-
-
-Delete LDAP
-^^^^^^^^^^^
-
-::
-
-  treadmill cloud delete ldap --vpc-id=<vpc_id> --subnet-id=<subnet_id>
-
-This will delete the subnet having LDAP Server.
-
-
-Delete Cell
-^^^^^^^^^^^
-
-::
-
-  treadmill cloud delete cell --vpc-id=<vpc_id> --subnet-id=<subnet_id>
-
-This will delete the subnet having masters and zookeeper.
-
-
-Delete VPC
-^^^^^^^^^^
-
-::
-
-  treadmill cloud delete vpc --vpc-id=<vpc_id>
-
-This will delete the VPC.
+At this point all the hosts will be registered with IPA server.
 
