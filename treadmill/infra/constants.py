@@ -28,4 +28,3 @@ ROLES = {
     'ZOOKEEPER': 'ZOOKEEPER',
     'DEFAULT': 'DEFAULT'
 }
-DEFAULT_DOMAIN = 'treadmill.org'

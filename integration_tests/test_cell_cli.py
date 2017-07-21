@@ -34,7 +34,10 @@ class CellCLITest(unittest.TestCase):
 
     def test_setup_cell(self):
         self.destroy_attempted = False
-        result_init = self.runner.invoke(self.configure_cli, ['init'])
+        result_init = self.runner.invoke(self.configure_cli, [
+            'init',
+            '--domain=treadmill.org'
+        ])
         cell_info = {}
         vpc_info = {}
 
@@ -56,7 +59,8 @@ class CellCLITest(unittest.TestCase):
                 '--key=ms_treadmill_dev',
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],
-                '--cell-cidr-block=172.23.0.0/24'
+                '--cell-cidr-block=172.23.0.0/24',
+                '--domain=treadmill.org'
             ]
         )
 

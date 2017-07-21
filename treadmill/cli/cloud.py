@@ -12,7 +12,7 @@ def init():
         pass
 
     @cloud.command(name='init')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-cidr-block', default='172.23.0.0/16',
@@ -44,7 +44,7 @@ def init():
     @cloud.command(name='init-ldap')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='1', type=int,
@@ -97,7 +97,7 @@ def init():
     @cloud.command(name='init-cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     @click.option('--name', default='TreadmillMaster',
                   help='Treadmill master name')
@@ -191,7 +191,7 @@ def init():
     @click.option('--name', default='TreadmillIPA',
                   help='Name of the instance')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     @click.option('--subnet-cidr-block', help='Cidr block of subnet for IPA',
                   default='172.23.2.0/24')
@@ -230,7 +230,7 @@ def init():
     @cloud.command(name='add-node')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     @click.option('--name', default='TreadmillNode',
                   help='Node name')
@@ -275,7 +275,7 @@ def init():
 
     @delete.command(name='vpc')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     def delete_vpc(vpc_id, domain):
         """Delete VPC"""
@@ -285,7 +285,7 @@ def init():
 
     @delete.command(name='cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of cell')
     def delete_cell(vpc_id, domain, subnet_id):
@@ -300,7 +300,7 @@ def init():
 
     @delete.command(name='domain')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of IPA')
     @click.option('--name', help='Name of Instance',
@@ -315,7 +315,7 @@ def init():
 
     @delete.command(name='ldap')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of LDAP')
     @click.option('--name', help='Name of Instance',
@@ -334,7 +334,7 @@ def init():
 
     @list.command(name='vpc')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', default=constants.DEFAULT_DOMAIN,
+    @click.option('--domain', required=True,
                   help='Domain for hosted zone')
     def vpc_resources(vpc_id, domain):
         """Show VPC"""

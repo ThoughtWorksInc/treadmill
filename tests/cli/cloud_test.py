@@ -45,6 +45,7 @@ class CloudTest(unittest.TestCase):
         result = self.runner.invoke(
             self.configure_cli, [
                 'init-cell',
+                '--domain=treadmill.org',
                 '--key=key',
                 '--image-id=img-123',
                 '--subnet-id=sub-123',
@@ -106,6 +107,7 @@ class CloudTest(unittest.TestCase):
                 '--subnet-id=sub-123',
                 '--vpc-id=vpc-123',
                 '--cell-cidr-block=172.24.0.0/24',
+                '--domain=treadmill.org',
                 '--without-ldap'
             ])
 
@@ -145,6 +147,7 @@ class CloudTest(unittest.TestCase):
                 '--vpc-id=vpc-123',
                 '--subnet-id=sub-123',
                 '--count=2',
+                '--domain=treadmill.org',
             ])
 
         self.assertEqual(result.exit_code, 0)
@@ -198,7 +201,8 @@ class CloudTest(unittest.TestCase):
                 'delete',
                 'domain',
                 '--vpc-id=vpc-123',
-                '--subnet-id=sub-123'
+                '--subnet-id=sub-123',
+                '--domain=treadmill.org',
             ])
 
         self.assertEqual(result.exit_code, 0)
