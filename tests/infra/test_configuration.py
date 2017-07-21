@@ -81,7 +81,7 @@ class LDAPTest(unittest.TestCase):
             ],
             'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
-            'configure-ldap.sh': ['SUBNET_ID', 'APP_ROOT', 'LDAP_HOSTNAME'],
+            'configure-ldap.sh': ['SUBNET_ID', 'APP_ROOT'],
         }
 
         self.assertCountEqual(

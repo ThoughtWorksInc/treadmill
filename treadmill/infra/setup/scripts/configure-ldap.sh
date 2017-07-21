@@ -29,16 +29,13 @@ WantedBy=multi-user.target
 EOF
 ) > /etc/systemd/system/openldap.service
 
-# XXX: Do we want to have a pre-set password?
 s6-setuidgid treadmld \
     treadmill admin install --install-dir /var/tmp/treadmill-openldap \
         openldap \
         --owner treadmld \
         --uri ldap://0.0.0.0:22389 \
-        --suffix ${LDAP_DC} \
-        --rootpw $(/usr/sbin/slappasswd -s secret) \
-        --enable-sasl \
-        --ldap-hostname {{ LDAP_HOSTNAME }}
+        --suffix "${LDAP_DC}" \
+        --gssapi
 
 # TODO: Create global utility function for adding service
 systemctl daemon-reload
