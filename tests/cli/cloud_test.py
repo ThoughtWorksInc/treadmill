@@ -41,6 +41,7 @@ class CloudTest(unittest.TestCase):
         Test cloud init cell
         """
         cell = cell_mock()
+        cell.id = 'sub-123'
         _ldap_mock = ldap_mock()
         result = self.runner.invoke(
             self.configure_cli, [
@@ -88,7 +89,8 @@ class CloudTest(unittest.TestCase):
             ldap_hostname='treadmillldap1',
             app_root='/var/tmp',
             cidr_block='172.23.1.0/24',
-            subnet_id=None
+            subnet_id=None,
+            cell_subnet_id='sub-123'
         )
 
     @mock.patch('treadmill.cli.cloud.ldap.LDAP')

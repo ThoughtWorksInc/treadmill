@@ -23,10 +23,11 @@ class LDAP(base_provision.BaseProvision):
             instance_type,
             app_root,
             ldap_hostname,
+            cell_subnet_id,
             subnet_id=None
     ):
         self.configuration = configuration.LDAP(
-            subnet_id=subnet_id,
+            cell_subnet_id=cell_subnet_id,
             ldap_hostname=ldap_hostname,
             tm_release=tm_release,
             app_root=app_root,

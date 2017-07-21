@@ -66,6 +66,7 @@ def init():
     @click.option('--ldap-cidr-block', default='172.23.1.0/24',
                   help='CIDR block for LDAP')
     @click.option('--ldap-subnet-id', help='Subnet ID for LDAP')
+    @click.option('--cell-subnet-id', help='Subnet ID of Cell')
     def init_ldap(vpc_id, region, domain, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id):
@@ -89,6 +90,7 @@ def init():
             app_root=app_root,
             ldap_hostname=ldap_hostname,
             cidr_block=ldap_cidr_block,
+            cell_subnet_id=cell_subnet_id,
             subnet_id=ldap_subnet_id
         )
 
@@ -181,6 +183,7 @@ def init():
                 app_root=app_root,
                 ldap_hostname=ldap_hostname,
                 cidr_block=ldap_cidr_block,
+                cell_subnet_id=_cell.id,
                 subnet_id=ldap_subnet_id
             )
 
