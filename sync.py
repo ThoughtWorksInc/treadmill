@@ -27,8 +27,8 @@ else:
         subprocess.call(['git', 'commit', '--amend', '-m', sys.argv[3]])
     print('Promoting to remote...')
 
-    yes = set(['yes','y'])
-    choice = raw_input('Push this ? (yes/no) ').lower()
+    yes = set(['yes','y', 'Y'])
+    choice = raw_input('Push this [Y/n]? ').lower()
     if choice in yes:
         subprocess.call(['git', 'push', 'origin', merge_branch, '-f'])
         print('Synced!')
