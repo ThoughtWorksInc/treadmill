@@ -10,6 +10,6 @@ subprocess.call(['git', 'checkout', '-b', merge_branch])
 terminal_commit = sys.argv[2]
 subprocess.call(['git', 'reset', '--soft', terminal_commit])
 subprocess.call(['git', 'commit', '--amend', '--no-edit'])
-subprocess.call(['git', 'push', 'origin', merge_branch, '-f'])
-if sys.argv[3]:
+if (len(sys.argv) > 3) and sys.argv[3]:
     subprocess.call(['git', 'commit', '--amend', '-m', sys.argv[3]])
+subprocess.call(['git', 'push', 'origin', merge_branch, '-f'])
