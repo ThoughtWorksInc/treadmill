@@ -64,22 +64,25 @@ class Subnet(ec2object.EC2Object):
             reverse_hosted_zone_id,
             role
         )
-        self.load_route_related_ids()
 
-        try:
+        remaining_instances = self._get_instances(
+            filters=self._network_filters()
+        ).instances
+
+        if not remaining_instances:
+            self.load_route_related_ids()
+            self.ec2_conn.disassociate_route_table(
+                AssociationId=self.association_id
+            )
+            self.ec2_conn.delete_route_table(
+                RouteTableId=self.route_table_id
+            )
             self.ec2_conn.delete_subnet(
                 SubnetId=self.id
             )
-        except Exception:
+        else:
             _LOGGER.info('keeping the subnet as other instances are alive.')
             return
-
-        self.ec2_conn.disassociate_route_table(
-            AssociationId=self.association_id
-        )
-        self.ec2_conn.delete_route_table(
-            RouteTableId=self.route_table_id
-        )
 
     def get_instances(self, refresh=False, role=None):
         if role:
@@ -89,13 +92,18 @@ class Subnet(ec2object.EC2Object):
 
     def get_all_instances(self, refresh=False):
         if refresh or not self.instances:
-            self.instances = instances.Instances.get(
+            self.instances = self._get_instances(
                 filters=self._network_filters()
             )
 
+    def _get_instances(self, filters):
+        return instances.Instances.get(
+            filters=filters
+        )
+
     def get_instances_by_role(self, role, refresh=False):
         if refresh or not self.instances:
-            self.instances = instances.Instances.get(
+            self.instances = self._get_instances(
                 filters=self._network_filters(
                     extra_filters=self._role_filter(role)
                 )
@@ -110,11 +118,10 @@ class Subnet(ec2object.EC2Object):
         if not self.instances:
             self.get_instances(refresh=True, role=role)
 
-        if self.instances:
-            self.instances.terminate(
-                hosted_zone_id=hosted_zone_id,
-                reverse_hosted_zone_id=reverse_hosted_zone_id,
-            )
+        self.instances.terminate(
+            hosted_zone_id=hosted_zone_id,
+            reverse_hosted_zone_id=reverse_hosted_zone_id,
+        )
 
     def refresh(self):
         self.metadata = self.ec2_conn.describe_subnets(
