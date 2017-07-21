@@ -34,3 +34,5 @@ else:
         print('Synced!')
     else:
         print('Branch is rebased/squashed and ready to be pushed.')
+
+    print('\x1b[6;30;42m' + 'Good Job!!!' + '\x1b[0m')
