@@ -1,6 +1,14 @@
 echo Installing openldap
 
-yum -y install openldap openldap-clients openldap-servers
+yum -y install openldap openldap-clients openldap-servers ipa-admintools
+
+echo "{{ IPA_ADMIN_PASSWORD }}" | kinit admin
+ipa service-add --force "ldap/treadmillldap1.{{ DOMAIN }}@{{ DOMAIN|upper }}"
+
+echo Retrieving LDAP service keytab
+ipa-getkeytab -p "ldap/treadmillldap1.{{ DOMAIN }}" -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/ldap.keytab
+ipa-getkeytab -r -p treadmld -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/treadmld.keytab
+chown treadmld:treadmld /etc/ldap.keytab /etc/treadmld.keytab
 
 # Enable 22389 port for LDAP (requires policycoreutils-python)
 /sbin/semanage  port -a -t ldap_port_t -p tcp 22389
@@ -17,6 +25,7 @@ Description=OpenLDAP Directory Server
 After=network.target
 
 [Service]
+Environment="KRB5_KTNAME=/etc/ldap.keytab"
 User=treadmld
 Group=treadmld
 SyslogIdentifier=openldap
@@ -43,6 +52,8 @@ systemctl enable openldap.service --now
 
 echo Initializing openldap
 
+su -c "kinit -k -t /etc/treadmld.keytab treadmld" treadmld
+
 s6-setuidgid treadmld \
     treadmill admin ldap init
 
@@ -52,6 +63,6 @@ s6-setuidgid treadmld \
 echo Configuring local cell
 
 s6-setuidgid treadmld \
-    treadmill admin ldap cell configure {{ SUBNET_ID }} --version 0.1 --root {{ APP_ROOT }} \
+    treadmill admin ldap cell configure "{{ SUBNET_ID }}" --version 0.1 --root "{{ APP_ROOT }}" \
         --username treadmld \
         --location local.local

@@ -51,7 +51,8 @@ class CloudTest(unittest.TestCase):
                 '--image-id=img-123',
                 '--subnet-id=sub-123',
                 '--vpc-id=vpc-123',
-                '--cell-cidr-block=172.24.0.0/24'
+                '--cell-cidr-block=172.24.0.0/24',
+                '--ipa-admin-password=ipa_pass',
             ])
 
         self.assertEqual(result.exit_code, 0)
@@ -90,7 +91,8 @@ class CloudTest(unittest.TestCase):
             app_root='/var/tmp',
             cidr_block='172.23.1.0/24',
             subnet_id=None,
-            cell_subnet_id='sub-123'
+            cell_subnet_id='sub-123',
+            ipa_admin_password='ipa_pass',
         )
 
     @mock.patch('treadmill.cli.cloud.ldap.LDAP')

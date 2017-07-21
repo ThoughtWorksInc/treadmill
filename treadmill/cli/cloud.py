@@ -1,5 +1,8 @@
+import os
 import click
 from pprint import pprint
+from getpass import getpass
+
 from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
 
@@ -67,12 +70,19 @@ def init():
                   help='CIDR block for LDAP')
     @click.option('--ldap-subnet-id', help='Subnet ID for LDAP')
     @click.option('--cell-subnet-id', help='Subnet ID of Cell')
+    @click.option('--ipa-admin-password', help='Password for IPA admin')
     def init_ldap(vpc_id, region, domain, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
-                  ldap_cidr_block, ldap_subnet_id):
+                  ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
+                  ipa_admin_password):
         """Initialize treadmill cell"""
         if region:
             connection.Connection.context.region_name = region
+
+        if not ipa_admin_password:
+            ipa_admin_password = os.environ.get(
+                'TREADMILL_IPA_ADMIN_PASSWORD', getpass('IPA admin password: ')
+            )
 
         connection.Connection.context.domain = domain
 
@@ -91,7 +101,8 @@ def init():
             ldap_hostname=ldap_hostname,
             cidr_block=ldap_cidr_block,
             cell_subnet_id=cell_subnet_id,
-            subnet_id=ldap_subnet_id
+            subnet_id=ldap_subnet_id,
+            ipa_admin_password=ipa_admin_password,
         )
 
         click.echo(
@@ -129,13 +140,19 @@ def init():
                   help='Subnet ID for LDAP')
     @click.option('--without-ldap', required=False, is_flag=True,
                   default=False, help='Flag for LDAP Server')
+    @click.option('--ipa-admin-password', help='Password for IPA admin')
     def init_cell(vpc_id, region, domain, name, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
                   cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
-                  without_ldap):
+                  without_ldap, ipa_admin_password):
         """Initialize treadmill cell"""
         if region:
             connection.Connection.context.region_name = region
+
+        if not without_ldap and not ipa_admin_password:
+            ipa_admin_password = os.environ.get(
+                'TREADMILL_IPA_ADMIN_PASSWORD', getpass('IPA admin password: ')
+            )
 
         connection.Connection.context.domain = domain
 
@@ -184,7 +201,8 @@ def init():
                 ldap_hostname=ldap_hostname,
                 cidr_block=ldap_cidr_block,
                 cell_subnet_id=_cell.id,
-                subnet_id=ldap_subnet_id
+                subnet_id=ldap_subnet_id,
+                ipa_admin_password=ipa_admin_password,
             )
 
             result['Ldap'] = _ldap.subnet.show()
@@ -204,8 +222,7 @@ def init():
                   default='172.23.2.0/24')
     @click.option('--subnet-id', help='Subnet ID')
     @click.option('--count', help='Count of the instances', default=1)
-    @click.option('--ipa-admin-password', required=True,
-                  help='Password for IPA admin')
+    @click.option('--ipa-admin-password', help='Password for IPA admin')
     @click.option('--tm-release', default='0.1.0', help='Treadmill Release')
     @click.option('--key', required=True, help='SSH key name')
     @click.option('--instance-type',
@@ -218,6 +235,12 @@ def init():
                     instance_type, image_id):
         """Initialize treadmill domain"""
         connection.Connection.context.domain = domain
+
+        if not ipa_admin_password:
+            ipa_admin_password = os.environ.get(
+                'TREADMILL_IPA_ADMIN_PASSWORD', getpass('IPA admin password: ')
+            )
+
         _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
         _ipa.setup(
             subnet_id=subnet_id,

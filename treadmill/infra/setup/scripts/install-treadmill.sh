@@ -1,6 +1,3 @@
-# Add treadmld user
-id -u treadmld &>/dev/null || useradd treadmld
-
 # Install PID1
 if [ ! -e /etc/yum.repos.d/treadmill.repo ]; then
     curl -L https://s3.amazonaws.com/yum_repo_dev/treadmill.repo -o /etc/yum.repos.d/treadmill.repo

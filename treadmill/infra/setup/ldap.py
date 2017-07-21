@@ -24,6 +24,7 @@ class LDAP(base_provision.BaseProvision):
             app_root,
             ldap_hostname,
             cell_subnet_id,
+            ipa_admin_password,
             subnet_id=None
     ):
         self.configuration = configuration.LDAP(
@@ -31,7 +32,8 @@ class LDAP(base_provision.BaseProvision):
             ldap_hostname=ldap_hostname,
             tm_release=tm_release,
             app_root=app_root,
-            name=self.name
+            name=self.name,
+            ipa_admin_password=ipa_admin_password,
         )
         super(LDAP, self).setup(
             image_id=image_id,

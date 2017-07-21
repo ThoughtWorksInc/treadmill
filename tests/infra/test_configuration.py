@@ -74,14 +74,16 @@ class LDAPTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_ldap_configuration_script_data(self, open_mock):
-        config = configuration.LDAP('', '', '', '', '')
+        config = configuration.LDAP('', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
             ],
             'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
-            'configure-ldap.sh': ['SUBNET_ID', 'APP_ROOT'],
+            'configure-ldap.sh': [
+                'SUBNET_ID', 'APP_ROOT', 'IPA_ADMIN_PASSWORD', 'DOMAIN'
+            ],
         }
 
         self.assertCountEqual(
