@@ -26,5 +26,11 @@ else:
     if (len(sys.argv) > 3) and sys.argv[3]:
         subprocess.call(['git', 'commit', '--amend', '-m', sys.argv[3]])
     print('Promoting to remote...')
-    subprocess.call(['git', 'push', 'origin', merge_branch, '-f'])
-    print('Synced!')
+
+    yes = set(['yes','y'])
+    choice = raw_input('Push this ? (yes/no)').lower()
+    if choice in yes:
+        subprocess.call(['git', 'push', 'origin', merge_branch, '-f'])
+        print('Synced!')
+    else:
+        print('Branch is rebased/squashed and ready to be pushed.')
