@@ -1,6 +1,8 @@
 from treadmill.infra import connection
 from treadmill.infra import constants
 
+import time
+
 
 class EC2Object:
     def __init__(self, name=None, id=None, metadata=None, role=None):
@@ -24,7 +26,7 @@ class EC2Object:
             if _ami_launch_index is not None:
                 self.name = self.name + str(
                     self.metadata['AmiLaunchIndex'] + 1
-                )
+                ) + "#" + str(int(time.time()))
 
         tags = self._prepare_tag_attributes_for('name')
 

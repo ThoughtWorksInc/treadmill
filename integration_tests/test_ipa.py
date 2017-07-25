@@ -76,8 +76,12 @@ class IPATest(unittest.TestCase):
         self.assertEqual(subnet_info['VpcId'], vpc_info['VpcId'])
         self.assertEqual(len(subnet_info['Instances']), 1)
         self.assertCountEqual(
-            [i['Name'] for i in subnet_info['Instances']],
+            [i['Name'].split('#')[0] for i in subnet_info['Instances']],
             ['TreadmillIPA1']
+        )
+        self.assertCountEqual(
+            [i['Role'] for i in subnet_info['Instances']],
+            ['IPA']
         )
         self.assertIsNotNone(subnet_info['SubnetId'])
         self.assertEqual(len(vpc_info['Subnets']), 1)
@@ -106,7 +110,7 @@ class IPATest(unittest.TestCase):
         self.assertEqual(ldap_subnet_info['SubnetId'], subnet_info['SubnetId'])
         self.assertEqual(len(ldap_subnet_info['Instances']), 2)
         self.assertCountEqual(
-            [i['Name'] for i in ldap_subnet_info['Instances']],
+            [i['Name'].split('#')[0] for i in ldap_subnet_info['Instances']],
             ['TreadmillIPA1', 'TreadmillLDAP1']
         )
 
@@ -125,7 +129,7 @@ class IPATest(unittest.TestCase):
 
         self.assertEqual(len(_subnet_resources['Instances']), 1)
         self.assertCountEqual(
-            [i['Name'] for i in _subnet_resources['Instances']],
+            [i['Name'].split('#')[0] for i in _subnet_resources['Instances']],
             ['TreadmillLDAP1']
         )
 
@@ -212,8 +216,12 @@ class IPATest(unittest.TestCase):
         self.assertEqual(subnet_info['VpcId'], vpc_info['VpcId'])
         self.assertEqual(len(subnet_info['Instances']), 1)
         self.assertCountEqual(
-            [i['Name'] for i in subnet_info['Instances']],
+            [i['Name'].split('#')[0] for i in subnet_info['Instances']],
             ['TreadmillIPA1']
+        )
+        self.assertCountEqual(
+            [i['Role'] for i in subnet_info['Instances']],
+            ['IPA']
         )
         self.assertIsNotNone(subnet_info['SubnetId'])
         self.assertEqual(len(vpc_info['Subnets']), 1)
@@ -243,8 +251,12 @@ class IPATest(unittest.TestCase):
         self.assertEqual(ldap_subnet_info['VpcId'], vpc_info['VpcId'])
         self.assertEqual(len(ldap_subnet_info['Instances']), 1)
         self.assertCountEqual(
-            [i['Name'] for i in ldap_subnet_info['Instances']],
+            [i['Name'].split('#')[0] for i in ldap_subnet_info['Instances']],
             ['TreadmillLDAP1']
+        )
+        self.assertCountEqual(
+            [i['Role'] for i in ldap_subnet_info['Instances']],
+            ['LDAP']
         )
         self.assertIsNotNone(ldap_subnet_info['SubnetId'])
 
