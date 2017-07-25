@@ -65,7 +65,7 @@ class Subnet(ec2object.EC2Object):
             role
         )
 
-        remaining_instances = self._get_instances(
+        remaining_instances = self._get_instances_by_filters(
             filters=self._network_filters()
         ).instances
 
@@ -92,18 +92,18 @@ class Subnet(ec2object.EC2Object):
 
     def get_all_instances(self, refresh=False):
         if refresh or not self.instances:
-            self.instances = self._get_instances(
+            self.instances = self._get_instances_by_filters(
                 filters=self._network_filters()
             )
 
-    def _get_instances(self, filters):
+    def _get_instances_by_filters(self, filters):
         return instances.Instances.get(
             filters=filters
         )
 
     def get_instances_by_role(self, role, refresh=False):
         if refresh or not self.instances:
-            self.instances = self._get_instances(
+            self.instances = self._get_instances_by_filters(
                 filters=self._network_filters(
                     extra_filters=self._role_filter(role)
                 )
