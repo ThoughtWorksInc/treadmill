@@ -1,7 +1,6 @@
 import os
 import click
 from pprint import pprint
-from getpass import getpass
 
 from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
@@ -81,7 +80,8 @@ def init():
 
         if not ipa_admin_password:
             ipa_admin_password = os.environ.get(
-                'TREADMILL_IPA_ADMIN_PASSWORD', getpass('IPA admin password: ')
+                'TREADMILL_IPA_ADMIN_PASSWORD',
+                click.prompt('IPA admin password ', hide_input=True)
             )
 
         connection.Connection.context.domain = domain
@@ -151,7 +151,8 @@ def init():
 
         if not without_ldap and not ipa_admin_password:
             ipa_admin_password = os.environ.get(
-                'TREADMILL_IPA_ADMIN_PASSWORD', getpass('IPA admin password: ')
+                'TREADMILL_IPA_ADMIN_PASSWORD',
+                click.prompt('IPA admin password ', hide_input=True)
             )
 
         connection.Connection.context.domain = domain
@@ -238,7 +239,12 @@ def init():
 
         if not ipa_admin_password:
             ipa_admin_password = os.environ.get(
-                'TREADMILL_IPA_ADMIN_PASSWORD', getpass('IPA admin password: ')
+                'TREADMILL_IPA_ADMIN_PASSWORD',
+                click.prompt(
+                    'Create IPA admin password ',
+                    hide_input=True,
+                    confirmation_prompt=True
+                )
             )
 
         _ipa = ipa.IPA(name=name, vpc_id=vpc_id)

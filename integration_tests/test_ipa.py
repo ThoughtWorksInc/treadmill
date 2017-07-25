@@ -59,7 +59,7 @@ class IPATest(unittest.TestCase):
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--subnet-cidr-block=172.23.0.0/24',
-                '--ipa-admin-password=secret'
+                '--ipa-admin-password=Tre@dmill1',
             ]
         )
 
@@ -90,7 +90,8 @@ class IPATest(unittest.TestCase):
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--ldap-subnet-id=' + subnet_info['SubnetId'],
-                '--domain=treadmill.org'
+                '--domain=treadmill.org',
+                '--ipa-admin-password=Tre@dmill1',
             ]
         )
 
@@ -193,7 +194,7 @@ class IPATest(unittest.TestCase):
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--subnet-cidr-block=172.23.0.0/24',
-                '--ipa-admin-password=Tre@dmill',
+                '--ipa-admin-password=Tre@dmill1',
                 '--domain=treadmill.org'
             ]
         )

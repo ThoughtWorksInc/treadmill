@@ -60,7 +60,8 @@ class CellCLITest(unittest.TestCase):
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--cell-cidr-block=172.23.0.0/24',
-                '--domain=treadmill.org'
+                '--domain=treadmill.org',
+                '--ipa-admin-password=Tre@dmill1',
             ]
         )
 
