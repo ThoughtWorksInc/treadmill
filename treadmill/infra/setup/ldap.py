@@ -3,16 +3,6 @@ from treadmill.infra import configuration
 
 
 class LDAP(base_provision.BaseProvision):
-    def __init__(
-            self,
-            name,
-            vpc_id,
-    ):
-        super(LDAP, self).__init__(
-            name=name,
-            vpc_id=vpc_id,
-        )
-
     def setup(
             self,
             image_id,

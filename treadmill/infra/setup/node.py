@@ -3,17 +3,6 @@ from treadmill.infra import configuration, constants, instances
 
 
 class Node(base_provision.BaseProvision):
-    def __init__(
-            self,
-            name,
-            vpc_id,
-    ):
-        super(Node, self).__init__(
-            name=name,
-            vpc_id=vpc_id,
-        )
-        self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
-
     def setup(
             self,
             image_id,
@@ -32,6 +21,7 @@ class Node(base_provision.BaseProvision):
             subnet_id=subnet_id,
             ldap_hostname=ldap_hostname,
         )
+        self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         super(Node, self).setup(
             image_id=image_id,
             count=count,
