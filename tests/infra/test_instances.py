@@ -30,7 +30,6 @@ class InstanceTest(unittest.TestCase):
         self.assertEquals(instance.private_ip, '1.1.1.1')
         self.assertEquals(instance.ec2_conn, conn_mock)
 
-    @mock.patch('time.time', mock.Mock(return_value=786.007))
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create_tags(self, ConnectionMock):
         conn_mock = ConnectionMock()
@@ -42,17 +41,16 @@ class InstanceTest(unittest.TestCase):
             metadata={'AmiLaunchIndex': 100}
         )
         instance.create_tags()
-        self.assertEquals(instance.name, 'foo101#786')
+        self.assertEquals(instance.name, 'foo101')
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
             Tags=[{
                 'Key': 'Name',
-                'Value': 'foo101#786'
+                'Value': 'foo101'
             }]
         )
 
-    @mock.patch('time.time', mock.Mock(return_value=777.007))
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create_tags_with_role(self, ConnectionMock):
         conn_mock = ConnectionMock()
@@ -65,13 +63,13 @@ class InstanceTest(unittest.TestCase):
             role='role-name'
         )
         instance.create_tags()
-        self.assertEquals(instance.name, 'foo101#777')
+        self.assertEquals(instance.name, 'foo101')
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
             Tags=[{
                 'Key': 'Name',
-                'Value': 'foo101#777'
+                'Value': 'foo101'
             }, {
                 'Key': 'Role',
                 'Value': 'role-name'
@@ -214,7 +212,6 @@ class InstanceTest(unittest.TestCase):
 class InstancesTest(unittest.TestCase):
     """Tests instances collection"""
 
-    @mock.patch('time.time', mock.Mock(return_value=786.007))
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create(self, ConnectionMock):
         ConnectionMock.context.domain = 'joo.goo'
@@ -296,7 +293,7 @@ class InstancesTest(unittest.TestCase):
                                 'ResourceRecords': [{
                                     'Value': ''
                                 }],
-                                'Name': 'foo1#786.joo.goo.',
+                                'Name': 'foo1.joo.goo.',
                                 'TTL': 3600,
                                 'Type': 'A'
                             },
@@ -310,7 +307,7 @@ class InstancesTest(unittest.TestCase):
                         'Changes': [{
                             'ResourceRecordSet': {
                                 'ResourceRecords': [{
-                                    'Value': 'foo1#786.joo.goo.'
+                                    'Value': 'foo1.joo.goo.'
                                 }],
                                 'Name': '.in-addr.arpa',
                                 'TTL': 3600,
@@ -328,7 +325,7 @@ class InstancesTest(unittest.TestCase):
                                 'ResourceRecords': [{
                                     'Value': ''
                                 }],
-                                'Name': 'foo600#786.joo.goo.',
+                                'Name': 'foo600.joo.goo.',
                                 'TTL': 3600,
                                 'Type': 'A'
                             },
@@ -342,7 +339,7 @@ class InstancesTest(unittest.TestCase):
                         'Changes': [{
                             'ResourceRecordSet': {
                                 'ResourceRecords': [{
-                                    'Value': 'foo600#786.joo.goo.'
+                                    'Value': 'foo600.joo.goo.'
                                 }],
                                 'Name': '.in-addr.arpa',
                                 'TTL': 3600,
@@ -362,7 +359,7 @@ class InstancesTest(unittest.TestCase):
                     Resources=[1],
                     Tags=[{
                         'Key': 'Name',
-                        'Value': 'foo1#786'
+                        'Value': 'foo1'
                     }, {
                         'Value': 'role',
                         'Key': 'Role'
@@ -372,7 +369,7 @@ class InstancesTest(unittest.TestCase):
                     Resources=[2],
                     Tags=[{
                         'Key': 'Name',
-                        'Value': 'foo600#786'
+                        'Value': 'foo600'
                     }, {
                         'Value': 'role',
                         'Key': 'Role'

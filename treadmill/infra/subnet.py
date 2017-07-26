@@ -161,7 +161,6 @@ class Subnet(ec2object.EC2Object):
     def _instance_details(self, data):
         return {
             'Name': self._select_from_tags(data['Tags'], 'Name'),
-            'Role': self._select_from_tags(data['Tags'], 'Role'),
             'InstanceId': data['InstanceId'],
             'InstanceState': data['State']['Name'],
             'SecurityGroups': data['SecurityGroups'],
