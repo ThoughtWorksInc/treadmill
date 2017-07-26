@@ -197,7 +197,7 @@ class CloudTest(unittest.TestCase):
     @mock.patch('treadmill.cli.cloud.ipa.IPA')
     def test_delete_domain(self, ipa_mock):
         """
-        Test cloud init domain
+        Test cloud delete domain
         """
         ipa = ipa_mock()
         result = self.runner.invoke(
@@ -212,4 +212,24 @@ class CloudTest(unittest.TestCase):
         self.assertEqual(result.exit_code, 0)
         ipa.destroy.assert_called_once_with(
             subnet_id='sub-123'
+        )
+
+    @mock.patch('treadmill.cli.cloud.node.Node')
+    def test_delete_node_by_instance_id(self, node_mock):
+        """
+        Test cloud delete node
+        """
+        _node_mock = node_mock()
+        result = self.runner.invoke(
+            self.configure_cli, [
+                'delete',
+                'node',
+                '--vpc-id=vpc-123',
+                '--instance-id=instance-123',
+                '--name=foo',
+                '--domain=treadmill.org',
+            ])
+        self.assertEqual(result.exit_code, 0)
+        _node_mock.destroy.assert_called_once_with(
+            instance_id='instance-123'
         )

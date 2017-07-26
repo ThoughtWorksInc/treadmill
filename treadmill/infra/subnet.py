@@ -196,7 +196,6 @@ class Subnet(ec2object.EC2Object):
                 'Name': 'tag-value',
                 'Values': [role]
             }
-
         ]
 
     def _association_filters(self):

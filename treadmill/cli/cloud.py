@@ -1,9 +1,12 @@
 import os
 import click
 from pprint import pprint
+import logging
 
 from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def init():
@@ -367,6 +370,24 @@ def init():
 
         _ldap = ldap.LDAP(name=name, vpc_id=vpc_id)
         _ldap.destroy(subnet_id=subnet_id)
+
+    @delete.command(name='node')
+    @click.option('--vpc-id', required=True, help='VPC ID of cell')
+    @click.option('--domain', required=True,
+                  envvar='TREADMILL_DNS_DOMAIN',
+                  help='Domain for hosted zone')
+    @click.option('--name', help='Instance Name', required=False)
+    @click.option('--instance-id', help='Instance ID', required=False)
+    def delete_node(vpc_id, domain, name, instance_id):
+        """Delete Node"""
+        if not name and not instance_id:
+            _LOGGER.error('Provide either --name or --instance-id of'
+                          'Node Instance and try again.')
+            return
+
+        connection.Connection.context.domain = domain
+        _node = node.Node(name=name, vpc_id=vpc_id)
+        _node.destroy(instance_id=instance_id)
 
     @cloud.group()
     def list():

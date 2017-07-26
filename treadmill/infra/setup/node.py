@@ -1,5 +1,5 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants
+from treadmill.infra import configuration, constants, instances
 
 
 class Node(base_provision.BaseProvision):
@@ -38,4 +38,30 @@ class Node(base_provision.BaseProvision):
             subnet_id=subnet_id,
             key=key,
             instance_type=instance_type
+        )
+
+    def destroy(self, instance_id=None):
+        if instance_id:
+            _instances = instances.Instances.get(ids=[instance_id])
+        elif self.name:
+            _instances = instances.Instances.get(
+                filters=[
+                    {
+                        'Name': 'tag-key',
+                        'Values': ['Name']
+                    },
+                    {
+                        'Name': 'tag-value',
+                        'Values': [self.name]
+                    },
+                ]
+            )
+        else:
+            return
+
+        self.vpc.load_hosted_zone_ids()
+
+        _instances.terminate(
+            hosted_zone_id=self.vpc.hosted_zone_id,
+            reverse_hosted_zone_id=self.vpc.reverse_hosted_zone_id
         )
