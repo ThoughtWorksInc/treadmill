@@ -5,7 +5,7 @@ export TREADMILL_CELL=local
 export TREADMILL_LDAP=ldap://master:22389
 export TREADMILL_LDAP_SUFFIX=dc=local
 export TREADMILL_LDAP_PWD=secret
-export TREADMILL_LDAP_USER=cn=Manager,dc=local
+export TREADMILL_LDAP_USER=cn=Manager,cn=config
 export LC_ALL=en_US.utf8
 export LANG=en_US.utf8
 
