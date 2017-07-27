@@ -38,16 +38,16 @@ class InstanceTest(unittest.TestCase):
         instance = Instance(
             name='foo',
             id='1',
-            metadata={'AmiLaunchIndex': 100}
+            metadata={'AmiLaunchIndex': 100, 'InstanceId': '786'}
         )
         instance.create_tags()
-        self.assertEquals(instance.name, 'foo101')
+        self.assertEquals(instance.name, 'foo101-786')
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
             Tags=[{
                 'Key': 'Name',
-                'Value': 'foo101'
+                'Value': 'foo101-786'
             }]
         )
 
@@ -59,17 +59,17 @@ class InstanceTest(unittest.TestCase):
         instance = Instance(
             name='foo',
             id='1',
-            metadata={'AmiLaunchIndex': 100},
+            metadata={'AmiLaunchIndex': 100, 'InstanceId': '777'},
             role='role-name'
         )
         instance.create_tags()
-        self.assertEquals(instance.name, 'foo101')
+        self.assertEquals(instance.name, 'foo101-777')
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
             Tags=[{
                 'Key': 'Name',
-                'Value': 'foo101'
+                'Value': 'foo101-777'
             }, {
                 'Key': 'Role',
                 'Value': 'role-name'
@@ -216,16 +216,16 @@ class InstancesTest(unittest.TestCase):
     def test_create(self, ConnectionMock):
         ConnectionMock.context.domain = 'joo.goo'
         instance1_metadata_mock = {
-            'InstanceId': 1,
+            'InstanceId': '111',
             'AmiLaunchIndex': 0
         }
         instance2_metadata_mock = {
-            'InstanceId': 2,
+            'InstanceId': '222',
             'AmiLaunchIndex': 599
         }
         sample_instances = [
-            {'InstanceId': 1},
-            {'InstanceId': 2},
+            {'InstanceId': '111'},
+            {'InstanceId': '222'},
         ]
         instances_mock = [
             instance1_metadata_mock,
@@ -260,7 +260,7 @@ class InstancesTest(unittest.TestCase):
         self.assertEquals(len(instances), 2)
         self.assertIsInstance(instances[0], Instance)
         self.assertIsInstance(instances[1], Instance)
-        self.assertCountEqual(instance_ids, [1, 2])
+        self.assertCountEqual(instance_ids, ['111', '222'])
         self.assertEquals(instances[0].metadata, instance1_metadata_mock)
         self.assertEquals(instances[1].metadata, instance2_metadata_mock)
         self.assertEquals(instances[0].role, 'role')
@@ -281,7 +281,7 @@ class InstancesTest(unittest.TestCase):
             UserData='',
         )
         conn_mock.describe_instances.assert_called_with(
-            InstanceIds=[1, 2]
+            InstanceIds=['111', '222']
         )
         self.assertCountEqual(
             conn_mock.change_resource_record_sets.mock_calls,
@@ -293,7 +293,7 @@ class InstancesTest(unittest.TestCase):
                                 'ResourceRecords': [{
                                     'Value': ''
                                 }],
-                                'Name': 'foo1.joo.goo.',
+                                'Name': 'foo1-111.joo.goo.',
                                 'TTL': 3600,
                                 'Type': 'A'
                             },
@@ -307,7 +307,7 @@ class InstancesTest(unittest.TestCase):
                         'Changes': [{
                             'ResourceRecordSet': {
                                 'ResourceRecords': [{
-                                    'Value': 'foo1.joo.goo.'
+                                    'Value': 'foo1-111.joo.goo.'
                                 }],
                                 'Name': '.in-addr.arpa',
                                 'TTL': 3600,
@@ -325,7 +325,7 @@ class InstancesTest(unittest.TestCase):
                                 'ResourceRecords': [{
                                     'Value': ''
                                 }],
-                                'Name': 'foo600.joo.goo.',
+                                'Name': 'foo600-222.joo.goo.',
                                 'TTL': 3600,
                                 'Type': 'A'
                             },
@@ -339,7 +339,7 @@ class InstancesTest(unittest.TestCase):
                         'Changes': [{
                             'ResourceRecordSet': {
                                 'ResourceRecords': [{
-                                    'Value': 'foo600.joo.goo.'
+                                    'Value': 'foo600-222.joo.goo.'
                                 }],
                                 'Name': '.in-addr.arpa',
                                 'TTL': 3600,
@@ -356,20 +356,20 @@ class InstancesTest(unittest.TestCase):
             conn_mock.create_tags.mock_calls,
             [
                 mock.mock.call(
-                    Resources=[1],
+                    Resources=['111'],
                     Tags=[{
                         'Key': 'Name',
-                        'Value': 'foo1'
+                        'Value': 'foo1-111'
                     }, {
                         'Value': 'role',
                         'Key': 'Role'
                     }]
                 ),
                 mock.mock.call(
-                    Resources=[2],
+                    Resources=['222'],
                     Tags=[{
                         'Key': 'Name',
-                        'Value': 'foo600'
+                        'Value': 'foo600-222'
                     }, {
                         'Value': 'role',
                         'Key': 'Role'
@@ -447,7 +447,7 @@ class InstancesTest(unittest.TestCase):
         conn_mock = ConnectionMock()
 
         sample_instances = [
-            {'InstanceId': 1}, {'InstanceId': 2}, {'InstanceId': 3}
+            {'InstanceId': '1'}, {'InstanceId': '2'}, {'InstanceId': '3'}
         ]
         conn_mock.describe_instances = mock.Mock(return_value={
             'Reservations': [{'Instances': sample_instances}]
@@ -465,7 +465,7 @@ class InstancesTest(unittest.TestCase):
         conn_mock = ConnectionMock()
 
         sample_instances = [
-            {'InstanceId': 1}, {'InstanceId': 2}, {'InstanceId': 3}
+            {'InstanceId': '1'}, {'InstanceId': '2'}, {'InstanceId': '3'}
         ]
         conn_mock.describe_instances = mock.Mock(return_value={
             'Reservations': [{'Instances': sample_instances}]

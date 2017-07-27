@@ -24,7 +24,7 @@ class EC2Object:
             if _ami_launch_index is not None:
                 self.name = self.name + str(
                     self.metadata['AmiLaunchIndex'] + 1
-                )
+                ) + "-" + self.metadata['InstanceId']
 
         tags = self._prepare_tag_attributes_for('name')
 

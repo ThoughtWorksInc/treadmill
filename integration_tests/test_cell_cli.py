@@ -85,29 +85,44 @@ class CellCLITest(unittest.TestCase):
         self.assertEqual(len(cell_info['Instances']), 6)
         self.assertEqual(len(ldap_info['Instances']), 1)
         self.assertCountEqual(
-            [i['Name'] for i in cell_info['Instances']],
+            [i['Name'].split('-')[0] for i in cell_info['Instances']],
             ['TreadmillMaster1', 'TreadmillMaster2', 'TreadmillMaster3',
              'TreadmillZookeeper1', 'TreadmillZookeeper2',
              'TreadmillZookeeper3']
         )
-        zk_subnet_ids = set([
-            i['SubnetId'] for i in cell_info['Instances'] if i['Name'][:-1]
-            in 'TreadmillZookeeper'
-        ])
 
-        master_subnet_ids = set([
-            i['SubnetId'] for i in cell_info['Instances'] if i['Name'][:-1]
-            in 'TreadmillMaster'
-        ])
+        def _extract_attrs(_list, condition_attr, attr):
+            return set([
+                i[attr]
+                for i in _list['Instances'] if i['Name'].split('-')[0][:-1]
+                in condition_attr
+            ])
 
-        ldap_subnet_ids = set([
-            i['SubnetId'] for i in ldap_info['Instances'] if i['Name'][:-1]
-            in 'TreadmillLDAP'
-        ])
+        zk_subnet_ids = list(
+            _extract_attrs(cell_info, 'TreadmillZookeeper', 'SubnetId')
+        )
+        master_subnet_ids = list(
+            _extract_attrs(cell_info, 'TreadmillMaster', 'SubnetId')
+        )
+        ldap_subnet_ids = list(
+            _extract_attrs(ldap_info, 'TreadmillLDAP', 'SubnetId')
+        )
+        zk_instance_role = list(
+            _extract_attrs(cell_info, 'TreadmillZookeeper', 'Role')
+        )
+        master_instance_role = list(
+            _extract_attrs(cell_info, 'TreadmillMaster', 'Role')
+        )
+        ldap_instance_role = list(
+            _extract_attrs(ldap_info, 'TreadmillLDAP', 'Role')
+        )
 
         self.assertEqual(len(zk_subnet_ids), 1)
         self.assertEqual(len(ldap_subnet_ids), 1)
         self.assertEqual(len(master_subnet_ids), 1)
+        self.assertEqual(zk_instance_role, ['ZOOKEEPER'])
+        self.assertEqual(master_instance_role, ['MASTER'])
+        self.assertEqual(ldap_instance_role, ['LDAP'])
         self.assertEqual(master_subnet_ids, zk_subnet_ids)
         self.assertNotEqual(master_subnet_ids, ldap_subnet_ids)
         self.assertEqual(len(_vpc_info['Subnets']), 2)
