@@ -52,7 +52,7 @@ class MasterTest(unittest.TestCase):
             ],
             'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
-            'configure-master.sh': [],
+            'configure-master.sh': ['SUBNET_ID'],
         }
 
         self.assertCountEqual(

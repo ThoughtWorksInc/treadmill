@@ -45,7 +45,9 @@ class Master(Configuration):
                 'vars': {'TREADMILL_RELEASE': tm_release}
             }, {
                 'name': 'configure-master.sh',
-                'vars': {},
+                'vars': {
+                    'SUBNET_ID': subnet_id,
+                },
             },
         ]
         super().__init__(setup_scripts)

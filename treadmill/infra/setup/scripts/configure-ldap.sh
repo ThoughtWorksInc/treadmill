@@ -49,13 +49,22 @@ s6-setuidgid treadmld \
 # TODO: Create global utility function for adding service
 systemctl daemon-reload
 systemctl enable openldap.service --now
+systemctl status openldap
 
 echo Initializing openldap
 
 su -c "kinit -k -t /etc/treadmld.keytab treadmld" treadmld
 
-s6-setuidgid treadmld \
-    treadmill admin ldap init
+# FIXME: Flaky command. Works after a few re-runs.
+(
+set +e
+retry_count=0
+while [ $retry_count -lt 5 ]
+do
+    s6-setuidgid treadmld treadmill admin ldap init
+    retry_count=$((retry_count+1))
+done
+)
 
 s6-setuidgid treadmld \
     treadmill admin ldap schema --update
@@ -66,3 +75,14 @@ s6-setuidgid treadmld \
     treadmill admin ldap cell configure "{{ SUBNET_ID }}" --version 0.1 --root "{{ APP_ROOT }}" \
         --username treadmld \
         --location local.local
+
+(
+master_count=1
+while [ $master_count -le 3 ]
+do
+    s6-setuidgid treadmld \
+        treadmill admin ldap cell insert "{{ SUBNET_ID }}" --idx ${master_count} \
+            --hostname "treadmillmaster${master_count}.{{ DOMAIN }}" --client-port 2181
+    master_count=$((master_count+1))
+done
+)

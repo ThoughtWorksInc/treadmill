@@ -1,5 +1,65 @@
 AMI_LAUNCH_INDEX=$(curl -s http://169.254.169.254/latest/meta-data/ami-launch-index)
 MASTER_ID=$(expr $AMI_LAUNCH_INDEX + 1) # AMI_LAUNCH_INDEX is 0 indexed, master cannot be set to 0.
 
-# Start master service
-. /root/.bashrc && nohup treadmill admin install --profile aws master --master-id ${MASTER_ID}  --run > master_services.out 2>&1 &
+mkdir -p /opt/treadmill-pid1/bin
+mkdir -p /opt/s6/bin
+mkdir -p /opt/treadmill/bin
+cp -p /bin/pid1 /opt/treadmill-pid1/bin/pid1
+cp -p /bin/s6-* /opt/s6/bin/
+cp -p /bin/treadmill /opt/treadmill/bin/
+
+yum install -y openldap-clients
+. /root/.bashrc
+
+kinit -k
+
+(
+TIMEOUT=30
+retry_count=0
+until ( ldapsearch -c -H $TREADMILL_LDAP "ou=cells" ) || [ $retry_count -eq $TIMEOUT ]
+do
+    retry_count=$(($retry_count+1))
+    sleep 30
+done
+)
+
+treadmill --outfmt yaml admin ldap cell configure "{{ SUBNET_ID }}" > /var/tmp/cell_conf.yml
+
+(
+cat <<EOF
+mkdir -p /var/spool/tickets
+kinit -k -t /etc/krb5.keytab -c /var/spool/tickets/treadmld
+chown treadmld:treadmld /var/spool/tickets/treadmld
+EOF
+) > /etc/cron.hourly/hostkey-treadmld-kinit
+
+chmod 755 /etc/cron.hourly/hostkey-treadmld-kinit
+/etc/cron.hourly/hostkey-treadmld-kinit
+
+# Install master service
+treadmill admin install --install-dir /var/tmp/treadmill-master \
+    --config /var/tmp/cell_conf.yml master --master-id "${MASTER_ID}"
+
+(
+cat <<EOF
+[Unit]
+Description=Treadmill master services
+After=network.target
+
+[Service]
+User=root
+Group=root
+SyslogIdentifier=treadmill
+ExecStartPre=/bin/mount --make-rprivate /
+ExecStart=/var/tmp/treadmill-master/treadmill/bin/run.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+) > /etc/systemd/system/treadmill-master.service
+
+
+/bin/systemctl daemon-reload
+/bin/systemctl enable treadmill-master.service --now
