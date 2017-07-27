@@ -3,14 +3,10 @@ echo Installing openldap
 yum -y install openldap openldap-clients openldap-servers ipa-admintools
 
 echo "{{ IPA_ADMIN_PASSWORD }}" | kinit admin
-AMI_LAUNCH_INDEX=$(curl http://169.254.169.254/latest/meta-data/ami-launch-index)
-ID=$((AMI_LAUNCH_INDEX+1))
-INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
-
-ipa service-add --force "ldap/treadmillldap${ID}-${INSTANCE_ID}.{{ DOMAIN }}@{{ DOMAIN|upper }}"
+ipa service-add --force "ldap/treadmillldap1.{{ DOMAIN }}@{{ DOMAIN|upper }}"
 
 echo Retrieving LDAP service keytab
-ipa-getkeytab -p "ldap/treadmillldap${ID}-${INSTANCE_ID}.{{ DOMAIN }}" -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/ldap.keytab
+ipa-getkeytab -p "ldap/treadmillldap1.{{ DOMAIN }}" -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/ldap.keytab
 ipa-getkeytab -r -p treadmld -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/treadmld.keytab
 chown treadmld:treadmld /etc/ldap.keytab /etc/treadmld.keytab
 
