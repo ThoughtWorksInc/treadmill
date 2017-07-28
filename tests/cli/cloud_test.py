@@ -152,6 +152,7 @@ class CloudTest(unittest.TestCase):
                 '--subnet-id=sub-123',
                 '--count=2',
                 '--domain=treadmill.org',
+                '--ipa-admin-password=Tre@admill1',
             ])
 
         self.assertEqual(result.exit_code, 0)
@@ -163,7 +164,8 @@ class CloudTest(unittest.TestCase):
             key='key',
             ldap_hostname='treadmillldap1',
             subnet_id='sub-123',
-            tm_release='0.1.0'
+            tm_release='0.1.0',
+            ipa_admin_password='Tre@admill1',
         )
 
     @mock.patch('treadmill.cli.cloud.ipa.IPA')

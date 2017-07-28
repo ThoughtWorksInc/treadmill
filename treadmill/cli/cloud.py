@@ -288,11 +288,19 @@ def init():
                   help='LDAP hostname')
     @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
     @click.option('--subnet-id', required=True, help='Subnet ID')
+    @click.option('--ipa-admin-password', help='Password for IPA admin')
     def add_node(vpc_id, region, domain, name, key, count, image_id,
                  instance_type, tm_release, ldap_hostname, app_root,
-                 subnet_id):
+                 subnet_id, ipa_admin_password):
         """Add new node"""
         connection.Connection.context.domain = domain
+
+        if not ipa_admin_password:
+            ipa_admin_password = os.environ.get(
+                'TREADMILL_IPA_ADMIN_PASSWORD',
+                click.prompt('IPA admin password ', hide_input=True)
+            )
+
         _node = node.Node(name, vpc_id)
         _node.setup(
             key=key,
@@ -302,7 +310,8 @@ def init():
             tm_release=tm_release,
             app_root=app_root,
             ldap_hostname=ldap_hostname,
-            subnet_id=subnet_id
+            subnet_id=subnet_id,
+            ipa_admin_password=ipa_admin_password,
         )
         click.echo(
             pprint(_node.subnet.show())

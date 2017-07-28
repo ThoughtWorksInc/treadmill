@@ -12,7 +12,8 @@ class Node(base_provision.BaseProvision):
             instance_type,
             app_root,
             ldap_hostname,
-            subnet_id
+            subnet_id,
+            ipa_admin_password,
     ):
         self.configuration = configuration.Node(
             name=self.name,
@@ -20,6 +21,7 @@ class Node(base_provision.BaseProvision):
             app_root=app_root,
             subnet_id=subnet_id,
             ldap_hostname=ldap_hostname,
+            ipa_admin_password=ipa_admin_password,
         )
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         super(Node, self).setup(

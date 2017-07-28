@@ -172,13 +172,16 @@ class NodeTest(unittest.TestCase):
             app_root='/var/tmp',
             subnet_id='sub-123',
             ldap_hostname='ldap_host',
+            ipa_admin_password='Tre@admill1',
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'APP_ROOT', 'SUBNET_ID',
                                   'LDAP_HOSTNAME'],
             'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
-            'configure-node.sh': ['APP_ROOT'],
+            'configure-node.sh': [
+                'APP_ROOT', 'SUBNET_ID', 'IPA_ADMIN_PASSWORD'
+            ],
         }
 
         self.assertCountEqual(

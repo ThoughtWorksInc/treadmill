@@ -61,7 +61,7 @@ set +e
 retry_count=0
 while [ $retry_count -lt 5 ]
 do
-    s6-setuidgid treadmld treadmill admin ldap init
+    s6-setuidgid treadmld treadmill admin ldap init || true
     retry_count=$((retry_count+1))
 done
 )

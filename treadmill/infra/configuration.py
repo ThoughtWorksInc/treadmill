@@ -133,7 +133,7 @@ class Zookeeper(Configuration):
 
 class Node(Configuration):
     def __init__(self, name, tm_release, app_root, subnet_id,
-                 ldap_hostname):
+                 ldap_hostname, ipa_admin_password):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -156,6 +156,8 @@ class Node(Configuration):
                 'name': 'configure-node.sh',
                 'vars': {
                     'APP_ROOT': app_root,
+                    'SUBNET_ID': subnet_id,
+                    'IPA_ADMIN_PASSWORD': ipa_admin_password,
                 },
             }
         ]
