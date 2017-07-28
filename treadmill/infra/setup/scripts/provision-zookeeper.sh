@@ -43,4 +43,5 @@ EOF
 ) > /etc/systemd/system/zookeeper.service
 
 chown -R zookeeper:zookeeper /var/lib/zookeeper
+/bin/systemctl enable zookeeper.service
 /bin/systemctl start zookeeper.service
