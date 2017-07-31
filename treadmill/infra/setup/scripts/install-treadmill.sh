@@ -8,7 +8,7 @@ yum install treadmill-pid1 --nogpgcheck -y
 if [ ! -e /etc/yum.repos.d/treadmill.repo ]; then
     curl -L https://s3.amazonaws.com/yum_repo_dev/treadmill.repo -o /etc/yum.repos.d/treadmill.repo
 fi
-yum install s6 --nogpgcheck -y
+yum install s6 execline --nogpgcheck -y
 
 # Install treadmill
 curl -L "https://github.com/ThoughtWorksInc/treadmill/releases/download/{{ TREADMILL_RELEASE }}/treadmill" -o /bin/treadmill

@@ -1,5 +1,5 @@
 echo Installing Node packages
-yum -y install conntrack-tools iproute libcgroup libcgroup-tools bridge-utils openldap-clients
+yum -y install conntrack-tools iproute libcgroup libcgroup-tools bridge-utils openldap-clients lvm2* ipset iptables
 
 mkdir -p /opt/treadmill-pid1/bin
 mkdir -p /opt/s6/bin
