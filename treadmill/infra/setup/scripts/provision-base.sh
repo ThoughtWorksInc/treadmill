@@ -23,6 +23,7 @@ export TREADMILL_LDAP_SUFFIX=${LDAP_DC}
 export TREADMILL_CELL={{ SUBNET_ID }}
 export TREADMILL_APPROOT={{ APP_ROOT }}
 export TREADMILL_DNS_DOMAIN={{ DOMAIN }}
+export TREADMILL=/opt/treadmill
 export PEX_ROOT=/tmp/pex
 EOF
 ) >> /root/.bashrc
