@@ -12,7 +12,7 @@ class ZookeeperTest(unittest.TestCase):
     def test_connect_without_connargs(self, kazooClientMock):
         zkurl = 'zookeeper://foo@123:21'
 
-        connect(zkurl, {})
+        connect(zkurl)
 
         kazooClientMock.assert_called_once_with(
             hosts='foo@123:21',
@@ -32,7 +32,7 @@ class ZookeeperTest(unittest.TestCase):
             }
         }
 
-        connect(zkurl, connargs)
+        connect(zkurl, **connargs)
 
         kazooClientMock.assert_called_once_with(
             hosts='foobar:123',

@@ -4,7 +4,7 @@
 import kazoo.client
 
 
-def connect(zkurl, connargs):
+def connect(zkurl, **connargs):
     """
     Connect to zookeeper
     """
