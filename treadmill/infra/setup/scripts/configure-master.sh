@@ -1,13 +1,6 @@
 AMI_LAUNCH_INDEX=$(curl -s http://169.254.169.254/latest/meta-data/ami-launch-index)
 MASTER_ID=$(expr $AMI_LAUNCH_INDEX + 1) # AMI_LAUNCH_INDEX is 0 indexed, master cannot be set to 0.
 
-mkdir -p /opt/treadmill-pid1/bin
-mkdir -p /opt/s6/bin
-mkdir -p /opt/treadmill/bin
-cp -p /bin/pid1 /opt/treadmill-pid1/bin/pid1
-cp -p /bin/s6-* /opt/s6/bin/
-cp -p /bin/treadmill /opt/treadmill/bin/
-
 yum install -y openldap-clients
 . /root/.bashrc
 
