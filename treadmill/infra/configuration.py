@@ -4,6 +4,7 @@ from treadmill.infra import SCRIPT_DIR
 from treadmill.infra import connection
 from treadmill import TREADMILL_BIN
 
+
 class Configuration:
     """Configure instances"""
 
