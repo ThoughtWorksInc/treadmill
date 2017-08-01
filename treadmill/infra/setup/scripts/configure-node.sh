@@ -15,7 +15,7 @@ do
 done
 )
 
-treadmill --outfmt yaml admin ldap cell configure "{{ SUBNET_ID }}" > {{ APP_ROOT }}/cell_conf.yml
+{{ TREADMILL }} --outfmt yaml admin ldap cell configure "{{ SUBNET_ID }}" > {{ APP_ROOT }}/cell_conf.yml
 
 (
 cat <<EOF
@@ -48,7 +48,7 @@ WantedBy=multi-user.target
 EOF
 ) > /etc/systemd/system/treadmill-node.service
 
-treadmill admin install \
+{{ TREADMILL }} admin install \
     --install-dir {{ APP_ROOT }}/treadmill-node \
     --config {{ APP_ROOT }}/cell_conf.yml \
     --override network_device=eth0 \
@@ -63,4 +63,4 @@ ipa-getkeytab -r -p treadmld -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD
 chown treadmld:treadmld /etc/treadmld.keytab
 su -c "kinit -k -t /etc/treadmld.keytab treadmld" treadmld
 
-s6-setuidgid treadmld treadmill admin ldap server configure "$(hostname -f)" --cell "{{ SUBNET_ID }}"
+s6-setuidgid treadmld {{ TREADMILL }} admin ldap server configure "$(hostname -f)" --cell "{{ SUBNET_ID }}"

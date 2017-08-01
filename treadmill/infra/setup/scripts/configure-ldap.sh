@@ -39,7 +39,7 @@ EOF
 ) > /etc/systemd/system/openldap.service
 
 s6-setuidgid treadmld \
-    treadmill admin install --install-dir /var/tmp/treadmill-openldap \
+    {{ TREADMILL }} admin install --install-dir /var/tmp/treadmill-openldap \
         openldap \
         --owner treadmld \
         --uri ldap://0.0.0.0:22389 \
@@ -61,18 +61,18 @@ set +e
 retry_count=0
 while [ $retry_count -lt 5 ]
 do
-    s6-setuidgid treadmld treadmill admin ldap init || true
+    s6-setuidgid treadmld {{ TREADMILL }} admin ldap init || true
     retry_count=$((retry_count+1))
 done
 )
 
 s6-setuidgid treadmld \
-    treadmill admin ldap schema --update
+    {{ TREADMILL }} admin ldap schema --update
 
 echo Configuring local cell
 
 s6-setuidgid treadmld \
-    treadmill admin ldap cell configure "{{ SUBNET_ID }}" --version 0.1 --root "{{ APP_ROOT }}" \
+    {{ TREADMILL }} admin ldap cell configure "{{ SUBNET_ID }}" --version 0.1 --root "{{ APP_ROOT }}" \
         --username treadmld \
         --location local.local
 
@@ -81,7 +81,7 @@ master_count=1
 while [ $master_count -le 3 ]
 do
     s6-setuidgid treadmld \
-        treadmill admin ldap cell insert "{{ SUBNET_ID }}" --idx ${master_count} \
+        {{ TREADMILL }} admin ldap cell insert "{{ SUBNET_ID }}" --idx ${master_count} \
             --hostname "treadmillmaster${master_count}.{{ DOMAIN }}" --client-port 2181
     master_count=$((master_count+1))
 done

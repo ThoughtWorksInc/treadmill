@@ -16,7 +16,7 @@ do
 done
 )
 
-treadmill --outfmt yaml admin ldap cell configure "{{ SUBNET_ID }}" > /var/tmp/cell_conf.yml
+{{ TREADMILL }} --outfmt yaml admin ldap cell configure "{{ SUBNET_ID }}" > /var/tmp/cell_conf.yml
 
 (
 cat <<EOF
@@ -30,7 +30,7 @@ chmod 755 /etc/cron.hourly/hostkey-treadmld-kinit
 /etc/cron.hourly/hostkey-treadmld-kinit
 
 # Install master service
-treadmill admin install --install-dir /var/tmp/treadmill-master \
+{{ TREADMILL }} admin install --install-dir /var/tmp/treadmill-master \
     --config /var/tmp/cell_conf.yml master --master-id "${MASTER_ID}"
 
 (
