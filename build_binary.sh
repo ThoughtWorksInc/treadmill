@@ -15,7 +15,7 @@ if [ ! -d "kazoo" ]; then
     git clone -b puresasl https://github.com/ceache/kazoo.git
 fi
 
-pex . kazoo -o dist/treadmill.pex -e treadmill.console:run -v
+pex . kazoo -o dist/treadmill.pex -e treadmill.console:run -v --disable-cache
 rm -rf kazoo
 
 cp dist/treadmill.pex ~/rpmbuild/SOURCES/treadmill-0.1/treadmill
