@@ -1,13 +1,6 @@
 echo Installing Node packages
 yum -y install conntrack-tools iproute libcgroup libcgroup-tools bridge-utils openldap-clients lvm2* ipset iptables
 
-mkdir -p /opt/treadmill-pid1/bin
-mkdir -p /opt/s6/bin
-mkdir -p /opt/treadmill/bin
-cp -p /bin/pid1 /opt/treadmill-pid1/bin/pid1
-cp -p /bin/s6-* /opt/s6/bin/
-cp -p /bin/treadmill /opt/treadmill/bin/
-
 . /root/.bashrc
 
 kinit -k
@@ -58,6 +51,7 @@ EOF
 treadmill admin install \
     --install-dir {{ APP_ROOT }}/treadmill-node \
     --config {{ APP_ROOT }}/cell_conf.yml \
+    --override network_device=eth0 \
     node
 
 /bin/systemctl daemon-reload
