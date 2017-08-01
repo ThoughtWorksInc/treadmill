@@ -2,7 +2,7 @@ from jinja2 import Template
 
 from treadmill.infra import SCRIPT_DIR
 from treadmill.infra import connection
-
+from treadmill import TREADMILL_BIN
 
 class Configuration:
     """Configure instances"""
@@ -18,9 +18,11 @@ class Configuration:
         # Add initializer script
         self.setup_scripts.insert(0, {'name': 'init.sh'})
         for script in self.setup_scripts:
+            script['vars'] = script.get('vars', {})
+            script['vars']['TREADMILL'] = TREADMILL_BIN
             with open(SCRIPT_DIR + script['name'], 'r') as data:
                 template = Template(data.read())
-                userdata += template.render(script.get('vars', {})) + '\n'
+                userdata += template.render(script['vars']) + '\n'
         return userdata
 
 
