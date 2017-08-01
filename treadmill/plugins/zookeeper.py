@@ -4,7 +4,7 @@
 import kazoo.client
 import kazoo.security
 
-_ROLES = ['servers', 'admins', 'readers']
+_ROLES = ['servers', 'admin', 'readers']
 
 
 def connect(zkurl, connargs):
