@@ -16,6 +16,8 @@ do
 done
 )
 
+sleep 30
+
 {{ TREADMILL }} --outfmt yaml admin ldap cell configure "{{ SUBNET_ID }}" > /var/tmp/cell_conf.yml
 
 (
