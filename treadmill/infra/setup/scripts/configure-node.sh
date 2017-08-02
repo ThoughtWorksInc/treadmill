@@ -1,3 +1,6 @@
+setenforce 0
+sed -i -e 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
+
 echo Installing Node packages
 yum -y install conntrack-tools iproute libcgroup libcgroup-tools bridge-utils openldap-clients lvm2* ipset iptables rrdtool
 
