@@ -3,7 +3,7 @@ import sys
 
 
 if sys.argv[1] == 'help':
-    print("Usage:\n python delete_obselete_hosted_zones.py <hosted-zones-ids-not-to-be-deleted>")
+    print("Usage:\n python delete_obselete_hosted_zones.py <hosted-zones-ids-not-to-be-deleted>")  # noqa
 else:
     hosted_zones_to_keep = sys.argv[1:]
     route53_conn = connection.Connection(resource=constants.ROUTE_53)

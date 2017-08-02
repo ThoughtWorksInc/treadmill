@@ -219,6 +219,7 @@ def init():
     @cloud.command(name='init-domain')
     @click.option('--name', default='TreadmillIPA',
                   help='Name of the instance')
+    @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--domain', required=True,
                   envvar='TREADMILL_DNS_DOMAIN',
@@ -235,11 +236,13 @@ def init():
                   help='Instance type')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for new master instance')
-    def init_domain(name, vpc_id, domain, subnet_cidr_block, subnet_id, count,
-                    ipa_admin_password, tm_release, key,
+    def init_domain(name, region, vpc_id, domain, subnet_cidr_block, subnet_id,
+                    count, ipa_admin_password, tm_release, key,
                     instance_type, image_id):
         """Initialize treadmill domain"""
         connection.Connection.context.domain = domain
+        if region:
+            connection.Connection.context.region_name = region
 
         if not ipa_admin_password:
             ipa_admin_password = os.environ.get(
@@ -295,6 +298,8 @@ def init():
                  subnet_id, ipa_admin_password):
         """Add new node"""
         connection.Connection.context.domain = domain
+        if region:
+            connection.Connection.context.region_name = region
 
         if not ipa_admin_password:
             ipa_admin_password = os.environ.get(
