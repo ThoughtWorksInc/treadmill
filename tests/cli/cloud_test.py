@@ -59,6 +59,7 @@ class CloudTest(unittest.TestCase):
         cell.setup_zookeeper.assert_called_once_with(
             name='TreadmillZookeeper',
             key='key',
+            ldap_hostname='treadmillldap1',
             image_id='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
             subnet_cidr_block='172.24.0.0/24',
@@ -119,6 +120,7 @@ class CloudTest(unittest.TestCase):
         cell.setup_zookeeper.assert_called_once_with(
             name='TreadmillZookeeper',
             key='key',
+            ldap_hostname='treadmillldap1',
             image_id='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
             subnet_cidr_block='172.24.0.0/24',
