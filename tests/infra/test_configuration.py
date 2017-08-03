@@ -140,9 +140,10 @@ class ZookeeperTest(unittest.TestCase):
     def test_zookeeper_configuration_script_data(self, open_mock):
         config = configuration.Zookeeper(
             name='zookeeper',
+            ldap_hostname='ldap_host'
         )
         expected_script_data = {
-            'provision-base.sh': ['DOMAIN', 'NAME'],
+            'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME'],
             'install-ipa-client.sh': [],
             'provision-zookeeper.sh': ['DOMAIN'],
         }

@@ -171,6 +171,7 @@ def init():
             image_id=image_id,
             instance_type=instance_type,
             subnet_cidr_block=cell_cidr_block,
+            ldap_hostname=ldap_hostname
         )
 
         _cell.setup_master(
