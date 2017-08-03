@@ -1,6 +1,6 @@
 Name: execline
 Version: 2.2.0.0
-Release: 12
+Release: 14
 Summary: Dependency for treadmill
 Source0: execline-2.2.0.0.tar.gz
 License: ISC
@@ -15,54 +15,54 @@ Write some descripton about your package.
 make
 %install
 make install
-install -m 700 -d $RPM_BUILD_ROOT/opt/s6/bin
-install -m 700 -d $RPM_BUILD_ROOT/opt/s6/lib/execline
-install -m 700 -d $RPM_BUILD_ROOT/opt/s6/include/execline
-install -m 700 background $RPM_BUILD_ROOT/opt/s6/bin/background
-install -m 700 backtick $RPM_BUILD_ROOT/opt/s6/bin/backtick
-install -m 700 define $RPM_BUILD_ROOT/opt/s6/bin/define
-install -m 700 dollarat $RPM_BUILD_ROOT/opt/s6/bin/dollarat
-install -m 700 elgetopt $RPM_BUILD_ROOT/opt/s6/bin/elgetopt
-install -m 700 elgetpositionals $RPM_BUILD_ROOT/opt/s6/bin/elgetpositionals
-install -m 700 elglob $RPM_BUILD_ROOT/opt/s6/bin/elglob
-install -m 700 emptyenv $RPM_BUILD_ROOT/opt/s6/bin/emptyenv
-install -m 700 exec $RPM_BUILD_ROOT/opt/s6/bin/exec
-install -m 700 execlineb $RPM_BUILD_ROOT/opt/s6/bin/execlineb
-install -m 700 exit $RPM_BUILD_ROOT/opt/s6/bin/exit
-install -m 700 export $RPM_BUILD_ROOT/opt/s6/bin/export
-install -m 700 fdblock $RPM_BUILD_ROOT/opt/s6/bin/fdblock
-install -m 700 fdclose $RPM_BUILD_ROOT/opt/s6/bin/fdclose
-install -m 700 fdmove $RPM_BUILD_ROOT/opt/s6/bin/fdmove
-install -m 700 fdswap $RPM_BUILD_ROOT/opt/s6/bin/fdswap
-install -m 700 fdreserve $RPM_BUILD_ROOT/opt/s6/bin/fdreserve
-install -m 700 forbacktickx $RPM_BUILD_ROOT/opt/s6/bin/forbacktickx
-install -m 700 foreground $RPM_BUILD_ROOT/opt/s6/bin/foreground
-install -m 700 forstdin $RPM_BUILD_ROOT/opt/s6/bin/forstdin
-install -m 700 forx $RPM_BUILD_ROOT/opt/s6/bin/forx
-install -m 700 getcwd $RPM_BUILD_ROOT/opt/s6/bin/getcwd
-install -m 700 getpid $RPM_BUILD_ROOT/opt/s6/bin/getpid
-install -m 700 heredoc $RPM_BUILD_ROOT/opt/s6/bin/heredoc
-install -m 700 homeof $RPM_BUILD_ROOT/opt/s6/bin/homeof
-install -m 700 if $RPM_BUILD_ROOT/opt/s6/bin/if
-install -m 700 ifelse $RPM_BUILD_ROOT/opt/s6/bin/ifelse
-install -m 700 ifte $RPM_BUILD_ROOT/opt/s6/bin/ifte
-install -m 700 ifthenelse $RPM_BUILD_ROOT/opt/s6/bin/ifthenelse
-install -m 700 import $RPM_BUILD_ROOT/opt/s6/bin/import
-install -m 700 importas $RPM_BUILD_ROOT/opt/s6/bin/importas
-install -m 700 loopwhilex $RPM_BUILD_ROOT/opt/s6/bin/loopwhilex
-install -m 700 multidefine $RPM_BUILD_ROOT/opt/s6/bin/multidefine
-install -m 700 multisubstitute $RPM_BUILD_ROOT/opt/s6/bin/multisubstitute
-install -m 700 pipeline $RPM_BUILD_ROOT/opt/s6/bin/pipeline
-install -m 700 piperw $RPM_BUILD_ROOT/opt/s6/bin/piperw
-install -m 700 redirfd $RPM_BUILD_ROOT/opt/s6/bin/redirfd
-install -m 700 runblock $RPM_BUILD_ROOT/opt/s6/bin/runblock
-install -m 700 shift $RPM_BUILD_ROOT/opt/s6/bin/shift
-install -m 700 trap $RPM_BUILD_ROOT/opt/s6/bin/trap
-install -m 700 tryexec $RPM_BUILD_ROOT/opt/s6/bin/tryexec
-install -m 700 unexport $RPM_BUILD_ROOT/opt/s6/bin/unexport
-install -m 700 withstdinas $RPM_BUILD_ROOT/opt/s6/bin/withstdinas
-install -m 744 libexecline.a.xyzzy $RPM_BUILD_ROOT/opt/s6/lib/execline/libexecline.a
-install -m 744 src/include/execline/config.h $RPM_BUILD_ROOT/opt/s6/include/execline/config.h
+install -m 755 -d $RPM_BUILD_ROOT/opt/s6/bin
+install -m 755 -d $RPM_BUILD_ROOT/opt/s6/lib/execline
+install -m 755 -d $RPM_BUILD_ROOT/opt/s6/include/execline
+install -m 755 background $RPM_BUILD_ROOT/opt/s6/bin/background
+install -m 755 backtick $RPM_BUILD_ROOT/opt/s6/bin/backtick
+install -m 755 define $RPM_BUILD_ROOT/opt/s6/bin/define
+install -m 755 dollarat $RPM_BUILD_ROOT/opt/s6/bin/dollarat
+install -m 755 elgetopt $RPM_BUILD_ROOT/opt/s6/bin/elgetopt
+install -m 755 elgetpositionals $RPM_BUILD_ROOT/opt/s6/bin/elgetpositionals
+install -m 755 elglob $RPM_BUILD_ROOT/opt/s6/bin/elglob
+install -m 755 emptyenv $RPM_BUILD_ROOT/opt/s6/bin/emptyenv
+install -m 755 exec $RPM_BUILD_ROOT/opt/s6/bin/exec
+install -m 755 execlineb $RPM_BUILD_ROOT/opt/s6/bin/execlineb
+install -m 755 exit $RPM_BUILD_ROOT/opt/s6/bin/exit
+install -m 755 export $RPM_BUILD_ROOT/opt/s6/bin/export
+install -m 755 fdblock $RPM_BUILD_ROOT/opt/s6/bin/fdblock
+install -m 755 fdclose $RPM_BUILD_ROOT/opt/s6/bin/fdclose
+install -m 755 fdmove $RPM_BUILD_ROOT/opt/s6/bin/fdmove
+install -m 755 fdswap $RPM_BUILD_ROOT/opt/s6/bin/fdswap
+install -m 755 fdreserve $RPM_BUILD_ROOT/opt/s6/bin/fdreserve
+install -m 755 forbacktickx $RPM_BUILD_ROOT/opt/s6/bin/forbacktickx
+install -m 755 foreground $RPM_BUILD_ROOT/opt/s6/bin/foreground
+install -m 755 forstdin $RPM_BUILD_ROOT/opt/s6/bin/forstdin
+install -m 755 forx $RPM_BUILD_ROOT/opt/s6/bin/forx
+install -m 755 getcwd $RPM_BUILD_ROOT/opt/s6/bin/getcwd
+install -m 755 getpid $RPM_BUILD_ROOT/opt/s6/bin/getpid
+install -m 755 heredoc $RPM_BUILD_ROOT/opt/s6/bin/heredoc
+install -m 755 homeof $RPM_BUILD_ROOT/opt/s6/bin/homeof
+install -m 755 if $RPM_BUILD_ROOT/opt/s6/bin/if
+install -m 755 ifelse $RPM_BUILD_ROOT/opt/s6/bin/ifelse
+install -m 755 ifte $RPM_BUILD_ROOT/opt/s6/bin/ifte
+install -m 755 ifthenelse $RPM_BUILD_ROOT/opt/s6/bin/ifthenelse
+install -m 755 import $RPM_BUILD_ROOT/opt/s6/bin/import
+install -m 755 importas $RPM_BUILD_ROOT/opt/s6/bin/importas
+install -m 755 loopwhilex $RPM_BUILD_ROOT/opt/s6/bin/loopwhilex
+install -m 755 multidefine $RPM_BUILD_ROOT/opt/s6/bin/multidefine
+install -m 755 multisubstitute $RPM_BUILD_ROOT/opt/s6/bin/multisubstitute
+install -m 755 pipeline $RPM_BUILD_ROOT/opt/s6/bin/pipeline
+install -m 755 piperw $RPM_BUILD_ROOT/opt/s6/bin/piperw
+install -m 755 redirfd $RPM_BUILD_ROOT/opt/s6/bin/redirfd
+install -m 755 runblock $RPM_BUILD_ROOT/opt/s6/bin/runblock
+install -m 755 shift $RPM_BUILD_ROOT/opt/s6/bin/shift
+install -m 755 trap $RPM_BUILD_ROOT/opt/s6/bin/trap
+install -m 755 tryexec $RPM_BUILD_ROOT/opt/s6/bin/tryexec
+install -m 755 unexport $RPM_BUILD_ROOT/opt/s6/bin/unexport
+install -m 755 withstdinas $RPM_BUILD_ROOT/opt/s6/bin/withstdinas
+install -m 755 libexecline.a.xyzzy $RPM_BUILD_ROOT/opt/s6/lib/execline/libexecline.a
+install -m 755 src/include/execline/config.h $RPM_BUILD_ROOT/opt/s6/include/execline/config.h
 %post
 %files
 /opt/s6/bin/background
