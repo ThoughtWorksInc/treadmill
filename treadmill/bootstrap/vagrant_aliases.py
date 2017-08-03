@@ -22,9 +22,6 @@ ALIASES = {
     'tkt-recv': None,
     'tkt-send': None,
 
-    'rrdcached': None,
-    'rrdtool': None,
-
     'logstash-forwarder': None,
 
     'treadmill_bind_preload.so': None,
