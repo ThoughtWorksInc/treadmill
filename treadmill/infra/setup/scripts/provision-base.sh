@@ -27,6 +27,6 @@ export TREADMILL=/opt/treadmill
 export PEX_ROOT=/tmp/pex
 export PATH=$PATH:/opt/s6/bin:/opt/treadmill/bin
 EOF
-) >> /root/.bashrc
+) >> /etc/profile.d/treadmill_profile.sh
 
-source /root/.bashrc
+source /etc/profile.d/treadmill_profile.sh
