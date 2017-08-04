@@ -57,10 +57,6 @@ EOF
     --override "network_device=eth0 rrdtool=/usr/bin/rrdtool rrdcached=/usr/bin/rrdcached" \
     node
 
-echo Disabling alert_monitor and metrics services
-touch "{{ APP_ROOT }}/treadmill-node/init/alert_monitor/down"
-touch "{{ APP_ROOT }}/treadmill-node/init/metrics/down"
-
 /bin/systemctl daemon-reload
 /bin/systemctl enable treadmill-node.service --now
 
