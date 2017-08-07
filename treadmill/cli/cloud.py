@@ -289,7 +289,8 @@ def init():
                   default='0.1.0', help='Treadmill release to use')
     @click.option('--ldap-hostname', default='treadmillldap1',
                   help='LDAP hostname')
-    @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
+    @click.option('--app-root', default='/var/tmp/treadmill-node',
+                  help='Treadmill app root')
     @click.option('--subnet-id', required=True, help='Subnet ID')
     @click.option('--ipa-admin-password', help='Password for IPA admin')
     def add_node(vpc_id, region, domain, name, key, count, image_id,

@@ -157,7 +157,7 @@ class CloudTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         node_mock.setup.assert_called_once_with(
-            app_root='/var/tmp',
+            app_root='/var/tmp/treadmill-node',
             count=2,
             image_id='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
