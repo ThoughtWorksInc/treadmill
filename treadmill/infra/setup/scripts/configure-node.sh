@@ -18,7 +18,7 @@ do
 done
 )
 
-{{ TREADMILL }} --outfmt yaml admin ldap cell configure "{{ SUBNET_ID }}" > {{ APP_ROOT }}/cell_conf.yml
+{{ TREADMILL }} --outfmt yaml admin ldap cell configure "{{ SUBNET_ID }}" > /var/tmp/cell_conf.yml
 
 (
 cat <<EOF
@@ -42,7 +42,7 @@ User=root
 Group=root
 SyslogIdentifier=treadmill
 ExecStartPre=/bin/mount --make-rprivate /
-ExecStart={{ APP_ROOT }}/treadmill-node/bin/run.sh
+ExecStart={{ APP_ROOT }}/bin/run.sh
 Restart=always
 RestartSec=5
 
@@ -52,8 +52,8 @@ EOF
 ) > /etc/systemd/system/treadmill-node.service
 
 {{ TREADMILL }} admin install \
-    --install-dir {{ APP_ROOT }}/treadmill-node \
-    --config {{ APP_ROOT }}/cell_conf.yml \
+    --install-dir {{ APP_ROOT }} \
+    --config /var/tmp/cell_conf.yml \
     --override "network_device=eth0 rrdtool=/usr/bin/rrdtool rrdcached=/usr/bin/rrdcached" \
     node
 
