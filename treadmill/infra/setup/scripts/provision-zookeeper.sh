@@ -36,8 +36,8 @@ After=network.target
 
 [Service]
 Type=forking
-User=zookeeper
-Group=zookeeper
+User=treadmld
+Group=treadmld
 SyslogIdentifier=zookeeper
 Environment=ZOO_LOG_DIR=/var/lib/zookeeper
 ExecStart=/usr/lib/zookeeper/bin/zkServer.sh start
@@ -48,14 +48,15 @@ WantedBy=multi-user.target
 EOF
 ) > /etc/systemd/system/zookeeper.service
 
-chown -R zookeeper:zookeeper /var/lib/zookeeper
+chown -R treadmld:treadmld /var/lib/zookeeper
 
-zookeeper-server-initialize
+su -c "zookeeper-server-initialize" treadmld
 
 AMI_LAUNCH_INDEX=$(curl http://169.254.169.254/latest/meta-data/ami-launch-index)
 ZK_ID=$((AMI_LAUNCH_INDEX+1))
+su -c "echo $ZK_ID > /var/lib/zookeeper/myid" treadmld
 
-echo $ZK_ID > /var/lib/zookeeper/myid
+chmod 644 /etc/krb5.keytab
 
 /bin/systemctl enable zookeeper.service
 /bin/systemctl start zookeeper.service
