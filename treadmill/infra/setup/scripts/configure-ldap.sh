@@ -55,19 +55,20 @@ echo Initializing openldap
 
 su -c "kinit -k -t /etc/treadmld.keytab treadmld" treadmld
 
-# FIXME: Flaky command. Works after a few re-runs.
+s6-setuidgid treadmld {{ TREADMILL }} admin ldap init
+
 (
-set +e
+# FIXME: Flaky command. Works after a few re-runs.
+TIMEOUT=120
+
 retry_count=0
-while [ $retry_count -lt 5 ]
+until ( s6-setuidgid treadmld {{ TREADMILL }} admin ldap schema --update ) || [ $retry_count -eq $TIMEOUT ]
 do
-    s6-setuidgid treadmld {{ TREADMILL }} admin ldap init || true
-    retry_count=$((retry_count+1))
+    retry_count=`expr $retry_count + 1`
+    echo "Trying ldap schema update : $retry_count"
+    sleep 1
 done
 )
-
-s6-setuidgid treadmld \
-    {{ TREADMILL }} admin ldap schema --update
 
 echo Configuring local cell
 
