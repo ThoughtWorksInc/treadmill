@@ -12,12 +12,7 @@ SSH in the vagrant machine:
 
   vagrant ssh master
 
-Activate the virtual environment:
-::
-
-  source /opt/treadmill/bin/activate
-
-Virtual environment should have treadmill installed. List the treadmill options:
+Check treadmill exist:
 ::
 
   treadmill --help
@@ -82,7 +77,7 @@ ipa-admin-password should be at least 8 characters long.
 
 Other values can be overwritten if required.
 
-This will create IPA Server.
+This will spin up IPA Server.
 
 
 Initialize LDAP
@@ -94,7 +89,7 @@ LDAP can be initialized either along with cell or using the LDAP CLI. By default
 
   treadmill cloud init-ldap --vpc-id <vpc_id> --key <key_name> --image-id <ami_id>
 
-This will setup LDAP Server.
+This will spin up LDAP Server.
 
 
 Initialize Cell
@@ -104,7 +99,6 @@ Initialize Cell
 
   treadmill cloud init-cell --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --without-ldap
 
-This will setup 3 masters and 3 zookeeper boxes by default.
+This will setup 3 masters and 3 zookeeper instances by default.
 
 At this point all the hosts will be registered with IPA server.
-
