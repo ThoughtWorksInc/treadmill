@@ -2,6 +2,7 @@ from treadmill.infra import constants, connection
 
 route53_conn = connection.Connection(resource=constants.ROUTE_53)
 
+
 def delete_obsolete(zone_ids_to_keep):
     hosted_zones = route53_conn.list_hosted_zones()['HostedZones']
     all_zone_ids = [hosted_zone['Id'] for hosted_zone in hosted_zones]
@@ -18,6 +19,7 @@ def delete_obsolete(zone_ids_to_keep):
 
         route53_conn.delete_hosted_zone(Id=id)
 
+
 def delete_record(zone_id, record):
     route53_conn.change_resource_record_sets(
         HostedZoneId=zone_id.split('/')[-1],
@@ -33,5 +35,3 @@ def delete_record(zone_id, record):
             }]
         }
     )
-
-
