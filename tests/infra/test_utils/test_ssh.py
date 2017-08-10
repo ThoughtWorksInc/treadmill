@@ -2,6 +2,7 @@ import unittest
 import mock
 from treadmill.infra.utils import ssh
 
+
 class SSHTest(unittest.TestCase):
     @mock.patch('treadmill.infra.connection.Connection')
     def test_enable(self, connectionMock):
