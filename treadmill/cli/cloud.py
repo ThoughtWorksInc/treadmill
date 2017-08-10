@@ -5,6 +5,7 @@ import logging
 
 from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
+from treadmill.infra.utils import ssh, hosted_zones
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -434,5 +435,23 @@ def init():
         click.echo(
             pprint(subnet.Subnet(id=subnet_id).show())
         )
+
+    @cloud.command(name='enable-ssh')
+    @click.option('--security-group-id', required=True, help='Security Group ID')
+    def enable_ssh(security_group_id):
+        """Enable SSH from my ip"""
+        ssh.enable(security_group_id)
+
+    @cloud.command(name='disable-ssh')
+    @click.option('--security-group-id', required=True, help='Security Group ID')
+    def disable_ssh(security_group_id):
+        """Disable SSH from my ip"""
+        ssh.disable(security_group_id)
+
+    @cloud.command(name='delete-hosted-zone')
+    @click.option('--zones-to-retain', required=True, help='Hosted Zone IDs to retain', multiple=True)
+    def delete_hosted_zones(zones_to_retain):
+        """Delete Hosted Zones"""
+        hosted_zones.delete_obsolete(zones_to_retain)
 
     return cloud
