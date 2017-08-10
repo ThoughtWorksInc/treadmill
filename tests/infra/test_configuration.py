@@ -176,7 +176,7 @@ class NodeTest(unittest.TestCase):
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'APP_ROOT', 'SUBNET_ID',
-                                  'LDAP_HOSTNAME'],
+                                  'LDAP_HOSTNAME', 'ROLE'],
             'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-node.sh': [

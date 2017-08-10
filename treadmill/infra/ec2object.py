@@ -25,6 +25,8 @@ class EC2Object:
                 self.name = self.name + str(
                     self.metadata['AmiLaunchIndex'] + 1
                 )
+            if self.role == constants.ROLES['NODE']:
+                self.name = self.name + '-' + self.id
 
         tags = self._prepare_tag_attributes_for('name')
 

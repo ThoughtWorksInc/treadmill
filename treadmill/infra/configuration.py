@@ -1,7 +1,7 @@
 from jinja2 import Template
 
 from treadmill.infra import SCRIPT_DIR
-from treadmill.infra import connection
+from treadmill.infra import connection, constants
 from treadmill import TREADMILL_BIN
 
 
@@ -146,6 +146,7 @@ class Node(Configuration):
                     'APP_ROOT': app_root,
                     'SUBNET_ID': subnet_id,
                     'LDAP_HOSTNAME': ldap_hostname,
+                    'ROLE': constants.ROLES['NODE']
                 }
             }, {
                 'name': 'install-ipa-client.sh',
