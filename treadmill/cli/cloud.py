@@ -283,7 +283,7 @@ def init():
     @click.option('--image-id', required=True,
                   help='AMI ID to use for new node instance')
     @click.option('--instance-type',
-                  default=constants.INSTANCE_TYPES['EC2']['micro'],
+                  default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
     @click.option('--tm-release',
                   default='0.1.0', help='Treadmill release to use')
