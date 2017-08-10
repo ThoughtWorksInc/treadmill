@@ -18,6 +18,19 @@ class Instance(ec2object.EC2Object):
         )
         self.private_ip = self._get_private_ip()
 
+    def create_tags(self):
+        self.name = self.name + str(
+            self.metadata['AmiLaunchIndex'] + 1
+        )
+        if self.role == constants.ROLES['NODE']:
+            self.name = self.name + '-' + self.id
+
+        super(Instance, self).create_tags()
+
+    @property
+    def hostname(self):
+        return self.name + '.' + connection.Connection.context.domain
+
     def configure_dns_record(self, hosted_zone_id, reverse=False):
         self._change_resource_record_sets(
             'UPSERT',

@@ -53,6 +53,7 @@ class InstanceTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create_tags_with_role(self, ConnectionMock):
+        ConnectionMock.context.domain = 'do.main'
         conn_mock = ConnectionMock()
         conn_mock.create_tags = mock.Mock()
 
@@ -64,6 +65,7 @@ class InstanceTest(unittest.TestCase):
         )
         instance.create_tags()
         self.assertEquals(instance.name, 'foo101')
+        self.assertEquals(instance.hostname, 'foo101.do.main')
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
@@ -78,6 +80,7 @@ class InstanceTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_create_tags_with_node_role(self, ConnectionMock):
+        ConnectionMock.context.domain = 'do.main'
         conn_mock = ConnectionMock()
         conn_mock.create_tags = mock.Mock()
 
@@ -89,6 +92,7 @@ class InstanceTest(unittest.TestCase):
         )
         instance.create_tags()
         self.assertEquals(instance.name, 'foo101-instanceid')
+        self.assertEquals(instance.hostname, 'foo101-instanceid.do.main')
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['instanceid'],

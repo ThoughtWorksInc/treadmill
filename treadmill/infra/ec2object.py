@@ -19,15 +19,6 @@ class EC2Object:
                              if t['Key'] == 'Name'][0]
 
     def create_tags(self):
-        if self.metadata:
-            _ami_launch_index = self.metadata.get('AmiLaunchIndex', None)
-            if _ami_launch_index is not None:
-                self.name = self.name + str(
-                    self.metadata['AmiLaunchIndex'] + 1
-                )
-            if self.role == constants.ROLES['NODE']:
-                self.name = self.name + '-' + self.id
-
         tags = self._prepare_tag_attributes_for('name')
 
         if self.role:
