@@ -56,7 +56,7 @@ AMI_LAUNCH_INDEX=$(curl http://169.254.169.254/latest/meta-data/ami-launch-index
 ZK_ID=$((AMI_LAUNCH_INDEX+1))
 su -c "echo $ZK_ID > /var/lib/zookeeper/myid" treadmld
 
-chmod 644 /etc/krb5.keytab
+chown treadmld:treadmld /etc/krb5.keytab
 
 /bin/systemctl enable zookeeper.service
 /bin/systemctl start zookeeper.service
