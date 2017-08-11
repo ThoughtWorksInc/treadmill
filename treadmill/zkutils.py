@@ -115,7 +115,7 @@ def make_default_acl(acls):
     """Constructs a default Treadmill acl."""
     realacl = [
         make_role_acl('readers', 'r'),
-        make_role_acl('admin', 'rwcda'),
+        make_role_acl('admins', 'rwcda'),
         make_self_acl('rwcda'),
     ]
     if acls:
