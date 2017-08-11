@@ -293,9 +293,11 @@ def init():
                   help='Treadmill app root')
     @click.option('--subnet-id', required=True, help='Subnet ID')
     @click.option('--ipa-admin-password', help='Password for IPA admin')
+    @click.option('--with-api', required=False, is_flag=True,
+                  default=False, help='Provision node with treadmill APIs')
     def add_node(vpc_id, region, domain, name, key, count, image_id,
                  instance_type, tm_release, ldap_hostname, app_root,
-                 subnet_id, ipa_admin_password):
+                 subnet_id, ipa_admin_password, with_api):
         """Add new node"""
         connection.Connection.context.domain = domain
         if region:
@@ -318,6 +320,7 @@ def init():
             ldap_hostname=ldap_hostname,
             subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
+            with_api=with_api,
         )
         click.echo(
             pprint(_node.subnet.show())

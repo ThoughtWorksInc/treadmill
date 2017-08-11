@@ -1,3 +1,4 @@
+import pkg_resources
 from jinja2 import Template
 
 from treadmill.infra import SCRIPT_DIR
@@ -136,7 +137,7 @@ class Zookeeper(Configuration):
 
 class Node(Configuration):
     def __init__(self, name, tm_release, app_root, subnet_id,
-                 ldap_hostname, ipa_admin_password):
+                 ldap_hostname, ipa_admin_password, with_api):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -165,4 +166,14 @@ class Node(Configuration):
                 },
             }
         ]
+        if with_api:
+            MANIFEST_PATH = pkg_resources.resource_filename(
+                __name__, 'manifests'
+            )
+            setup_scripts.append({
+                'name': 'start-api.sh',
+                'vars': {
+                    'MANIFEST_PATH': MANIFEST_PATH,
+                },
+            })
         super().__init__(setup_scripts)
