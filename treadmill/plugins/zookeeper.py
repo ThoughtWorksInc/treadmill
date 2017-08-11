@@ -5,6 +5,7 @@ import kazoo.client
 import kazoo.security
 
 _ROLES = ['servers', 'admins', 'readers']
+_ZK_PREFIX = 'zookeeper://foo@'
 
 
 def connect(zkurl, connargs):
@@ -12,7 +13,7 @@ def connect(zkurl, connargs):
     Connect to zookeeper
     """
     if not connargs.get('hosts'):
-        connargs['hosts'] = zkurl[len('zookeeper://'):]
+        connargs['hosts'] = zkurl[len(_ZK_PREFIX):]
 
     if not connargs.get('sasl_data'):
         connargs['sasl_data'] = {
