@@ -85,20 +85,20 @@ class InstanceTest(unittest.TestCase):
         conn_mock.create_tags = mock.Mock()
 
         instance = Instance(
-            name='foo',
+            name='Foo',
             id='instanceid',
             metadata={'AmiLaunchIndex': 100},
             role='NODE'
         )
         instance.create_tags()
-        self.assertEquals(instance.name, 'foo101-instanceid')
+        self.assertEquals(instance.name, 'Foo101-instanceid')
         self.assertEquals(instance.hostname, 'foo101-instanceid.do.main')
 
         conn_mock.create_tags.assert_called_once_with(
             Resources=['instanceid'],
             Tags=[{
                 'Key': 'Name',
-                'Value': 'foo101-instanceid'
+                'Value': 'Foo101-instanceid'
             }, {
                 'Key': 'Role',
                 'Value': 'NODE'

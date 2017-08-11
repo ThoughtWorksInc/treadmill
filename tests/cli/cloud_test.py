@@ -160,7 +160,7 @@ class CloudTest(unittest.TestCase):
             app_root='/var/tmp/treadmill-node',
             count=2,
             image_id='img-123',
-            instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
+            instance_type=constants.INSTANCE_TYPES['EC2']['large'],
             key='key',
             ldap_hostname='treadmillldap1',
             subnet_id='sub-123',

@@ -136,7 +136,7 @@ class Subnet(ec2object.EC2Object):
         if self.instances:
             _instance_details = list(map(
                 self._instance_details,
-                [i.metadata for i in self.instances.instances])
+                self.instances.instances)
             )
 
         return {
@@ -158,13 +158,14 @@ class Subnet(ec2object.EC2Object):
             RouteTableId=self.route_table_id
         )
 
-    def _instance_details(self, data):
+    def _instance_details(self, instance):
         return {
-            'Name': self._select_from_tags(data['Tags'], 'Name'),
-            'InstanceId': data['InstanceId'],
-            'InstanceState': data['State']['Name'],
-            'SecurityGroups': data['SecurityGroups'],
-            'SubnetId': data['SubnetId']
+            'Name': instance.name,
+            'HostName': instance.hostname,
+            'InstanceId': instance.id,
+            'InstanceState': instance.metadata['State']['Name'],
+            'SecurityGroups': instance.metadata['SecurityGroups'],
+            'SubnetId': instance.metadata['SubnetId']
         }
 
     def _select_from_tags(self, tags, selector):

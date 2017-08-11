@@ -29,7 +29,7 @@ class Instance(ec2object.EC2Object):
 
     @property
     def hostname(self):
-        return self.name + '.' + connection.Connection.context.domain
+        return self.name.lower() + '.' + connection.Connection.context.domain
 
     def configure_dns_record(self, hosted_zone_id, reverse=False):
         self._change_resource_record_sets(
