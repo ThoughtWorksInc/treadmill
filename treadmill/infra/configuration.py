@@ -168,13 +168,7 @@ class Node(Configuration):
             }
         ]
         if with_api:
-            MANIFEST_PATH = pkg_resources.resource_filename(
-                __name__, 'manifests'
-            )
             setup_scripts.append({
                 'name': 'start-api.sh',
-                'vars': {
-                    'MANIFEST_PATH': MANIFEST_PATH,
-                },
             })
         super().__init__(setup_scripts)

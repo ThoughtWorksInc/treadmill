@@ -168,6 +168,7 @@ class CloudTest(unittest.TestCase):
             subnet_id='sub-123',
             tm_release='0.1.0',
             ipa_admin_password='Tre@admill1',
+            with_api=False,
         )
 
     @mock.patch('treadmill.cli.cloud.ipa.IPA')

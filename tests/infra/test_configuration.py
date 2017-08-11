@@ -174,6 +174,7 @@ class NodeTest(unittest.TestCase):
             subnet_id='sub-123',
             ldap_hostname='ldap_host',
             ipa_admin_password='Tre@admill1',
+            with_api=False,
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'APP_ROOT', 'SUBNET_ID',
