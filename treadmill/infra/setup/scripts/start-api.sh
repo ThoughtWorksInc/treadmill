@@ -13,3 +13,5 @@ EOF
 {{ TREADMILL }} admin master app schedule --env prod --proid treadmld --manifest /var/tmp/cellapi.yml treadmld.cellapi
 {{ TREADMILL }} admin master app schedule --env prod --proid treadmld --manifest /var/tmp/adminapi.yml treadmld.adminapi
 {{ TREADMILL }} admin master app schedule --env prod --proid treadmld --manifest /var/tmp/stateapi.yml treadmld.stateapi
+
+systemctl restart treadmill-node
