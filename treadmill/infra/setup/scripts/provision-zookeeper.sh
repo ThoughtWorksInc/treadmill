@@ -57,6 +57,7 @@ ZK_ID=$((AMI_LAUNCH_INDEX+1))
 su -c "echo $ZK_ID > /var/lib/zookeeper/myid" treadmld
 
 chown treadmld:treadmld /etc/krb5.keytab
+kinit -k
 
 /bin/systemctl enable zookeeper.service
 /bin/systemctl start zookeeper.service
