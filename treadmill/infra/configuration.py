@@ -1,5 +1,4 @@
-import pkg_resources
-from jinja2 import Template
+from jinja2 import Environment, FileSystemLoader
 
 from treadmill.infra import SCRIPT_DIR
 from treadmill.infra import connection, constants
@@ -16,6 +15,7 @@ class Configuration:
         if not self.setup_scripts:
             return ''
 
+        environment = Environment(loader=FileSystemLoader('./treadmill/infra'))
         userdata = ''
         # Add initializer script
         self.setup_scripts.insert(0, {'name': 'init.sh'})
@@ -23,7 +23,7 @@ class Configuration:
             script['vars'] = script.get('vars', {})
             script['vars']['TREADMILL'] = TREADMILL_BIN
             with open(SCRIPT_DIR + script['name'], 'r') as data:
-                template = Template(data.read())
+                template = environment.from_string(data.read())
                 userdata += template.render(script['vars']) + '\n'
         return userdata
 
