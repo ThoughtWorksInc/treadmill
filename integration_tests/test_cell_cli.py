@@ -41,7 +41,7 @@ class CellCLITest(unittest.TestCase):
         result_init = self.runner.invoke(
             self.configure_cli, [
                 'init',
-                '-f=' + options_fixture_file
+                '--options=' + options_fixture_file
             ]
         )
         cell_info = {}
