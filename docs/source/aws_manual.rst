@@ -80,24 +80,12 @@ Other values can be overwritten if required.
 This will spin up IPA Server.
 
 
-Initialize LDAP
-^^^^^^^^^^^^^^^
-
-LDAP can be initialized either along with cell or using the LDAP CLI. By default the cell initialization will create LDAP.
-
-::
-
-  treadmill cloud init-ldap --domain <domain> --vpc-id <vpc_id> --key <key_name> --image-id <ami_id>
-
-This will spin up LDAP Server.
-
-
 Initialize Cell
 ^^^^^^^^^^^^^^^
 
 ::
 
-  treadmill cloud init-cell --domain <domain> --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --without-ldap
+  treadmill cloud init-cell --domain <domain> --vpc-id <vpc_id> --key <key_name> --image-id <ami_id>
 
 This will setup 3 masters and 3 zookeeper instances by default.
 
