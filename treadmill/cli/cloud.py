@@ -12,7 +12,7 @@ from click import Option, UsageError
 
 _LOGGER = logging.getLogger(__name__)
 
-_OPTIONS_FILE = 'options'
+_OPTIONS_FILE = 'file'
 
 
 def init():
@@ -70,7 +70,7 @@ def init():
         '--secgroup_desc',
         default='Treadmill Security Group',
         help='Description for the security group')
-    @click.option('--' + _OPTIONS_FILE,
+    @click.option('-f', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
                                       'region',
@@ -79,7 +79,7 @@ def init():
                                       'secgroup_name'],
                   help="Options YAML file. ")
     def init(domain, region, vpc_cidr_block,
-             secgroup_name, secgroup_desc, options):
+             secgroup_name, secgroup_desc, _file):
         """Initialize treadmill VPC"""
 
         if region:
@@ -123,7 +123,7 @@ def init():
     @click.option('--ldap-subnet-id', help='Subnet ID for LDAP')
     @click.option('--cell-subnet-id', help='Subnet ID of Cell')
     @click.option('--ipa-admin-password', help='Password for IPA admin')
-    @click.option('--' + _OPTIONS_FILE,
+    @click.option('-f', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
                                       'region',
@@ -143,7 +143,7 @@ def init():
     def init_ldap(vpc_id, region, domain, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
-                  ipa_admin_password, options):
+                  ipa_admin_password, _file):
         """Initialize treadmill cell"""
         if region:
             connection.Connection.context.region_name = region
@@ -211,7 +211,7 @@ def init():
     @click.option('--without-ldap', required=False, is_flag=True,
                   default=False, help='Flag for LDAP Server')
     @click.option('--ipa-admin-password', help='Password for IPA admin')
-    @click.option('--' + _OPTIONS_FILE,
+    @click.option('-f', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
                                       'region',
@@ -234,7 +234,7 @@ def init():
     def init_cell(vpc_id, region, domain, name, key, count, image_id,
                   instance_type, tm_release, ldap_hostname, app_root,
                   cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
-                  without_ldap, ipa_admin_password, options):
+                  without_ldap, ipa_admin_password, _file):
         """Initialize treadmill cell"""
         if region:
             connection.Connection.context.region_name = region
@@ -323,7 +323,7 @@ def init():
                   help='Instance type')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for new master instance')
-    @click.option('--' + _OPTIONS_FILE,
+    @click.option('-f', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
                                       'region',
@@ -340,7 +340,7 @@ def init():
                   help="Options YAML file. ")
     def init_domain(name, region, vpc_id, domain, subnet_cidr_block, subnet_id,
                     count, ipa_admin_password, tm_release, key,
-                    instance_type, image_id, options):
+                    instance_type, image_id, _file):
         """Initialize treadmill domain"""
         connection.Connection.context.domain = domain
         if region:
@@ -398,7 +398,7 @@ def init():
     @click.option('--ipa-admin-password', help='Password for IPA admin')
     @click.option('--with-api', required=False, is_flag=True,
                   default=False, help='Provision node with treadmill APIs')
-    @click.option('--' + _OPTIONS_FILE,
+    @click.option('-f', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
                                       'region',
@@ -417,7 +417,7 @@ def init():
                   help="Options YAML file. ")
     def add_node(vpc_id, region, domain, name, key, count, image_id,
                  instance_type, tm_release, ldap_hostname, app_root,
-                 subnet_id, ipa_admin_password, with_api, options):
+                 subnet_id, ipa_admin_password, with_api, _file):
         """Add new node"""
         connection.Connection.context.domain = domain
         if region:
