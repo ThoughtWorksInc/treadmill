@@ -31,6 +31,8 @@ EOF
 chmod 755 /etc/cron.hourly/hostkey-treadmld-kinit
 /etc/cron.hourly/hostkey-treadmld-kinit
 
+ln -s /var/spool/tickets/treadmld {{ APP_ROOT }}/spool//krb5cc_host
+
 (
 cat <<EOF
 [Unit]
