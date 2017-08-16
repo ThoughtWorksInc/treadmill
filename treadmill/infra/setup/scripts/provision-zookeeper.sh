@@ -27,6 +27,7 @@ envsubst < /etc/zookeeper/conf/treadmill.conf > /etc/zookeeper/conf/temp.conf
 mv /etc/zookeeper/conf/temp.conf /etc/zookeeper/conf/treadmill.conf -f
 sed -i s/REALM/{{ DOMAIN|upper }}/g /etc/zookeeper/conf/treadmill.conf
 sed -i s/PRINCIPAL/'"'host\\/$HOST_FQDN'"'/g /etc/zookeeper/conf/jaas.conf
+sed -i s/KEYTAB/'"'\\/etc\\/krb5.keytab'"'/g /etc/zookeeper/conf/jaas.conf
 
 (
 cat <<EOF
