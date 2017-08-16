@@ -55,7 +55,7 @@ Initialize VPC
 
 ::
 
-  treadmill cloud init
+  treadmill cloud init --domain <domain>
 
 This creates a VPC, Internet Gateway, Security Group and Route53 Hosted Zone. Default values are used to create these resources. The values can be overwritten from command line.
 
@@ -71,7 +71,7 @@ Initialize Domain
 
 ::
 
-  treadmill cloud init-domain --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --ipa-admin-password <password>
+  treadmill cloud init-domain --domain <domain> --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --ipa-admin-password <password>
 
 ipa-admin-password should be at least 8 characters long.
 
@@ -87,7 +87,7 @@ LDAP can be initialized either along with cell or using the LDAP CLI. By default
 
 ::
 
-  treadmill cloud init-ldap --vpc-id <vpc_id> --key <key_name> --image-id <ami_id>
+  treadmill cloud init-ldap --domain <domain> --vpc-id <vpc_id> --key <key_name> --image-id <ami_id>
 
 This will spin up LDAP Server.
 
@@ -97,7 +97,19 @@ Initialize Cell
 
 ::
 
-  treadmill cloud init-cell --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --without-ldap
+  treadmill cloud init-cell --domain <domain> --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --without-ldap
+
+This will setup 3 masters and 3 zookeeper instances by default.
+
+At this point all the hosts will be registered with IPA server.
+
+
+SpinUp First Node
+^^^^^^^^^^^^^^^^^
+
+::
+
+  treadmill cloud add-node --domain <domain> --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --subnet-id <subnet-id>
 
 This will setup 3 masters and 3 zookeeper instances by default.
 
