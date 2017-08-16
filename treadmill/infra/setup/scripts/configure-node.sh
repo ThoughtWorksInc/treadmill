@@ -57,13 +57,11 @@ EOF
     --override "network_device=eth0 rrdtool=/usr/bin/rrdtool rrdcached=/usr/bin/rrdcached" \
     node
 
-/bin/systemctl daemon-reload
-/bin/systemctl enable treadmill-node.service --now
-
-
-echo "{{ IPA_ADMIN_PASSWORD }}" | kinit admin
 ipa-getkeytab -r -p treadmld -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/treadmld.keytab
 chown treadmld:treadmld /etc/treadmld.keytab
 su -c "kinit -k -t /etc/treadmld.keytab treadmld" treadmld
 
 s6-setuidgid treadmld {{ TREADMILL }} admin ldap server configure "$(hostname -f)" --cell "{{ SUBNET_ID }}"
+
+/bin/systemctl daemon-reload
+/bin/systemctl enable treadmill-node.service --now
