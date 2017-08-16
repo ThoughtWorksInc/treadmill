@@ -1230,11 +1230,11 @@ Module: treadmill.cli.cloud
 		  --subnet-id TEXT           Subnet ID  [required]
 		  --ipa-admin-password TEXT  Password for IPA admin
 		  --with-api                 Provision node with treadmill APIs
-		  --options TEXT             Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [subnet_id, region,
-		                             app_root, ipa_admin_passwordwith_api, tm_release,
-		                             ldap_hostname, domain, vpc_id, instance_type,
-		                             image_id, key, count, name].
+		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
+		                             exclusive with arguments: [name, app_root, key,
+		                             tm_release, domain, ipa_admin_passwordwith_api,
+		                             region, vpc_id, instance_type, subnet_id, image_id,
+		                             count, ldap_hostname].
 		  --help                     Show this message and exit.
 
 		Usage: cloud delete [OPTIONS] COMMAND [ARGS]...
@@ -1285,9 +1285,9 @@ Module: treadmill.cli.cloud
 		  --vpc-cidr-block TEXT  CIDR block for the vpc
 		  --secgroup_name TEXT   Security group name
 		  --secgroup_desc TEXT   Description for the security group
-		  --options TEXT         Options YAML file.  NOTE: This argument is mutually
-		                         exclusive with arguments: [secgroup_desc,
-		                         secgroup_name, domain, region, vpc_cidr_block].
+		  -m, --manifest TEXT    Options YAML file.  NOTE: This argument is mutually
+		                         exclusive with arguments: [vpc_cidr_block,
+		                         secgroup_desc, secgroup_name, region, domain].
 		  --help                 Show this message and exit.
 
 		Usage: cloud init-cell [OPTIONS]
@@ -1312,13 +1312,13 @@ Module: treadmill.cli.cloud
 		  --ldap-subnet-id TEXT      Subnet ID for LDAP
 		  --without-ldap             Flag for LDAP Server
 		  --ipa-admin-password TEXT  Password for IPA admin
-		  --options TEXT             Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [subnet_id,
-		                             ldap_cidr_block, region, app_root,
-		                             cell_cidr_blockldap_subnet_id, tm_release,
-		                             ldap_hostname, domain, vpc_id, instance_type,
-		                             image_id, key, count, name, without_ldap,
-		                             ipa_admin_password].
+		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
+		                             exclusive with arguments: [ipa_admin_password,
+		                             name, app_root, key, tm_release, ldap_cidr_block,
+		                             domain, without_ldap,
+		                             cell_cidr_blockldap_subnet_id, region, vpc_id,
+		                             instance_type, subnet_id, image_id, count,
+		                             ldap_hostname].
 		  --help                     Show this message and exit.
 
 		Usage: cloud init-domain [OPTIONS]
@@ -1338,11 +1338,11 @@ Module: treadmill.cli.cloud
 		  --key TEXT                 SSH key name  [required]
 		  --instance-type TEXT       Instance type
 		  --image-id TEXT            AMI ID to use for new master instance  [required]
-		  --options TEXT             Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [region,
-		                             subnet_cidr_blocksubnet_id, tm_release, domain,
-		                             vpc_id, instance_type, image_id, key, count, name,
-		                             ipa_admin_password].
+		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
+		                             exclusive with arguments: [ipa_admin_password,
+		                             name, key, tm_release, subnet_cidr_blocksubnet_id,
+		                             domain, region, vpc_id, instance_type, image_id,
+		                             count].
 		  --help                     Show this message and exit.
 
 		Usage: cloud init-ldap [OPTIONS]
@@ -1364,12 +1364,11 @@ Module: treadmill.cli.cloud
 		  --ldap-subnet-id TEXT      Subnet ID for LDAP
 		  --cell-subnet-id TEXT      Subnet ID of Cell
 		  --ipa-admin-password TEXT  Password for IPA admin
-		  --options TEXT             Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments:
-		                             [ipa_admin_passwordldap_cidr_block, region,
-		                             app_root, cell_subnet_id, tm_release,
-		                             ldap_hostname, domain, vpc_id, instance_type,
-		                             image_id, key, count, ldap_subnet_id].
+		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
+		                             exclusive with arguments: [app_root, key,
+		                             tm_release, domain, cell_subnet_id, region, vpc_id,
+		                             instance_type, ipa_admin_passwordldap_cidr_block,
+		                             ldap_subnet_id, image_id, count, ldap_hostname].
 		  --help                     Show this message and exit.
 
 		Usage: cloud list [OPTIONS] COMMAND [ARGS]...
