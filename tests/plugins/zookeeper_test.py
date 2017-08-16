@@ -16,7 +16,7 @@ class ZookeeperTest(unittest.TestCase):
         kazooClientMock.assert_called_once_with(
             hosts='123:21',
             sasl_data={
-                'service': 'host',
+                'service': 'zookeeper',
                 'mechanisms': ['GSSAPI']
             })
 

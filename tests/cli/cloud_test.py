@@ -63,6 +63,7 @@ class CloudTest(unittest.TestCase):
             image_id='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
             subnet_cidr_block='172.24.0.0/24',
+            ipa_admin_password='ipa_pass',
         )
         cell.setup_master.assert_called_once_with(
             name='TreadmillMaster',
@@ -113,7 +114,8 @@ class CloudTest(unittest.TestCase):
                 '--vpc-id=vpc-123',
                 '--cell-cidr-block=172.24.0.0/24',
                 '--domain=treadmill.org',
-                '--without-ldap'
+                '--without-ldap',
+                '--ipa-admin-password=ipa_pass',
             ])
 
         self.assertEqual(result.exit_code, 0)
@@ -124,6 +126,7 @@ class CloudTest(unittest.TestCase):
             image_id='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
             subnet_cidr_block='172.24.0.0/24',
+            ipa_admin_password='ipa_pass',
         )
         cell.setup_master.assert_called_once_with(
             name='TreadmillMaster',

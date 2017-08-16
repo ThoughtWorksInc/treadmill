@@ -114,7 +114,7 @@ class IPA(Configuration):
 
 
 class Zookeeper(Configuration):
-    def __init__(self, name, ldap_hostname):
+    def __init__(self, name, ldap_hostname, ipa_admin_password):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -130,6 +130,7 @@ class Zookeeper(Configuration):
                 'name': 'provision-zookeeper.sh',
                 'vars': {
                     'DOMAIN': connection.Connection.context.domain,
+                    'IPA_ADMIN_PASSWORD': ipa_admin_password,
                 },
             },
         ]

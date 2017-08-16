@@ -239,7 +239,7 @@ def init():
         if region:
             connection.Connection.context.region_name = region
 
-        if not without_ldap and not ipa_admin_password:
+        if not ipa_admin_password:
             ipa_admin_password = os.environ.get(
                 'TREADMILL_IPA_ADMIN_PASSWORD',
                 click.prompt('IPA admin password ', hide_input=True)
@@ -258,7 +258,8 @@ def init():
             image_id=image_id,
             instance_type=instance_type,
             subnet_cidr_block=cell_cidr_block,
-            ldap_hostname=ldap_hostname
+            ldap_hostname=ldap_hostname,
+            ipa_admin_password=ipa_admin_password
         )
 
         _cell.setup_master(

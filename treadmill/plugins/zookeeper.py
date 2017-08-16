@@ -17,7 +17,7 @@ def connect(zkurl, connargs):
 
     if not connargs.get('sasl_data'):
         connargs['sasl_data'] = {
-            'service': 'host',
+            'service': 'zookeeper',
             'mechanisms': ['GSSAPI']
         }
 

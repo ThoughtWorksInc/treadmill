@@ -34,14 +34,15 @@ class Cell:
         self.vpc.associate_dhcp_options()
 
     def setup_zookeeper(self, name, key, image_id, instance_type,
-                        subnet_cidr_block, ldap_hostname):
+                        subnet_cidr_block, ldap_hostname, ipa_admin_password):
         self.zookeeper = zookeeper.Zookeeper(name, self.vpc.id)
         self.zookeeper.setup(
             image_id=image_id,
             key=key,
             cidr_block=subnet_cidr_block,
             instance_type=instance_type,
-            ldap_hostname=ldap_hostname
+            ldap_hostname=ldap_hostname,
+            ipa_admin_password=ipa_admin_password
         )
         self.id = self.zookeeper.subnet.id
 

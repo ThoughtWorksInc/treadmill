@@ -31,8 +31,6 @@ EOF
 chmod 755 /etc/cron.hourly/hostkey-treadmld-kinit
 /etc/cron.hourly/hostkey-treadmld-kinit
 
-ln -s /var/spool/tickets/treadmld {{ APP_ROOT }}/spool//krb5cc_host
-
 (
 cat <<EOF
 [Unit]
@@ -67,3 +65,5 @@ s6-setuidgid treadmld {{ TREADMILL }} admin ldap server configure "$(hostname -f
 
 /bin/systemctl daemon-reload
 /bin/systemctl enable treadmill-node.service --now
+
+ln -s /var/spool/tickets/treadmld {{ APP_ROOT }}/spool/krb5cc_host

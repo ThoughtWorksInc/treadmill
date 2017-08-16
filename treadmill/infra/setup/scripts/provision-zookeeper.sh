@@ -23,11 +23,17 @@ HOST_FQDN=$(hostname -f)
 
 export TREADMILL_CELL=$subnet_id
 
+echo "{{ IPA_ADMIN_PASSWORD }}" | kinit admin
+ipa service-add --force "zookeeper/$HOST_FQDN"
+
+echo Retrieving zookeeper service keytab
+ipa-getkeytab -p "zookeeper/$HOST_FQDN" -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/zk.keytab
+
 envsubst < /etc/zookeeper/conf/treadmill.conf > /etc/zookeeper/conf/temp.conf
 mv /etc/zookeeper/conf/temp.conf /etc/zookeeper/conf/treadmill.conf -f
 sed -i s/REALM/{{ DOMAIN|upper }}/g /etc/zookeeper/conf/treadmill.conf
-sed -i s/PRINCIPAL/'"'host\\/$HOST_FQDN'"'/g /etc/zookeeper/conf/jaas.conf
-sed -i s/KEYTAB/'"'\\/etc\\/krb5.keytab'"'/g /etc/zookeeper/conf/jaas.conf
+sed -i s/PRINCIPAL/'"'zookeeper\\/$HOST_FQDN'"'/g /etc/zookeeper/conf/jaas.conf
+sed -i s/KEYTAB/'"'\\/etc\\/zk.keytab'"'/g /etc/zookeeper/conf/jaas.conf
 
 (
 cat <<EOF
@@ -57,7 +63,7 @@ AMI_LAUNCH_INDEX=$(curl http://169.254.169.254/latest/meta-data/ami-launch-index
 ZK_ID=$((AMI_LAUNCH_INDEX+1))
 su -c "echo $ZK_ID > /var/lib/zookeeper/myid" treadmld
 
-chown treadmld:treadmld /etc/krb5.keytab
+chown treadmld:treadmld /etc/zk.keytab
 kinit -k
 
 /bin/systemctl enable zookeeper.service
