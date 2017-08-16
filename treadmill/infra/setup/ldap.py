@@ -25,7 +25,7 @@ class LDAP(base_provision.BaseProvision):
             name=self.name,
             ipa_admin_password=ipa_admin_password,
         )
-        super(LDAP, self).setup(
+        super().setup(
             image_id=image_id,
             count=count,
             cidr_block=cidr_block,

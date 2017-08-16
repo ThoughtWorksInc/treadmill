@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 class Subnet(ec2object.EC2Object):
     def __init__(self, name=None, id=None, metadata=None,
                  vpc_id=None, instances=None):
-        super(Subnet, self).__init__(
+        super().__init__(
             name=name,
             id=id,
             metadata=metadata

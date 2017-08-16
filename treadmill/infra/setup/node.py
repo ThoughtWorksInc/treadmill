@@ -26,7 +26,7 @@ class Node(base_provision.BaseProvision):
             with_api=with_api,
         )
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
-        super(Node, self).setup(
+        super().setup(
             image_id=image_id,
             count=count,
             subnet_id=subnet_id,

@@ -10,7 +10,7 @@ class Zookeeper(base_provision.BaseProvision):
             ldap_hostname
         )
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
-        super(Zookeeper, self).setup(
+        super().setup(
             image_id=image_id,
             count=3,
             cidr_block=cidr_block,

@@ -10,7 +10,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class Instance(ec2object.EC2Object):
     def __init__(self, name=None, id=None, metadata=None, role=None):
-        super(Instance, self).__init__(
+        super().__init__(
             id=id,
             name=name,
             metadata=metadata,
@@ -25,7 +25,7 @@ class Instance(ec2object.EC2Object):
         if self.role == constants.ROLES['NODE']:
             self.name = self.name + '-' + self.id
 
-        super(Instance, self).create_tags()
+        super().create_tags()
 
     @property
     def hostname(self):

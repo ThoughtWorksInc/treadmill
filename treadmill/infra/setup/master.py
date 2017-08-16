@@ -23,7 +23,7 @@ class Master(base_provision.BaseProvision):
             app_root=app_root
         )
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
-        super(Master, self).setup(
+        super().setup(
             image_id=image_id,
             count=count,
             cidr_block=cidr_block,
