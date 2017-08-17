@@ -549,8 +549,14 @@ def init():
 
     @list.command(name='cell')
     @click.option('--subnet-id', required=True, help='Subnet ID of cell')
-    def cell_resources(subnet_id):
+    @click.option('--domain', required=True,
+                  envvar='TREADMILL_DNS_DOMAIN',
+                  help='Domain for hosted zone')
+    def cell_resources(subnet_id, domain):
         """Show Cell"""
+
+        connection.Connection.context.domain = domain
+
         click.echo(
             pprint(subnet.Subnet(id=subnet_id).show())
         )
