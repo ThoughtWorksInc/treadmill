@@ -6,7 +6,7 @@ my_ip = request.urlopen(
 ).read().decode('utf-8') + '/32'
 
 
-def enable(port, group_id, protocol = 'tcp'):
+def enable(port, group_id, protocol='tcp'):
     port = int(port)
     conn = connection.Connection()
     conn.authorize_security_group_ingress(
@@ -18,7 +18,7 @@ def enable(port, group_id, protocol = 'tcp'):
     )
 
 
-def disable(port, group_id, protocol = 'tcp'):
+def disable(port, group_id, protocol='tcp'):
     port = int(port)
     conn = connection.Connection()
     conn.revoke_security_group_ingress(
