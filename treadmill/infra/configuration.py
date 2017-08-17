@@ -33,7 +33,7 @@ class Configuration:
 
 class Master(Configuration):
     def __init__(self, name, subnet_id,
-                 app_root, ldap_hostname, tm_release):
+                 app_root, ldap_hostname, tm_release, ipa_admin_password):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -54,6 +54,8 @@ class Master(Configuration):
                 'name': 'configure-master.sh',
                 'vars': {
                     'SUBNET_ID': subnet_id,
+                    'APP_ROOT': app_root,
+                    'IPA_ADMIN_PASSWORD': ipa_admin_password,
                 },
             },
         ]

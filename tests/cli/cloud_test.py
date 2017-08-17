@@ -75,6 +75,7 @@ class CloudTest(unittest.TestCase):
             ldap_hostname='treadmillldap1',
             app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
+            ipa_admin_password='ipa_pass'
         )
         self.assertEqual(
             ldap_mock.mock_calls[1],
@@ -138,6 +139,7 @@ class CloudTest(unittest.TestCase):
             ldap_hostname='treadmillldap1',
             app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
+            ipa_admin_password='ipa_pass'
         )
 
         _ldap_mock.setup.assert_not_called()

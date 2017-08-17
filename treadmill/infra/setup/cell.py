@@ -48,7 +48,7 @@ class Cell:
 
     def setup_master(self, name, key, count, image_id, instance_type,
                      tm_release, ldap_hostname,
-                     app_root, subnet_cidr_block=None):
+                     app_root, ipa_admin_password, subnet_cidr_block=None):
         if not self.vpc.id:
             raise('Provide vpc_id in init or setup vpc prior.')
 
@@ -63,7 +63,8 @@ class Cell:
             tm_release=tm_release,
             instance_type=instance_type,
             app_root=app_root,
-            subnet_id=self.id
+            subnet_id=self.id,
+            ipa_admin_password=ipa_admin_password
         )
         self.show()
 

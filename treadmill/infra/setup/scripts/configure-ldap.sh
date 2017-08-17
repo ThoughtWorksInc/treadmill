@@ -69,21 +69,3 @@ do
     sleep 1
 done
 )
-
-echo Configuring local cell
-
-s6-setuidgid treadmld \
-    {{ TREADMILL }} admin ldap cell configure "{{ SUBNET_ID }}" --version 0.1 --root "{{ APP_ROOT }}" \
-        --username treadmld \
-        --location local.local
-
-(
-master_count=1
-while [ $master_count -le 3 ]
-do
-    s6-setuidgid treadmld \
-        {{ TREADMILL }} admin ldap cell insert "{{ SUBNET_ID }}" --idx ${master_count} \
-            --hostname "treadmillmaster${master_count}.{{ DOMAIN }}" --client-port 2181
-    master_count=$((master_count+1))
-done
-)

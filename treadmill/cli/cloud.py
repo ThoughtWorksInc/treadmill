@@ -245,32 +245,7 @@ def init():
             subnet_id=subnet_id,
         )
 
-        _cell.setup_zookeeper(
-            name='TreadmillZookeeper',
-            key=key,
-            image_id=image_id,
-            instance_type=instance_type,
-            subnet_cidr_block=cell_cidr_block,
-            ldap_hostname=ldap_hostname,
-            ipa_admin_password=ipa_admin_password
-        )
-
-        _cell.setup_master(
-            name=name,
-            key=key,
-            count=count,
-            image_id=image_id,
-            instance_type=instance_type,
-            tm_release=tm_release,
-            ldap_hostname=ldap_hostname,
-            app_root=app_root,
-            subnet_cidr_block=cell_cidr_block,
-        )
-
-        result = {
-            'Cell': _cell.show()
-        }
-
+        result = {}
         if not without_ldap:
             _ldap = ldap.LDAP(
                 name='TreadmillLDAP',
@@ -291,7 +266,32 @@ def init():
                 ipa_admin_password=ipa_admin_password,
             )
 
-            result['Ldap'] = _ldap.subnet.show()
+            result['ldap'] = _ldap.subnet.show()
+
+        _cell.setup_zookeeper(
+            name='TreadmillZookeeper',
+            key=key,
+            image_id=image_id,
+            instance_type=instance_type,
+            subnet_cidr_block=cell_cidr_block,
+            ldap_hostname=ldap_hostname,
+            ipa_admin_password=ipa_admin_password
+        )
+
+        _cell.setup_master(
+            name=name,
+            key=key,
+            count=count,
+            image_id=image_id,
+            instance_type=instance_type,
+            tm_release=tm_release,
+            ldap_hostname=ldap_hostname,
+            app_root=app_root,
+            subnet_cidr_block=cell_cidr_block,
+            ipa_admin_password=ipa_admin_password
+        )
+
+        result['Cell'] = _cell.show()
 
         click.echo(
             pprint(result)

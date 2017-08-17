@@ -13,6 +13,7 @@ class Master(base_provision.BaseProvision):
             key,
             instance_type,
             app_root,
+            ipa_admin_password,
             subnet_id=None,
     ):
         self.configuration = configuration.Master(
@@ -20,7 +21,8 @@ class Master(base_provision.BaseProvision):
             subnet_id=subnet_id,
             ldap_hostname=ldap_hostname,
             tm_release=tm_release,
-            app_root=app_root
+            app_root=app_root,
+            ipa_admin_password=ipa_admin_password
         )
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         super().setup(
