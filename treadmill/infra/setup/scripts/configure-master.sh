@@ -44,6 +44,7 @@ chmod 755 /etc/cron.hourly/hostkey-treadmld-kinit
 
 # Install master service
 {{ TREADMILL }} admin install --install-dir /var/tmp/treadmill-master \
+    --override "profile=cloud" \
     --config /var/tmp/cell_conf.yml master --master-id "${MASTER_ID}"
 
 (
