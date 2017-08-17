@@ -42,13 +42,31 @@ Or create a credentials file ``~/.aws/credentials`` with following content:
 
 ----------------------------------------------------------
 
-
 List treadmill AWS commands
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ::
 
   treadmill cloud --help
 
 ----------------------------------------------------------
+
+List VPC
+^^^^^^^^
+::
+
+  treadmill cloud list vpc --vpc-id <vpc_id> --domain <domain>
+
+This lists all the EC2 instances and subnets inside the vpc.
+
+List Cell
+^^^^^^^^^
+::
+
+  treadmill cloud list cell --subnet-id <subnet_id> --domain <domain>
+
+This lists all the EC2 instances running inside a cell.
+
+-----------------------------------------------------------
 
 Initialize VPC
 ^^^^^^^^^^^^^^
