@@ -6,23 +6,25 @@ my_ip = request.urlopen(
 ).read().decode('utf-8') + '/32'
 
 
-def enable(group_id):
+def enable(port, group_id, protocol = 'tcp'):
+    port = int(port)
     conn = connection.Connection()
     conn.authorize_security_group_ingress(
         CidrIp=my_ip,
-        FromPort=22,
-        ToPort=22,
+        FromPort=port,
+        ToPort=port,
         GroupId=group_id,
-        IpProtocol='tcp'
+        IpProtocol=protocol
     )
 
 
-def disable(group_id):
+def disable(port, group_id, protocol = 'tcp'):
+    port = int(port)
     conn = connection.Connection()
     conn.revoke_security_group_ingress(
         CidrIp=my_ip,
-        FromPort=22,
-        ToPort=22,
+        FromPort=port,
+        ToPort=port,
         GroupId=group_id,
-        IpProtocol='tcp'
+        IpProtocol=protocol
     )

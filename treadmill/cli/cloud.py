@@ -5,7 +5,7 @@ import logging
 
 from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
-from treadmill.infra.utils import ssh, hosted_zones
+from treadmill.infra.utils import security_group, hosted_zones
 
 import yaml
 from click import Option, UsageError
@@ -555,19 +555,23 @@ def init():
             pprint(subnet.Subnet(id=subnet_id).show())
         )
 
-    @cloud.command(name='enable-ssh')
-    @click.option('--security-group-id', required=True,
+    @cloud.command(name='enable-port')
+    @click.option('--protocol', help='Protocol', default='tcp')
+    @click.option('-p', '--port', required=True, help='Port')
+    @click.option('-s', '--security-group-id', required=True,
                   help='Security Group ID')
-    def enable_ssh(security_group_id):
-        """Enable SSH from my ip"""
-        ssh.enable(security_group_id)
+    def enable_port(security_group_id, port, protocol):
+        """Enable Port from my ip"""
+        security_group.enable(port, security_group_id, protocol)
 
-    @cloud.command(name='disable-ssh')
-    @click.option('--security-group-id', required=True,
+    @cloud.command(name='disable-port')
+    @click.option('--protocol', help='Protocol', default='tcp')
+    @click.option('-p', '--port', required=True, help='Port')
+    @click.option('-s', '--security-group-id', required=True,
                   help='Security Group ID')
-    def disable_ssh(security_group_id):
-        """Disable SSH from my ip"""
-        ssh.disable(security_group_id)
+    def disable_ssh(security_group_id, port, protocol):
+        """Disable Port from my ip"""
+        security_group.disable(port, security_group_id, protocol)
 
     @cloud.command(name='delete-hosted-zone')
     @click.option('--zones-to-retain', required=True,
