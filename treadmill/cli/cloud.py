@@ -6,6 +6,7 @@ import logging
 from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
 from treadmill.infra.utils import security_group, hosted_zones
+from treadmill.cli import validate_ipa_password, ipa_password_prompt
 
 import yaml
 from click import Option, UsageError
@@ -122,7 +123,9 @@ def init():
                   help='CIDR block for LDAP')
     @click.option('--ldap-subnet-id', help='Subnet ID for LDAP')
     @click.option('--cell-subnet-id', help='Subnet ID of Cell')
-    @click.option('--ipa-admin-password', help='Password for IPA admin')
+    @click.option('--ipa-admin-password', callback=ipa_password_prompt,
+                  envvar='TREADMILL_IPA_ADMIN_PASSWORD',
+                  help='Password for IPA admin')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
@@ -147,12 +150,6 @@ def init():
         """Initialize treadmill cell"""
         if region:
             connection.Connection.context.region_name = region
-
-        if not ipa_admin_password:
-            ipa_admin_password = os.environ.get(
-                'TREADMILL_IPA_ADMIN_PASSWORD',
-                click.prompt('IPA admin password ', hide_input=True)
-            )
 
         connection.Connection.context.domain = domain
 
@@ -210,7 +207,9 @@ def init():
                   help='Subnet ID for LDAP')
     @click.option('--without-ldap', required=False, is_flag=True,
                   default=False, help='Flag for LDAP Server')
-    @click.option('--ipa-admin-password', help='Password for IPA admin')
+    @click.option('--ipa-admin-password', callback=ipa_password_prompt,
+                  envvar='TREADMILL_IPA_ADMIN_PASSWORD',
+                  help='Password for IPA admin')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
@@ -238,12 +237,6 @@ def init():
         """Initialize treadmill cell"""
         if region:
             connection.Connection.context.region_name = region
-
-        if not ipa_admin_password:
-            ipa_admin_password = os.environ.get(
-                'TREADMILL_IPA_ADMIN_PASSWORD',
-                click.prompt('IPA admin password ', hide_input=True)
-            )
 
         connection.Connection.context.domain = domain
 
@@ -316,7 +309,9 @@ def init():
                   default='172.23.2.0/24')
     @click.option('--subnet-id', help='Subnet ID')
     @click.option('--count', help='Count of the instances', default=1)
-    @click.option('--ipa-admin-password', help='Password for IPA admin')
+    @click.option('--ipa-admin-password', callback=validate_ipa_password,
+                  envvar='TREADMILL_IPA_ADMIN_PASSWORD',
+                  help='Password for IPA admin')
     @click.option('--tm-release', default='0.1.0', help='Treadmill Release')
     @click.option('--key', required=True, help='SSH key name')
     @click.option('--instance-type',
@@ -396,7 +391,9 @@ def init():
     @click.option('--app-root', default='/var/tmp/treadmill-node',
                   help='Treadmill app root')
     @click.option('--subnet-id', required=True, help='Subnet ID')
-    @click.option('--ipa-admin-password', help='Password for IPA admin')
+    @click.option('--ipa-admin-password', callback=ipa_password_prompt,
+                  envvar='TREADMILL_IPA_ADMIN_PASSWORD',
+                  help='Password for IPA admin')
     @click.option('--with-api', required=False, is_flag=True,
                   default=False, help='Provision node with treadmill APIs')
     @click.option('-m', '--' + _OPTIONS_FILE,

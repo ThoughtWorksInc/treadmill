@@ -183,7 +183,7 @@ class CloudTest(unittest.TestCase):
         result = self.runner.invoke(
             self.configure_cli, [
                 'init-domain',
-                '--ipa-admin-password=secret',
+                '--ipa-admin-password=Tre@dmil1',
                 '--key=key',
                 '--image-id=img-123',
                 '--vpc-id=vpc-123',
@@ -195,7 +195,7 @@ class CloudTest(unittest.TestCase):
             image_id='img-123',
             count=1,
             cidr_block='172.23.2.0/24',
-            ipa_admin_password='secret',
+            ipa_admin_password='Tre@dmil1',
             tm_release='0.1.0',
             key='key',
             instance_type=constants.INSTANCE_TYPES['EC2']['medium'],
