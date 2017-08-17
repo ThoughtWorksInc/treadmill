@@ -165,7 +165,10 @@ class Subnet(ec2object.EC2Object):
             'InstanceId': instance.id,
             'InstanceState': instance.metadata['State']['Name'],
             'SecurityGroups': instance.metadata['SecurityGroups'],
-            'SubnetId': instance.metadata['SubnetId']
+            'SubnetId': instance.metadata['SubnetId'],
+            'PublicIpAddress': instance.metadata['PublicIpAddress'],
+            'PrivateIpAddress': instance.metadata['PrivateIpAddress'],
+            'InstanceType': instance.metadata['InstanceType']
         }
 
     def _select_from_tags(self, tags, selector):
