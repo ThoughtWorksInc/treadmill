@@ -105,7 +105,7 @@ Initialize Cell
 
   treadmill cloud init-cell --domain <domain> --vpc-id <vpc_id> --key <key_name> --image-id <ami_id>
 
-This will setup 3 masters and 3 zookeeper instances by default.
+This will setup 1 openldap, 3 masters and 3 zookeeper instances by default.
 
 At this point all the hosts will be registered with IPA server.
 
