@@ -1201,8 +1201,8 @@ Module: treadmill.cli.cloud
 		  add-node            Add new node
 		  delete              Delete Treadmill EC2 Objects
 		  delete-hosted-zone  Delete Hosted Zones
-		  disable-ssh         Disable SSH from my ip
-		  enable-ssh          Enable SSH from my ip
+		  disable-port        Disable Port from my ip
+		  enable-port         Enable Port from my ip
 		  init                Initialize treadmill VPC
 		  init-cell           Initialize treadmill cell
 		  init-domain         Initialize treadmill domain
@@ -1231,10 +1231,10 @@ Module: treadmill.cli.cloud
 		  --ipa-admin-password TEXT  Password for IPA admin
 		  --with-api                 Provision node with treadmill APIs
 		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [name, app_root, key,
-		                             tm_release, domain, ipa_admin_passwordwith_api,
-		                             region, vpc_id, instance_type, subnet_id, image_id,
-		                             count, ldap_hostname].
+		                             exclusive with arguments: [tm_release,
+		                             ipa_admin_passwordwith_api, domain, ldap_hostname,
+		                             instance_type, region, key, image_id, subnet_id,
+		                             vpc_id, count, app_root, name].
 		  --help                     Show this message and exit.
 
 		Usage: cloud delete [OPTIONS] COMMAND [ARGS]...
@@ -1259,21 +1259,25 @@ Module: treadmill.cli.cloud
 		  --zones-to-retain TEXT  Hosted Zone IDs to retain  [required]
 		  --help                  Show this message and exit.
 
-		Usage: cloud disable-ssh [OPTIONS]
+		Usage: cloud disable-port [OPTIONS]
 		
-		  Disable SSH from my ip
+		  Disable Port from my ip
 		
 		Options:
-		  --security-group-id TEXT  Security Group ID  [required]
-		  --help                    Show this message and exit.
+		  --protocol TEXT               Protocol
+		  -p, --port TEXT               Port  [required]
+		  -s, --security-group-id TEXT  Security Group ID  [required]
+		  --help                        Show this message and exit.
 
-		Usage: cloud enable-ssh [OPTIONS]
+		Usage: cloud enable-port [OPTIONS]
 		
-		  Enable SSH from my ip
+		  Enable Port from my ip
 		
 		Options:
-		  --security-group-id TEXT  Security Group ID  [required]
-		  --help                    Show this message and exit.
+		  --protocol TEXT               Protocol
+		  -p, --port TEXT               Port  [required]
+		  -s, --security-group-id TEXT  Security Group ID  [required]
+		  --help                        Show this message and exit.
 
 		Usage: cloud init [OPTIONS]
 		
@@ -1286,8 +1290,8 @@ Module: treadmill.cli.cloud
 		  --secgroup_name TEXT   Security group name
 		  --secgroup_desc TEXT   Description for the security group
 		  -m, --manifest TEXT    Options YAML file.  NOTE: This argument is mutually
-		                         exclusive with arguments: [vpc_cidr_block,
-		                         secgroup_desc, secgroup_name, region, domain].
+		                         exclusive with arguments: [domain, vpc_cidr_block,
+		                         region, secgroup_desc, secgroup_name].
 		  --help                 Show this message and exit.
 
 		Usage: cloud init-cell [OPTIONS]
@@ -1313,12 +1317,11 @@ Module: treadmill.cli.cloud
 		  --without-ldap             Flag for LDAP Server
 		  --ipa-admin-password TEXT  Password for IPA admin
 		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [ipa_admin_password,
-		                             name, app_root, key, tm_release, ldap_cidr_block,
-		                             domain, without_ldap,
-		                             cell_cidr_blockldap_subnet_id, region, vpc_id,
-		                             instance_type, subnet_id, image_id, count,
-		                             ldap_hostname].
+		                             exclusive with arguments: [tm_release,
+		                             without_ldap, domain, ldap_hostname, instance_type,
+		                             region, key, image_id, subnet_id,
+		                             ipa_admin_password, cell_cidr_blockldap_subnet_id,
+		                             ldap_cidr_block, vpc_id, count, app_root, name].
 		  --help                     Show this message and exit.
 
 		Usage: cloud init-domain [OPTIONS]
@@ -1339,10 +1342,10 @@ Module: treadmill.cli.cloud
 		  --instance-type TEXT       Instance type
 		  --image-id TEXT            AMI ID to use for new master instance  [required]
 		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [ipa_admin_password,
-		                             name, key, tm_release, subnet_cidr_blocksubnet_id,
-		                             domain, region, vpc_id, instance_type, image_id,
-		                             count].
+		                             exclusive with arguments: [tm_release, domain,
+		                             instance_type, region, key, image_id,
+		                             ipa_admin_password, vpc_id, count,
+		                             subnet_cidr_blocksubnet_id, name].
 		  --help                     Show this message and exit.
 
 		Usage: cloud init-ldap [OPTIONS]
@@ -1365,10 +1368,11 @@ Module: treadmill.cli.cloud
 		  --cell-subnet-id TEXT      Subnet ID of Cell
 		  --ipa-admin-password TEXT  Password for IPA admin
 		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [app_root, key,
-		                             tm_release, domain, cell_subnet_id, region, vpc_id,
-		                             instance_type, ipa_admin_passwordldap_cidr_block,
-		                             ldap_subnet_id, image_id, count, ldap_hostname].
+		                             exclusive with arguments: [tm_release,
+		                             ipa_admin_passwordldap_cidr_block, ldap_subnet_id,
+		                             cell_subnet_id, domain, ldap_hostname,
+		                             instance_type, region, key, image_id, vpc_id,
+		                             count, app_root].
 		  --help                     Show this message and exit.
 
 		Usage: cloud list [OPTIONS] COMMAND [ARGS]...
