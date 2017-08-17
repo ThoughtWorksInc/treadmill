@@ -1,3 +1,4 @@
+import pkg_resources
 from jinja2 import Environment, FileSystemLoader
 
 from treadmill.infra import SCRIPT_DIR
@@ -15,7 +16,9 @@ class Configuration:
         if not self.setup_scripts:
             return ''
 
-        environment = Environment(loader=FileSystemLoader('./treadmill/infra'))
+        environment = Environment(loader=FileSystemLoader(
+            pkg_resources.resource_filename(__name__, '')
+        ))
         userdata = ''
         # Add initializer script
         self.setup_scripts.insert(0, {'name': 'init.sh'})
