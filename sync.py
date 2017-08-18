@@ -27,13 +27,18 @@ else:
         print('Rebasing and squashing...')
         subprocess.call(['git', 'reset', '--soft', terminal_commit])
         subprocess.call(['git', 'commit', '--amend', '--no-edit'])
+        current_author_name = subprocess.check_output(['git', 'config', 'user.name']).strip()
+        current_author_email = subprocess.check_output(['git', 'config', 'user.email']).strip()
+        author_string = current_author_name + '<' + current_author_email + '>'
+        subprocess.call(['git', 'commit', '--amend', '--author=' + author_string])
+
         if (len(sys.argv) > 3) and sys.argv[3]:
             subprocess.call(['git', 'commit', '--amend', '-m', sys.argv[3]])
-        print('Promoting to remote...')
 
         yes = set(['yes','y', 'Y'])
         choice = raw_input('Push this [Y/n]? ').lower()
         if choice in yes:
+            print('Promoting to remote...')
             subprocess.call(['git', 'push', 'origin', merge_branch, '-f'])
             print('Synced!')
         else:
