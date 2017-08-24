@@ -147,7 +147,7 @@ def init():
                   instance_type, tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
                   ipa_admin_password, manifest):
-        """Initialize treadmill cell"""
+        """Initialize treadmill LDAP"""
         if region:
             connection.Connection.context.region_name = region
 
