@@ -564,7 +564,12 @@ def init():
             pprint(subnet.Subnet(id=subnet_id).show())
         )
 
-    @cloud.command(name='enable-port')
+    @cloud.group()
+    def port():
+        """enable/disable EC2 instance port"""
+        pass
+
+    @port.command(name='enable')
     @click.option('--protocol', help='Protocol', default='tcp')
     @click.option('-p', '--port', required=True, help='Port')
     @click.option('-s', '--security-group-id', required=True,
@@ -573,7 +578,7 @@ def init():
         """Enable Port from my ip"""
         security_group.enable(port, security_group_id, protocol)
 
-    @cloud.command(name='disable-port')
+    @port.command(name='disable')
     @click.option('--protocol', help='Protocol', default='tcp')
     @click.option('-p', '--port', required=True, help='Port')
     @click.option('-s', '--security-group-id', required=True,
