@@ -20,7 +20,7 @@ def init():
     """Cloud CLI module"""
     @click.group()
     def cloud():
-        """Manage treadmill on cloud"""
+        """Manage Treadmill on cloud"""
         pass
 
     class MutuallyExclusiveOption(Option):
@@ -58,7 +58,12 @@ def init():
 
             return super().handle_parse_result(ctx, opts, args)
 
-    @cloud.command(name='init')
+    @cloud.group()
+    def init():
+        """Initialize Treadmill EC2 Objects"""
+        pass
+
+    @init.command(name='vpc')
     @click.option('--domain', required=True,
                   envvar='TREADMILL_DNS_DOMAIN',
                   help='Domain for hosted zone')
@@ -70,7 +75,8 @@ def init():
     @click.option(
         '--secgroup_desc',
         default='Treadmill Security Group',
-        help='Description for the security group')
+        help='Description for the security group'
+    )
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
@@ -79,9 +85,9 @@ def init():
                                       'secgroup_desc',
                                       'secgroup_name'],
                   help="Options YAML file. ")
-    def init(domain, region, vpc_cidr_block,
-             secgroup_name, secgroup_desc, manifest):
-        """Initialize treadmill VPC"""
+    def init_vpc(domain, region, vpc_cidr_block,
+                 secgroup_name, secgroup_desc, manifest):
+        """Initialize Treadmill VPC"""
 
         if region:
             connection.Connection.context.region_name = region
@@ -98,7 +104,7 @@ def init():
             pprint(_vpc.show())
         )
 
-    @cloud.command(name='init-ldap')
+    @init.command(name='ldap')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
     @click.option('--domain', required=True,
@@ -106,13 +112,13 @@ def init():
                   help='Domain for hosted zone')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='1', type=int,
-                  help='Number of treadmill ldap instances to spin up')
+                  help='Number of Treadmill ldap instances to spin up')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for instances')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
-    # TODO: Pick the current treadmill release by default.
+    # TODO: Pick the current Treadmill release by default.
     @click.option('--tm-release', default='0.1.0',
                   help='Treadmill release to use')
     @click.option('--ldap-hostname', default='treadmillldap1',
@@ -147,7 +153,7 @@ def init():
                   instance_type, tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
                   ipa_admin_password, manifest):
-        """Initialize treadmill LDAP"""
+        """Initialize Treadmill LDAP"""
         if region:
             connection.Connection.context.region_name = region
 
@@ -176,7 +182,7 @@ def init():
             pprint(_ldap.subnet.show())
         )
 
-    @cloud.command(name='init-cell')
+    @init.command(name='cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
     @click.option('--domain', required=True,
@@ -186,13 +192,13 @@ def init():
                   help='Treadmill master name')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='3', type=int,
-                  help='Number of treadmill masters to spin up')
+                  help='Number of Treadmill masters to spin up')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for new instances')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
-    # TODO: Pick the current treadmill release by default.
+    # TODO: Pick the current Treadmill release by default.
     @click.option('--tm-release', default='0.1.0',
                   help='Treadmill release to use')
     @click.option('--ldap-hostname', default='treadmillldap1',
@@ -234,7 +240,7 @@ def init():
                   instance_type, tm_release, ldap_hostname, app_root,
                   cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
                   without_ldap, ipa_admin_password, manifest):
-        """Initialize treadmill cell"""
+        """Initialize Treadmill Cell"""
         if region:
             connection.Connection.context.region_name = region
 
@@ -266,7 +272,7 @@ def init():
                 ipa_admin_password=ipa_admin_password,
             )
 
-            result['ldap'] = _ldap.subnet.show()
+            result['Ldap'] = _ldap.subnet.show()
 
         _cell.setup_zookeeper(
             name='TreadmillZookeeper',
@@ -297,7 +303,7 @@ def init():
             pprint(result)
         )
 
-    @cloud.command(name='init-domain')
+    @init.command(name='domain')
     @click.option('--name', default='TreadmillIPA',
                   help='Name of the instance')
     @click.option('--region', help='Region for the vpc')
@@ -337,7 +343,7 @@ def init():
     def init_domain(name, region, vpc_id, domain, subnet_cidr_block, subnet_id,
                     count, ipa_admin_password, tm_release, key,
                     instance_type, image_id, manifest):
-        """Initialize treadmill domain"""
+        """Initialize Treadmill Domain (IPA)"""
         connection.Connection.context.domain = domain
         if region:
             connection.Connection.context.region_name = region
@@ -368,7 +374,7 @@ def init():
             pprint(_ipa.show())
         )
 
-    @cloud.command(name='add-node')
+    @init.command(name='node')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
     @click.option('--domain', required=True,
@@ -378,14 +384,14 @@ def init():
                   help='Node name')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='1', type=int,
-                  help='Number of treadmill nodes to spin up')
+                  help='Number of Treadmill nodes to spin up')
     @click.option('--image-id', required=True,
                   help='AMI ID to use for new node instance')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
-    @click.option('--tm-release',
-                  default='0.1.0', help='Treadmill release to use')
+    @click.option('--tm-release', default='0.1.0',
+                  help='Treadmill release to use')
     @click.option('--ldap-hostname', default='treadmillldap1',
                   help='LDAP hostname')
     @click.option('--app-root', default='/var/tmp/treadmill-node',
@@ -395,7 +401,7 @@ def init():
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
                   help='Password for IPA admin')
     @click.option('--with-api', required=False, is_flag=True,
-                  default=False, help='Provision node with treadmill APIs')
+                  default=False, help='Provision node with Treadmill APIs')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
@@ -413,10 +419,10 @@ def init():
                                       'ipa_admin_password'
                                       'with_api'],
                   help="Options YAML file. ")
-    def add_node(vpc_id, region, domain, name, key, count, image_id,
-                 instance_type, tm_release, ldap_hostname, app_root,
-                 subnet_id, ipa_admin_password, with_api, manifest):
-        """Add new node"""
+    def init_node(vpc_id, region, domain, name, key, count, image_id,
+                  instance_type, tm_release, ldap_hostname, app_root,
+                  subnet_id, ipa_admin_password, with_api, manifest):
+        """Initialize new Node in Cell"""
         connection.Connection.context.domain = domain
         if region:
             connection.Connection.context.region_name = region

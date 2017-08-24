@@ -34,6 +34,7 @@ class IPATest(unittest.TestCase):
         self.destroy_attempted = False
         result_init = self.runner.invoke(self.configure_cli, [
             'init',
+            'vpc',
             '--domain=treadmill.org'
         ])
         subnet_info = {}
@@ -53,7 +54,9 @@ class IPATest(unittest.TestCase):
 
         result_domain_init = self.runner.invoke(
             self.configure_cli, [
-                'init-domain',
+                'init',
+                'domain',
+                '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--domain=treadmill.org',
                 '--image-id=ami-9e2f0988',
@@ -85,7 +88,9 @@ class IPATest(unittest.TestCase):
 
         result_ldap_init = self.runner.invoke(
             self.configure_cli, [
-                'init-ldap',
+                'init',
+                'ldap',
+                '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],
@@ -169,6 +174,7 @@ class IPATest(unittest.TestCase):
             self.configure_cli,
             [
                 'init',
+                'vpc',
                 '--domain=treadmill.org'
             ]
         )
@@ -189,7 +195,9 @@ class IPATest(unittest.TestCase):
 
         result_domain_init = self.runner.invoke(
             self.configure_cli, [
-                'init-domain',
+                'init',
+                'domain'
+                '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],
@@ -221,7 +229,9 @@ class IPATest(unittest.TestCase):
 
         result_ldap_init = self.runner.invoke(
             self.configure_cli, [
-                'init-ldap',
+                'init',
+                'ldap',
+                '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],

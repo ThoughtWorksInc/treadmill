@@ -41,7 +41,8 @@ class CellCLITest(unittest.TestCase):
         result_init = self.runner.invoke(
             self.configure_cli, [
                 'init',
-                '-f=' + options_fixture_file
+                'vpc',
+                '-m' + options_fixture_file
             ]
         )
         cell_info = {}
@@ -61,7 +62,9 @@ class CellCLITest(unittest.TestCase):
 
         result_cell_init = self.runner.invoke(
             self.configure_cli, [
-                'init-cell',
+                'init',
+                'cell',
+                '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image-id=ami-9e2f0988',
                 '--vpc-id=' + vpc_info['VpcId'],
@@ -79,7 +82,6 @@ class CellCLITest(unittest.TestCase):
                 print(result_cell_init.exception)
             else:
                 print(e)
-
         cell_info = result['Cell']
         ldap_info = result['Ldap']
 

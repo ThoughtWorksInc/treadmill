@@ -21,6 +21,7 @@ class CloudTest(unittest.TestCase):
         result = self.runner.invoke(
             self.configure_cli, [
                 'init',
+                'vpc',
                 '--domain=test.treadmill',
                 '--vpc-cidr-block=172.24.0.0/16',
                 '--secgroup_name=sg_common',
@@ -45,7 +46,9 @@ class CloudTest(unittest.TestCase):
         _ldap_mock = ldap_mock()
         result = self.runner.invoke(
             self.configure_cli, [
-                'init-cell',
+                'init',
+                'cell',
+                '--tm-release=0.1.0',
                 '--domain=treadmill.org',
                 '--key=key',
                 '--image-id=img-123',
@@ -108,7 +111,9 @@ class CloudTest(unittest.TestCase):
         _ldap_mock = ldap_mock()
         result = self.runner.invoke(
             self.configure_cli, [
-                'init-cell',
+                'init',
+                'cell',
+                '--tm-release=0.1.0',
                 '--key=key',
                 '--image-id=img-123',
                 '--subnet-id=sub-123',
@@ -152,7 +157,9 @@ class CloudTest(unittest.TestCase):
         node_mock = NodeMock()
         result = self.runner.invoke(
             self.configure_cli, [
-                'add-node',
+                'init',
+                'node',
+                '--tm-release=0.1.0',
                 '--key=key',
                 '--image-id=img-123',
                 '--vpc-id=vpc-123',
@@ -184,7 +191,9 @@ class CloudTest(unittest.TestCase):
         ipa = ipa_mock()
         result = self.runner.invoke(
             self.configure_cli, [
-                'init-domain',
+                'init',
+                'domain',
+                '--tm-release=0.1.0',
                 '--ipa-admin-password=Tre@dmil1',
                 '--key=key',
                 '--image-id=img-123',
