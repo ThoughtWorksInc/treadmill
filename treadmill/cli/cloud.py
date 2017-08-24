@@ -572,7 +572,7 @@ def init():
     @click.option('-p', '--port', required=True, help='Port')
     @click.option('-s', '--security-group-id', required=True,
                   help='Security Group ID')
-    def disable_ssh(security_group_id, port, protocol):
+    def disable_port(security_group_id, port, protocol):
         """Disable Port from my ip"""
         security_group.disable(port, security_group_id, protocol)
 
