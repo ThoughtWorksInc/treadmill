@@ -59,7 +59,7 @@ class IPATest(unittest.TestCase):
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--domain=treadmill.org',
-                '--image-id=ami-9e2f0988',
+                '--image=RHEL-7.4',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--subnet-cidr-block=172.23.0.0/24',
                 '--ipa-admin-password=Tre@dmill1',
@@ -92,7 +92,7 @@ class IPATest(unittest.TestCase):
                 'ldap',
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
-                '--image-id=ami-9e2f0988',
+                '--image=RHEL-7.4',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--ldap-subnet-id=' + subnet_info['SubnetId'],
                 '--domain=treadmill.org',
@@ -199,7 +199,7 @@ class IPATest(unittest.TestCase):
                 'domain'
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
-                '--image-id=ami-9e2f0988',
+                '--image=RHEL-7.4',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--subnet-cidr-block=172.23.0.0/24',
                 '--ipa-admin-password=Tre@dmill1',
@@ -233,7 +233,7 @@ class IPATest(unittest.TestCase):
                 'ldap',
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
-                '--image-id=ami-9e2f0988',
+                '--image=RHEL-7.4',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--domain=treadmill.org'
             ]

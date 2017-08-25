@@ -1,6 +1,8 @@
 from treadmill.infra import connection
 from treadmill.infra import ec2object
 from treadmill.infra import constants
+from datetime import datetime
+from functools import reduce
 import logging
 
 import polling
@@ -152,7 +154,7 @@ class Instances:
             name,
             key_name,
             count,
-            image_id,
+            image,
             instance_type,
             subnet_id,
             secgroup_ids,
@@ -163,7 +165,7 @@ class Instances:
     ):
         conn = connection.Connection()
         _instances = conn.run_instances(
-            ImageId=image_id,
+            ImageId=Instances.get_ami_id(image),
             MinCount=count,
             MaxCount=count,
             InstanceType=instance_type,
@@ -271,3 +273,27 @@ class Instances:
             timeout=300
         ):
             return
+
+    @classmethod
+    def get_ami_id(cls, image):
+        conn = connection.Connection()
+        images = conn.describe_images(
+            Filters=[
+                {'Name': 'name', 'Values': [image + '*']},
+                {'Name': 'owner-id', 'Values': ['309956199498']},
+                {'Name': 'image-type', 'Values': ['machine']}
+            ],
+        )['Images']
+
+        def get_time(str):
+            return datetime.strptime(str, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+        return reduce(
+            (
+                lambda x, y:
+                x
+                if get_time(x['CreationDate']) > get_time(y['CreationDate'])
+                else y
+            ),
+            images
+        )['ImageId']

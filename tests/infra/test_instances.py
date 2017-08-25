@@ -269,11 +269,14 @@ class InstancesTest(unittest.TestCase):
             'Reservations': [{'Instances': instances_mock}]
         })
         conn_mock.create_tags = mock.Mock()
+        conn_mock.describe_images = mock.Mock(return_value={
+            'Images': [{'ImageId': 'ami-123'}]
+        })
 
         instances = Instances.create(
             key_name='key',
             name='foo',
-            image_id='foo-123',
+            image='foo-123',
             count=2,
             instance_type='t2.small',
             subnet_id='',
@@ -296,7 +299,7 @@ class InstancesTest(unittest.TestCase):
         self.assertEquals(instances[1].role, 'role')
 
         conn_mock.run_instances.assert_called_with(
-            ImageId='foo-123',
+            ImageId='ami-123',
             InstanceType='t2.small',
             KeyName='key',
             MaxCount=2,
@@ -506,6 +509,30 @@ class InstancesTest(unittest.TestCase):
             Filters=[{'foo': 'bar'}]
         )
         self.assertEquals(instance_details, sample_instances)
+
+    @mock.patch('treadmill.infra.instances.connection.Connection')
+    def test_get_ami_id(self, ConnectionMock):
+        conn_mock = ConnectionMock()
+
+        sample_images = [
+            {'ImageId': 'ami-123', 'CreationDate': '2017-08-23T00:00:00.000Z'},
+            {'ImageId': 'ami-456', 'CreationDate': '2016-08-23T00:00:00.000Z'}
+        ]
+
+        conn_mock.describe_images = mock.Mock(return_value={
+            'Images': sample_images
+        })
+
+        ami_id = Instances.get_ami_id('foo-bar')
+
+        conn_mock.describe_images.assert_called_once_with(
+            Filters=[
+                {'Name': 'name', 'Values': ['foo-bar*']},
+                {'Name': 'owner-id', 'Values': ['309956199498']},
+                {'Name': 'image-type', 'Values': ['machine']}
+            ]
+        )
+        self.assertEquals(ami_id, 'ami-123')
 
 
 if __name__ == '__main__':

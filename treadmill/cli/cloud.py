@@ -113,8 +113,8 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='1', type=int,
                   help='Number of Treadmill ldap instances to spin up')
-    @click.option('--image-id', required=True,
-                  help='AMI ID to use for instances')
+    @click.option('--image', required=True,
+                  help='Image to use for instances')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -139,7 +139,7 @@ def init():
                                       'vpc_id',
                                       'key',
                                       'count',
-                                      'image_id',
+                                      'image',
                                       'instance_type',
                                       'tm_release',
                                       'ldap_hostname',
@@ -149,7 +149,7 @@ def init():
                                       'ipa_admin_password'
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
-    def init_ldap(vpc_id, region, domain, key, count, image_id,
+    def init_ldap(vpc_id, region, domain, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
                   ipa_admin_password, manifest):
@@ -167,7 +167,7 @@ def init():
         _ldap.setup(
             key=key,
             count=1,
-            image_id=image_id,
+            image=image,
             instance_type=instance_type,
             tm_release=tm_release,
             app_root=app_root,
@@ -193,8 +193,8 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='3', type=int,
                   help='Number of Treadmill masters to spin up')
-    @click.option('--image-id', required=True,
-                  help='AMI ID to use for new instances')
+    @click.option('--image', required=True,
+                  help='Image to use for new instances')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -224,7 +224,7 @@ def init():
                                       'name',
                                       'key',
                                       'count',
-                                      'image_id',
+                                      'image',
                                       'instance_type',
                                       'tm_release',
                                       'ldap_hostname',
@@ -236,7 +236,7 @@ def init():
                                       'without_ldap',
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
-    def init_cell(vpc_id, region, domain, name, key, count, image_id,
+    def init_cell(vpc_id, region, domain, name, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
                   cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
                   without_ldap, ipa_admin_password, manifest):
@@ -261,7 +261,7 @@ def init():
             _ldap.setup(
                 key=key,
                 count=1,
-                image_id=image_id,
+                image=image,
                 instance_type=instance_type,
                 tm_release=tm_release,
                 app_root=app_root,
@@ -277,7 +277,7 @@ def init():
         _cell.setup_zookeeper(
             name='TreadmillZookeeper',
             key=key,
-            image_id=image_id,
+            image=image,
             instance_type=instance_type,
             subnet_cidr_block=cell_cidr_block,
             ldap_hostname=ldap_hostname,
@@ -288,7 +288,7 @@ def init():
             name=name,
             key=key,
             count=count,
-            image_id=image_id,
+            image=image,
             instance_type=instance_type,
             tm_release=tm_release,
             ldap_hostname=ldap_hostname,
@@ -323,8 +323,8 @@ def init():
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['medium'],
                   help='Instance type')
-    @click.option('--image-id', required=True,
-                  help='AMI ID to use for new master instance')
+    @click.option('--image', required=True,
+                  help='Image to use for new master instance')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
@@ -333,7 +333,7 @@ def init():
                                       'name',
                                       'key',
                                       'count',
-                                      'image_id',
+                                      'image',
                                       'instance_type',
                                       'tm_release',
                                       'subnet_cidr_block'
@@ -342,7 +342,7 @@ def init():
                   help="Options YAML file. ")
     def init_domain(name, region, vpc_id, domain, subnet_cidr_block, subnet_id,
                     count, ipa_admin_password, tm_release, key,
-                    instance_type, image_id, manifest):
+                    instance_type, image, manifest):
         """Initialize Treadmill Domain (IPA)"""
         connection.Connection.context.domain = domain
         if region:
@@ -366,7 +366,7 @@ def init():
             tm_release=tm_release,
             key=key,
             instance_type=instance_type,
-            image_id=image_id,
+            image=image,
             cidr_block=subnet_cidr_block,
         )
 
@@ -385,8 +385,8 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='1', type=int,
                   help='Number of Treadmill nodes to spin up')
-    @click.option('--image-id', required=True,
-                  help='AMI ID to use for new node instance')
+    @click.option('--image', required=True,
+                  help='Image to use for new node instance')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
@@ -410,7 +410,7 @@ def init():
                                       'name',
                                       'key',
                                       'count',
-                                      'image_id',
+                                      'image',
                                       'instance_type',
                                       'tm_release',
                                       'ldap_hostname',
@@ -419,7 +419,7 @@ def init():
                                       'ipa_admin_password'
                                       'with_api'],
                   help="Options YAML file. ")
-    def init_node(vpc_id, region, domain, name, key, count, image_id,
+    def init_node(vpc_id, region, domain, name, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
                   subnet_id, ipa_admin_password, with_api, manifest):
         """Initialize new Node in Cell"""
@@ -437,7 +437,7 @@ def init():
         _node.setup(
             key=key,
             count=count,
-            image_id=image_id,
+            image=image,
             instance_type=instance_type,
             tm_release=tm_release,
             app_root=app_root,

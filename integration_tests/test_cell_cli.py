@@ -66,7 +66,7 @@ class CellCLITest(unittest.TestCase):
                 'cell',
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
-                '--image-id=ami-9e2f0988',
+                '--image=RHEL-7.4',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--cell-cidr-block=172.23.0.0/24',
                 '--domain=treadmill.org',
