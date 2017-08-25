@@ -634,6 +634,28 @@ class VPCTest(unittest.TestCase):
         )
         associate_dhcp_options_mock.assert_called_once()
 
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_all(
+            self,
+            connectionMock
+    ):
+        _connectionMock = connectionMock()
+        _connectionMock.describe_vpcs = mock.Mock(return_value={
+            'Vpcs': [
+                {
+                    'VpcId': '1',
+                    'foo': 'bar'
+                },
+                {
+                    'VpcId': '303',
+                    'foo': 'bar'
+                }
+            ]
+        })
+
+        self.assertCountEqual(vpc.VPC.all(), ['1', '303'])
+        _connectionMock.describe_vpcs.assert_called_once_with(VpcIds=[])
+
 
 if __name__ == '__main__':
     unittest.main()

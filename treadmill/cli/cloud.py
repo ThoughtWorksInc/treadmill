@@ -537,18 +537,17 @@ def init():
         pass
 
     @list.command(name='vpc')
-    @click.option('--vpc-id', required=True, help='VPC ID of cell')
+    @click.option('--vpc-id', help='VPC ID of cell')
     @click.option('--domain', required=True,
                   envvar='TREADMILL_DNS_DOMAIN',
                   help='Domain for hosted zone')
     def vpc_resources(vpc_id, domain):
-        """Show VPC"""
+        """Show VPC(s)"""
 
         connection.Connection.context.domain = domain
+        result = vpc.VPC(id=vpc_id).show() if vpc_id else vpc.VPC.all()
 
-        click.echo(
-            pprint(vpc.VPC(id=vpc_id).show())
-        )
+        click.echo("\n".join(result))
 
     @list.command(name='cell')
     @click.option('--subnet-id', required=True, help='Subnet ID of cell')

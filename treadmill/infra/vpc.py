@@ -57,6 +57,14 @@ class VPC:
                                            })
 
     @classmethod
+    def all(cls):
+        _ec2_conn = connection.Connection()
+        _vpcs = _ec2_conn.describe_vpcs(
+            VpcIds=[]
+        )['Vpcs']
+        return [_v['VpcId'] for _v in _vpcs]
+
+    @classmethod
     def setup(
             cls,
             cidr_block,

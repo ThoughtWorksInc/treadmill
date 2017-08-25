@@ -252,3 +252,34 @@ class CloudTest(unittest.TestCase):
         _node_mock.destroy.assert_called_once_with(
             instance_id='instance-123'
         )
+
+    @mock.patch('treadmill.cli.cloud.vpc.VPC')
+    def test_list_all_vpc(self, vpc_mock):
+        """
+        Test cloud list all vpc
+        """
+        result = self.runner.invoke(
+            self.configure_cli, [
+                'list',
+                'vpc',
+                '--domain=treadmill.org',
+            ])
+        self.assertEqual(result.exit_code, 0)
+        vpc_mock.all.assert_called_once()
+
+    @mock.patch('treadmill.cli.cloud.vpc.VPC')
+    def test_list_vpc(self, vpc_mock):
+        """
+        Test cloud list vpc
+        """
+        _vpc_mock = vpc_mock()
+        result = self.runner.invoke(
+            self.configure_cli, [
+                'list',
+                'vpc',
+                '--vpc-id=123',
+                '--domain=treadmill.org',
+            ])
+        self.assertEqual(result.exit_code, 0)
+        self.assertEquals(vpc_mock.mock_calls[1], mock.mock.call(id='123'))
+        _vpc_mock.show.assert_called_once()
