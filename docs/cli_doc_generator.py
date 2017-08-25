@@ -27,12 +27,12 @@ def loop_groups(cli):
     if type(cli) is Group:
         _commands = cli.commands
         click.echo("\n")
-        _command_names = _commands.keys()
+        _command_names = sorted(_commands.keys())
         loop_commands(cli, _command_names)
         for _command in _command_names:
             loop_groups(_commands.get(_command))
 
-def _print_cli_info(runner, cli_pkg, mods, path):
+def loop_modules(runner, cli_pkg, mods, path):
     for mod in mods:
         try:
             cli = importlib.import_module(path + '.' + mod).init()
@@ -48,7 +48,7 @@ def _print_cli_info(runner, cli_pkg, mods, path):
 
         submods = sorted([name for _, name, _ in pkgutil.iter_modules([cli_pkg + '/' + mod])])
         if submods:
-            _print_cli_info(runner, cli_pkg + '/' + mod, submods, path + '.' + mod)
+            loop_modules(runner, cli_pkg + '/' + mod, submods, path + '.' + mod)
 
 cli_pkg = os.path.dirname(treadmill.cli.__file__)
 cli_mods = sorted([name for _, name, _ in pkgutil.iter_modules([cli_pkg])])
@@ -61,4 +61,4 @@ CLI
 ==============================================================
 """
 )
-_print_cli_info(runner, cli_pkg, cli_mods, 'treadmill.cli')
+loop_modules(runner, cli_pkg, cli_mods, 'treadmill.cli')
