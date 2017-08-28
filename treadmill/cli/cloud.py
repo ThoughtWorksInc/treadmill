@@ -114,7 +114,7 @@ def init():
     @click.option('--count', default='1', type=int,
                   help='Number of Treadmill ldap instances to spin up')
     @click.option('--image', required=True,
-                  help='Image to use for instances')
+                  help='Image to use for instances e.g. RHEL-7.4')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -194,7 +194,7 @@ def init():
     @click.option('--count', default='3', type=int,
                   help='Number of Treadmill masters to spin up')
     @click.option('--image', required=True,
-                  help='Image to use for new instances')
+                  help='Image to use for new instances e.g. RHEL-7.4')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -324,7 +324,7 @@ def init():
                   default=constants.INSTANCE_TYPES['EC2']['medium'],
                   help='Instance type')
     @click.option('--image', required=True,
-                  help='Image to use for new master instance')
+                  help='Image to use for new master instance e.g. RHEL-7.4')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['domain',
@@ -386,7 +386,7 @@ def init():
     @click.option('--count', default='1', type=int,
                   help='Number of Treadmill nodes to spin up')
     @click.option('--image', required=True,
-                  help='Image to use for new node instance')
+                  help='Image to use for new node instance e.g. RHEL-7.4')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
