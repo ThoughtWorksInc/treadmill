@@ -543,11 +543,14 @@ def init():
                   help='Domain for hosted zone')
     def vpc_resources(vpc_id, domain):
         """Show VPC(s)"""
-
         connection.Connection.context.domain = domain
-        result = vpc.VPC(id=vpc_id).show() if vpc_id else vpc.VPC.all()
+        if vpc_id:
+            result = pprint(vpc.VPC(id=vpc_id).show())
+        else:
+            result = vpc.VPC.all()
+            result = "\n".join(result)
 
-        click.echo("\n".join(result))
+        click.echo(result)
 
     @list.command(name='cell')
     @click.option('--subnet-id', required=True, help='Subnet ID of cell')
