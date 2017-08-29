@@ -313,29 +313,36 @@ class CloudTest(unittest.TestCase):
 
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=foo.bar',
                 'list',
                 'cell',
                 '--subnet-id=subnet-123',
-                '--domain=foo.bar'
-            ])
+            ],
+            obj={}
+        )
+
         self.assertEquals(result.exit_code, 0)
         _subnet_mock.show.assert_called_once()
 
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=foo.bar',
                 'list',
                 'cell',
                 '--vpc-id=vpc-123',
-                '--domain=foo.bar'
-            ])
+            ],
+            obj={}
+        )
         self.assertEquals(result.exit_code, 0)
         _vpc_mock.list_cells.assert_called_once()
 
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=foo.bar',
                 'list',
                 'cell',
-                '--domain=foo.bar'
-            ])
+            ],
+            obj={}
+        )
         self.assertEquals(result.exit_code, 0)
         self.assertEquals(_vpc_mock.list_cells.call_count, 3)
