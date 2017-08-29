@@ -944,6 +944,13 @@ def validate_ipa_password(ctx, param, value):
         raise click.BadParameter('Password must be greater than 8 characters.')
     return value
 
+def validate_domain(ctx, param, value):
+    """Cloud domain validation"""
+
+    if value.count(".") != 1:
+        raise click.BadParameter('Valid domain like example.com')
+
+    return value
 
 def ipa_password_prompt(ctx, param, value):
     """IPA admin password prompt"""
