@@ -89,7 +89,7 @@ Initialize Domain
 
 ::
 
-  treadmill cloud --domain <domain> init domain --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --ipa-admin-password <password>
+  treadmill cloud --domain <domain> init domain --vpc-id <vpc_id> --key <key_name> --image <image_name> --ipa-admin-password <password>
 
 ipa-admin-password should be at least 8 characters long.
 
@@ -103,7 +103,7 @@ Initialize Cell
 
 ::
 
-  treadmill cloud --domain <domain> init cell --vpc-id <vpc_id> --key <key_name> --image-id <ami_id>
+  treadmill cloud --domain <domain> init cell --vpc-id <vpc_id> --key <key_name> --image <image_name>
 
 This will setup 1 openldap, 3 masters and 3 zookeeper instances by default.
 
@@ -115,4 +115,4 @@ SpinUp First Node
 
 ::
 
-  treadmill cloud --domain <domain> init node --vpc-id <vpc_id> --key <key_name> --image-id <ami_id> --subnet-id <subnet-id>
+  treadmill cloud --domain <domain> init node --vpc-id <vpc_id> --key <key_name> --image <image_name> --subnet-id <subnet-id>
