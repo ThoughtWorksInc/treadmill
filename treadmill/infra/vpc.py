@@ -306,6 +306,21 @@ class VPC:
             VpcId=self.id
         )
 
+    def list_cells(self):
+        subnets = self.ec2_conn.describe_subnets(
+            Filters=[
+                {
+                    'Name': 'vpc-id',
+                    'Values': [self.id]
+                },
+                {
+                    'Name': 'tag:Name',
+                    'Values': [constants.TREADMILL_CELL_SUBNET_NAME]
+                }
+            ]
+        )['Subnets']
+        return [s['SubnetId'] for s in subnets]
+
     def _reverse_domain_name(self):
         if not self.cidr_block:
             self._load()

@@ -4,7 +4,7 @@ Unit test for VPC.
 
 import unittest
 import mock
-from treadmill.infra import vpc
+from treadmill.infra import vpc, constants
 
 
 class VPCTest(unittest.TestCase):
@@ -655,6 +655,39 @@ class VPCTest(unittest.TestCase):
 
         self.assertCountEqual(vpc.VPC.all(), ['1', '303'])
         _connectionMock.describe_vpcs.assert_called_once_with(VpcIds=[])
+
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_list_cells(
+        self,
+        connectionMock
+    ):
+        _connectionMock = connectionMock()
+        _connectionMock.describe_subnets = mock.Mock(return_value={
+            'Subnets': [
+                {
+                    'SubnetId': '1'
+                },
+                {
+                    'SubnetId': '2'
+                }
+            ]
+        })
+
+        subnets = vpc.VPC(id='vpc-123').list_cells()
+
+        _connectionMock.describe_subnets.assert_called_once_with(
+            Filters=[
+                {
+                    'Name': 'vpc-id',
+                    'Values': ['vpc-123']
+                },
+                {
+                    'Name': 'tag:Name',
+                    'Values': [constants.TREADMILL_CELL_SUBNET_NAME]
+                }
+            ]
+        )
+        self.assertEquals(subnets, ['1', '2'])
 
 
 if __name__ == '__main__':

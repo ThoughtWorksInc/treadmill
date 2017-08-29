@@ -283,3 +283,42 @@ class CloudTest(unittest.TestCase):
         self.assertEqual(result.exit_code, 0)
         self.assertEquals(vpc_mock.mock_calls[1], mock.mock.call(id='123'))
         _vpc_mock.show.assert_called_once()
+
+    @mock.patch('treadmill.cli.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.cloud.subnet.Subnet')
+    def test_list_cell(self, subnet_mock, vpc_mock):
+        """
+        Test cloud list cell
+        """
+        _subnet_mock = subnet_mock()
+        _vpc_mock = vpc_mock()
+        vpc_mock.all = mock.Mock(return_value=['vpc-123', 'vpc-456'])
+
+        result = self.runner.invoke(
+            self.configure_cli, [
+                'list',
+                'cell',
+                '--subnet-id=subnet-123',
+                '--domain=foo.bar'
+            ])
+        self.assertEquals(result.exit_code, 0)
+        _subnet_mock.show.assert_called_once()
+
+        result = self.runner.invoke(
+            self.configure_cli, [
+                'list',
+                'cell',
+                '--vpc-id=vpc-123',
+                '--domain=foo.bar'
+            ])
+        self.assertEquals(result.exit_code, 0)
+        _vpc_mock.list_cells.assert_called_once()
+
+        result = self.runner.invoke(
+            self.configure_cli, [
+                'list',
+                'cell',
+                '--domain=foo.bar'
+            ])
+        self.assertEquals(result.exit_code, 0)
+        self.assertEquals(_vpc_mock.list_cells.call_count, 3)

@@ -553,18 +553,38 @@ def init():
         click.echo(result)
 
     @list.command(name='cell')
-    @click.option('--subnet-id', required=True, help='Subnet ID of cell')
+    @click.option('--vpc-id', help='VPC ID of cell')
+    @click.option('--subnet-id', help='Subnet ID of cell')
     @click.option('--domain', required=True,
                   envvar='TREADMILL_DNS_DOMAIN',
                   help='Domain for hosted zone')
-    def cell_resources(subnet_id, domain):
+    def cell_resources(vpc_id, subnet_id, domain):
         """Show Cell"""
-
         connection.Connection.context.domain = domain
+        if subnet_id:
+            click.echo(
+                pprint(
+                    subnet.Subnet(id=subnet_id).show()
+                )
+            )
+            return
 
-        click.echo(
-            pprint(subnet.Subnet(id=subnet_id).show())
-        )
+        if vpc_id:
+            vpcs = [vpc_id]
+        else:
+            vpcs = vpc.VPC.all()
+
+        result = []
+
+        for v in vpcs:
+            subnets = vpc.VPC(id=v).list_cells()
+            if subnets:
+                result.append({
+                    'VpcId': v,
+                    'Subnets': subnets
+                })
+
+        click.echo(pprint(result))
 
     @cloud.group()
     def port():
