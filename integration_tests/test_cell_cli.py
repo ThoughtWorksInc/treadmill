@@ -26,11 +26,12 @@ class CellCLITest(unittest.TestCase):
         if not self.destroy_attempted:
             self.runner.invoke(
                 self.configure_cli, [
+                    '--domain=treadmill.org',
                     'delete',
                     'vpc',
                     '--vpc-id=' + self.vpc_id,
-                    '--domain=treadmill.org'
-                ]
+                ],
+                obj={}
             )
 
     def test_setup_cell(self):
@@ -38,16 +39,20 @@ class CellCLITest(unittest.TestCase):
         options_fixture_file = pkg_resources.resource_filename(
             __name__, 'init_cell_options.yml'
         )
+
         result_init = self.runner.invoke(
-            self.configure_cli, [
+            self.configure_cli,
+            [
+                '--domain=treadmill.org',
                 'init',
                 'vpc',
                 '-m' + options_fixture_file
-            ]
+            ],
+            obj={}
         )
+
         cell_info = {}
         vpc_info = {}
-
         try:
             vpc_info = ast.literal_eval(result_init.output)
         except Exception as e:
@@ -62,6 +67,7 @@ class CellCLITest(unittest.TestCase):
 
         result_cell_init = self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'init',
                 'cell',
                 '--tm-release=0.1.0',
@@ -69,9 +75,9 @@ class CellCLITest(unittest.TestCase):
                 '--image=RHEL-7.4',
                 '--vpc-id=' + vpc_info['VpcId'],
                 '--cell-cidr-block=172.23.0.0/24',
-                '--domain=treadmill.org',
                 '--ipa-admin-password=Tre@dmill1',
-            ]
+            ],
+            obj={}
         )
 
         result = {}
@@ -125,21 +131,23 @@ class CellCLITest(unittest.TestCase):
 
         self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'delete',
                 'cell',
                 '--subnet-id=' + cell_info['SubnetId'],
                 '--vpc-id=' + vpc_info['VpcId'],
-                '--domain=treadmill.org'
-            ]
+            ],
+            obj={}
         )
         self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'delete',
                 'cell',
                 '--subnet-id=' + ldap_info['SubnetId'],
                 '--vpc-id=' + vpc_info['VpcId'],
-                '--domain=treadmill.org'
-            ]
+            ],
+            obj={}
         )
         _vpc.instances = None
         _vpc.subnet_ids = []
@@ -149,11 +157,12 @@ class CellCLITest(unittest.TestCase):
 
         self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'delete',
                 'vpc',
                 '--vpc-id=' + vpc_info['VpcId'],
-                '--domain=treadmill.org'
-            ]
+            ],
+            obj={}
         )
         self.destroy_attempted = True
 
