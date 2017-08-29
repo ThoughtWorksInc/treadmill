@@ -7,6 +7,8 @@ from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
 from treadmill.infra.utils import security_group, hosted_zones
 from treadmill.cli import validate_ipa_password, ipa_password_prompt
+from treadmill.cli import validate_domain
+
 
 import yaml
 from click import Option, UsageError
@@ -19,9 +21,14 @@ _OPTIONS_FILE = 'manifest'
 def init():
     """Cloud CLI module"""
     @click.group()
-    def cloud():
+    @click.option('--domain', required=True,
+                  envvar='TREADMILL_DNS_DOMAIN',
+                  callback=validate_domain,
+                  help='Domain for hosted zone')
+    @click.pass_context
+    def cloud(ctx, domain):
         """Manage Treadmill on cloud"""
-        pass
+        ctx.obj['DOMAIN'] = domain
 
     class MutuallyExclusiveOption(Option):
         def __init__(self, *args, **kwargs):
@@ -64,9 +71,6 @@ def init():
         pass
 
     @init.command(name='vpc')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-cidr-block', default='172.23.0.0/16',
                   help='CIDR block for the vpc')
@@ -79,15 +83,16 @@ def init():
     )
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
-                  mutually_exclusive=['domain',
-                                      'region',
+                  mutually_exclusive=['region',
                                       'vpc_cidr_block',
                                       'secgroup_desc',
                                       'secgroup_name'],
                   help="Options YAML file. ")
-    def init_vpc(domain, region, vpc_cidr_block,
+    @click.pass_context
+    def init_vpc(ctx, region, vpc_cidr_block,
                  secgroup_name, secgroup_desc, manifest):
         """Initialize Treadmill VPC"""
+        domain = ctx.obj['DOMAIN']
 
         if region:
             connection.Connection.context.region_name = region
@@ -107,9 +112,6 @@ def init():
     @init.command(name='ldap')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='1', type=int,
                   help='Number of Treadmill ldap instances to spin up')
@@ -134,8 +136,7 @@ def init():
                   help='Password for IPA admin')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
-                  mutually_exclusive=['domain',
-                                      'region',
+                  mutually_exclusive=['region',
                                       'vpc_id',
                                       'key',
                                       'count',
@@ -149,11 +150,14 @@ def init():
                                       'ipa_admin_password'
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
-    def init_ldap(vpc_id, region, domain, key, count, image,
+    @click.pass_context
+    def init_ldap(ctx, vpc_id, region, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
                   ipa_admin_password, manifest):
         """Initialize Treadmill LDAP"""
+
+        domain = ctx.obj['DOMAIN']
         if region:
             connection.Connection.context.region_name = region
 
@@ -185,9 +189,6 @@ def init():
     @init.command(name='cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--name', default='TreadmillMaster',
                   help='Treadmill master name')
     @click.option('--key', required=True, help='SSH Key Name')
@@ -218,8 +219,7 @@ def init():
                   help='Password for IPA admin')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
-                  mutually_exclusive=['domain',
-                                      'region',
+                  mutually_exclusive=['region',
                                       'vpc_id',
                                       'name',
                                       'key',
@@ -236,11 +236,15 @@ def init():
                                       'without_ldap',
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
-    def init_cell(vpc_id, region, domain, name, key, count, image,
+    @click.pass_context
+    def init_cell(ctx, vpc_id, region, name, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
                   cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
                   without_ldap, ipa_admin_password, manifest):
         """Initialize Treadmill Cell"""
+
+        domain = ctx.obj['DOMAIN']
+
         if region:
             connection.Connection.context.region_name = region
 
@@ -308,9 +312,6 @@ def init():
                   help='Name of the instance')
     @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--subnet-cidr-block', help='Cidr block of subnet for IPA',
                   default='172.23.2.0/24')
     @click.option('--subnet-id', help='Subnet ID')
@@ -327,8 +328,7 @@ def init():
                   help='Image to use for new master instance e.g. RHEL-7.4')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
-                  mutually_exclusive=['domain',
-                                      'region',
+                  mutually_exclusive=['region',
                                       'vpc_id',
                                       'name',
                                       'key',
@@ -340,10 +340,14 @@ def init():
                                       'subnet_id',
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
-    def init_domain(name, region, vpc_id, domain, subnet_cidr_block, subnet_id,
+    @click.pass_context
+    def init_domain(ctx, name, region, vpc_id, subnet_cidr_block, subnet_id,
                     count, ipa_admin_password, tm_release, key,
                     instance_type, image, manifest):
         """Initialize Treadmill Domain (IPA)"""
+
+        domain = ctx.obj['DOMAIN']
+
         connection.Connection.context.domain = domain
         if region:
             connection.Connection.context.region_name = region
@@ -377,9 +381,6 @@ def init():
     @init.command(name='node')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
     @click.option('--region', help='Region for the vpc')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--name', default='TreadmillNode',
                   help='Node name')
     @click.option('--key', required=True, help='SSH Key Name')
@@ -404,8 +405,7 @@ def init():
                   default=False, help='Provision node with Treadmill APIs')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
-                  mutually_exclusive=['domain',
-                                      'region',
+                  mutually_exclusive=['region',
                                       'vpc_id',
                                       'name',
                                       'key',
@@ -419,10 +419,14 @@ def init():
                                       'ipa_admin_password'
                                       'with_api'],
                   help="Options YAML file. ")
-    def init_node(vpc_id, region, domain, name, key, count, image,
+    @click.pass_context
+    def init_node(ctx, vpc_id, region, name, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
                   subnet_id, ipa_admin_password, with_api, manifest):
         """Initialize new Node in Cell"""
+
+        domain = ctx.obj['DOMAIN']
+
         connection.Connection.context.domain = domain
         if region:
             connection.Connection.context.region_name = region
@@ -457,23 +461,22 @@ def init():
 
     @delete.command(name='vpc')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
-    def delete_vpc(vpc_id, domain):
+    @click.pass_context
+    def delete_vpc(ctx, vpc_id):
         """Delete VPC"""
+
+        domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
 
         vpc.VPC(id=vpc_id).delete()
 
     @delete.command(name='cell')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of cell')
-    def delete_cell(vpc_id, domain, subnet_id):
+    @click.pass_context
+    def delete_cell(ctx, vpc_id, subnet_id):
         """Delete Cell (Subnet)"""
+        domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
         _vpc = vpc.VPC(id=vpc_id)
         _vpc.load_hosted_zone_ids()
@@ -484,15 +487,13 @@ def init():
 
     @delete.command(name='domain')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of IPA')
     @click.option('--name', help='Name of Instance',
                   default="TreadmillIPA")
-    def delete_domain(vpc_id, domain, subnet_id, name):
+    @click.pass_context
+    def delete_domain(ctx, vpc_id, subnet_id, name):
         """Delete IPA"""
-
+        domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
 
         _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
@@ -500,14 +501,13 @@ def init():
 
     @delete.command(name='ldap')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--subnet-id', required=True, help='Subnet ID of LDAP')
     @click.option('--name', help='Name of Instance',
                   default="TreadmillLDAP")
-    def delete_ldap(vpc_id, domain, subnet_id, name):
+    @click.pass_context
+    def delete_ldap(ctx, vpc_id, subnet_id, name):
         """Delete LDAP"""
+        domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
 
         _ldap = ldap.LDAP(name=name, vpc_id=vpc_id)
@@ -515,13 +515,12 @@ def init():
 
     @delete.command(name='node')
     @click.option('--vpc-id', required=True, help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
     @click.option('--name', help='Instance Name', required=False)
     @click.option('--instance-id', help='Instance ID', required=False)
-    def delete_node(vpc_id, domain, name, instance_id):
+    @click.pass_context
+    def delete_node(ctx, vpc_id, name, instance_id):
         """Delete Node"""
+        domain = ctx.obj['DOMAIN']
         if not name and not instance_id:
             _LOGGER.error('Provide either --name or --instance-id of'
                           'Node Instance and try again.')
@@ -538,11 +537,10 @@ def init():
 
     @list.command(name='vpc')
     @click.option('--vpc-id', help='VPC ID of cell')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
-    def vpc_resources(vpc_id, domain):
+    @click.pass_context
+    def vpc_resources(ctx, vpc_id):
         """Show VPC(s)"""
+        domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
         if vpc_id:
             result = pprint(vpc.VPC(id=vpc_id).show())
@@ -555,11 +553,10 @@ def init():
     @list.command(name='cell')
     @click.option('--vpc-id', help='VPC ID of cell')
     @click.option('--subnet-id', help='Subnet ID of cell')
-    @click.option('--domain', required=True,
-                  envvar='TREADMILL_DNS_DOMAIN',
-                  help='Domain for hosted zone')
-    def cell_resources(vpc_id, subnet_id, domain):
+    @click.pass_context
+    def cell_resources(ctx, vpc_id, subnet_id):
         """Show Cell"""
+        domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
         if subnet_id:
             click.echo(

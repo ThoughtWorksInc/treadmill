@@ -20,14 +20,15 @@ class CloudTest(unittest.TestCase):
         """
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=test.treadmill',
                 'init',
                 'vpc',
-                '--domain=test.treadmill',
                 '--vpc-cidr-block=172.24.0.0/16',
                 '--secgroup_name=sg_common',
                 '--secgroup_desc=Test'
-            ])
-
+            ],
+            obj={}
+        )
         self.assertEqual(result.exit_code, 0)
         vpc_mock.setup.assert_called_once_with(
             cidr_block='172.24.0.0/16',
@@ -46,17 +47,19 @@ class CloudTest(unittest.TestCase):
         _ldap_mock = ldap_mock()
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'init',
                 'cell',
                 '--tm-release=0.1.0',
-                '--domain=treadmill.org',
                 '--key=key',
                 '--image=img-123',
                 '--subnet-id=sub-123',
                 '--vpc-id=vpc-123',
                 '--cell-cidr-block=172.24.0.0/24',
                 '--ipa-admin-password=ipa_pass',
-            ])
+            ],
+            obj={}
+        )
 
         self.assertEqual(result.exit_code, 0)
         cell.setup_zookeeper.assert_called_once_with(
@@ -111,6 +114,7 @@ class CloudTest(unittest.TestCase):
         _ldap_mock = ldap_mock()
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'init',
                 'cell',
                 '--tm-release=0.1.0',
@@ -119,10 +123,11 @@ class CloudTest(unittest.TestCase):
                 '--subnet-id=sub-123',
                 '--vpc-id=vpc-123',
                 '--cell-cidr-block=172.24.0.0/24',
-                '--domain=treadmill.org',
                 '--without-ldap',
                 '--ipa-admin-password=ipa_pass',
-            ])
+            ],
+            obj={}
+        )
 
         self.assertEqual(result.exit_code, 0)
         cell.setup_zookeeper.assert_called_once_with(
@@ -157,6 +162,7 @@ class CloudTest(unittest.TestCase):
         node_mock = NodeMock()
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'init',
                 'node',
                 '--tm-release=0.1.0',
@@ -165,9 +171,10 @@ class CloudTest(unittest.TestCase):
                 '--vpc-id=vpc-123',
                 '--subnet-id=sub-123',
                 '--count=2',
-                '--domain=treadmill.org',
                 '--ipa-admin-password=Tre@admill1',
-            ])
+            ],
+            obj={}
+        )
 
         self.assertEqual(result.exit_code, 0)
         node_mock.setup.assert_called_once_with(
@@ -191,6 +198,7 @@ class CloudTest(unittest.TestCase):
         ipa = ipa_mock()
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=test.treadmill',
                 'init',
                 'domain',
                 '--tm-release=0.1.0',
@@ -198,8 +206,9 @@ class CloudTest(unittest.TestCase):
                 '--key=key',
                 '--image=img-123',
                 '--vpc-id=vpc-123',
-                '--domain=test.treadmill'
-            ])
+            ],
+            obj={}
+        )
 
         self.assertEqual(result.exit_code, 0)
         ipa.setup.assert_called_once_with(
@@ -221,12 +230,14 @@ class CloudTest(unittest.TestCase):
         ipa = ipa_mock()
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'delete',
                 'domain',
                 '--vpc-id=vpc-123',
                 '--subnet-id=sub-123',
-                '--domain=treadmill.org',
-            ])
+            ],
+            obj={}
+        )
 
         self.assertEqual(result.exit_code, 0)
         ipa.destroy.assert_called_once_with(
@@ -241,13 +252,15 @@ class CloudTest(unittest.TestCase):
         _node_mock = node_mock()
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'delete',
                 'node',
                 '--vpc-id=vpc-123',
                 '--instance-id=instance-123',
                 '--name=foo',
-                '--domain=treadmill.org',
-            ])
+            ],
+            obj={}
+        )
         self.assertEqual(result.exit_code, 0)
         _node_mock.destroy.assert_called_once_with(
             instance_id='instance-123'
@@ -260,10 +273,12 @@ class CloudTest(unittest.TestCase):
         """
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'list',
                 'vpc',
-                '--domain=treadmill.org',
-            ])
+            ],
+            obj={}
+        )
         self.assertEqual(result.exit_code, 0)
         vpc_mock.all.assert_called_once()
 
@@ -275,11 +290,13 @@ class CloudTest(unittest.TestCase):
         _vpc_mock = vpc_mock()
         result = self.runner.invoke(
             self.configure_cli, [
+                '--domain=treadmill.org',
                 'list',
                 'vpc',
                 '--vpc-id=123',
-                '--domain=treadmill.org',
-            ])
+            ],
+            obj={}
+        )
         self.assertEqual(result.exit_code, 0)
         self.assertEquals(vpc_mock.mock_calls[1], mock.mock.call(id='123'))
         _vpc_mock.show.assert_called_once()
