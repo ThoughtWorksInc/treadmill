@@ -3,14 +3,13 @@ import unittest
 import click
 import click.testing
 import mock
-import os
 
-from treadmill.infra import constants
+from treadmill.infra import constants, connection
 
 
 class CloudTest(unittest.TestCase):
     def setUp(self):
-        os.environ['AWS_DEFAULT_REGION'] = 'foobar'
+        connection.Connection.context.region_name = 'foobar'
         self.vpc_id_mock = 'vpc-123'
         self.vpc_name = 'vpc-name'
         self.runner = click.testing.CliRunner()
