@@ -2486,7 +2486,7 @@ Module: treadmill.cli.cloud
 		  Delete Cell (Subnet)
 		
 		Options:
-		  --vpc-id TEXT     VPC ID of cell  [required]
+		  --vpc-name TEXT   VPC Name  [required]
 		  --subnet-id TEXT  Subnet ID of cell  [required]
 		  --help            Show this message and exit.
 
@@ -2495,7 +2495,7 @@ Module: treadmill.cli.cloud
 		  Delete IPA
 		
 		Options:
-		  --vpc-id TEXT     VPC ID of cell  [required]
+		  --vpc-name TEXT   VPC Name  [required]
 		  --subnet-id TEXT  Subnet ID of IPA  [required]
 		  --name TEXT       Name of Instance
 		  --help            Show this message and exit.
@@ -2505,7 +2505,7 @@ Module: treadmill.cli.cloud
 		  Delete LDAP
 		
 		Options:
-		  --vpc-id TEXT     VPC ID of cell  [required]
+		  --vpc-name TEXT   VPC Name  [required]
 		  --subnet-id TEXT  Subnet ID of LDAP  [required]
 		  --name TEXT       Name of Instance
 		  --help            Show this message and exit.
@@ -2515,7 +2515,7 @@ Module: treadmill.cli.cloud
 		  Delete Node
 		
 		Options:
-		  --vpc-id TEXT       VPC ID of cell  [required]
+		  --vpc-name TEXT     VPC Name  [required]
 		  --name TEXT         Instance Name
 		  --instance-id TEXT  Instance ID
 		  --help              Show this message and exit.
@@ -2525,8 +2525,8 @@ Module: treadmill.cli.cloud
 		  Delete VPC
 		
 		Options:
-		  --vpc-id TEXT  VPC ID of cell  [required]
-		  --help         Show this message and exit.
+		  --vpc-name TEXT  VPC Name  [required]
+		  --help           Show this message and exit.
 
 
 
@@ -2535,7 +2535,7 @@ Module: treadmill.cli.cloud
 		  Initialize Treadmill Cell
 		
 		Options:
-		  --vpc-id TEXT              VPC ID of cell  [required]
+		  --vpc-name TEXT            VPC Name  [required]
 		  --region TEXT              Region for the vpc
 		  --name TEXT                Treadmill master name
 		  --key TEXT                 SSH Key Name  [required]
@@ -2553,11 +2553,11 @@ Module: treadmill.cli.cloud
 		  --without-ldap             Flag for LDAP Server
 		  --ipa-admin-password TEXT  Password for IPA admin
 		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [name, vpc_id,
-		                             ldap_cidr_block, image,
-		                             cell_cidr_blockldap_subnet_id, region, tm_release,
-		                             instance_type, count, without_ldap, app_root,
-		                             ipa_admin_password, key, ldap_hostname, subnet_id].
+		                             exclusive with arguments: [count, app_root,
+		                             tm_release, key, vpc_id, ldap_cidr_block,
+		                             cell_cidr_blockldap_subnet_id, ldap_hostname,
+		                             image, instance_type, subnet_id, name,
+		                             without_ldap, region, ipa_admin_password].
 		  --help                     Show this message and exit.
 
 		Usage: init domain [OPTIONS]
@@ -2567,7 +2567,7 @@ Module: treadmill.cli.cloud
 		Options:
 		  --name TEXT                Name of the instance
 		  --region TEXT              Region for the vpc
-		  --vpc-id TEXT              VPC ID of cell  [required]
+		  --vpc-name TEXT            VPC Name  [required]
 		  --subnet-cidr-block TEXT   Cidr block of subnet for IPA
 		  --subnet-id TEXT           Subnet ID
 		  --count INTEGER            Count of the instances
@@ -2578,9 +2578,9 @@ Module: treadmill.cli.cloud
 		  --image TEXT               Image to use for new master instance e.g. RHEL-7.4
 		                             [required]
 		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [name, vpc_id, image,
-		                             subnet_cidr_blocksubnet_id, region, tm_release,
-		                             instance_type, count, ipa_admin_password, key].
+		                             exclusive with arguments: [count, tm_release, key,
+		                             vpc_id, subnet_cidr_blocksubnet_id, image,
+		                             instance_type, name, region, ipa_admin_password].
 		  --help                     Show this message and exit.
 
 		Usage: init ldap [OPTIONS]
@@ -2588,7 +2588,7 @@ Module: treadmill.cli.cloud
 		  Initialize Treadmill LDAP
 		
 		Options:
-		  --vpc-id TEXT              VPC ID of cell  [required]
+		  --vpc-name TEXT            VPC name  [required]
 		  --region TEXT              Region for the vpc
 		  --key TEXT                 SSH Key Name  [required]
 		  --count INTEGER            Number of Treadmill ldap instances to spin up
@@ -2603,10 +2603,10 @@ Module: treadmill.cli.cloud
 		  --cell-subnet-id TEXT      Subnet ID of Cell
 		  --ipa-admin-password TEXT  Password for IPA admin
 		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [vpc_id, image, region,
-		                             tm_release, instance_type, cell_subnet_id, count,
-		                             ldap_subnet_id, app_root, key, ldap_hostname,
-		                             ipa_admin_passwordldap_cidr_block].
+		                             exclusive with arguments: [vpc_name, count,
+		                             app_root, tm_release, key, ldap_hostname,
+		                             ipa_admin_passwordldap_cidr_block, cell_subnet_id,
+		                             instance_type, image, ldap_subnet_id, region].
 		  --help                     Show this message and exit.
 
 		Usage: init node [OPTIONS]
@@ -2614,7 +2614,7 @@ Module: treadmill.cli.cloud
 		  Initialize new Node in Cell
 		
 		Options:
-		  --vpc-id TEXT              VPC ID of cell  [required]
+		  --vpc-name TEXT            VPC Name  [required]
 		  --region TEXT              Region for the vpc
 		  --name TEXT                Node name
 		  --key TEXT                 SSH Key Name  [required]
@@ -2629,10 +2629,10 @@ Module: treadmill.cli.cloud
 		  --ipa-admin-password TEXT  Password for IPA admin
 		  --with-api                 Provision node with Treadmill APIs
 		  -m, --manifest TEXT        Options YAML file.  NOTE: This argument is mutually
-		                             exclusive with arguments: [name, vpc_id, image,
-		                             ipa_admin_passwordwith_api, region, tm_release,
-		                             instance_type, count, app_root, key, ldap_hostname,
-		                             subnet_id].
+		                             exclusive with arguments: [count, app_root,
+		                             tm_release, key, vpc_id, ldap_hostname, image,
+		                             instance_type, ipa_admin_passwordwith_api,
+		                             subnet_id, name, region].
 		  --help                     Show this message and exit.
 
 		Usage: init vpc [OPTIONS]
@@ -2644,9 +2644,10 @@ Module: treadmill.cli.cloud
 		  --vpc-cidr-block TEXT  CIDR block for the vpc
 		  --secgroup_name TEXT   Security group name
 		  --secgroup_desc TEXT   Description for the security group
+		  --name TEXT            VPC name  [required]
 		  -m, --manifest TEXT    Options YAML file.  NOTE: This argument is mutually
-		                         exclusive with arguments: [region, vpc_cidr_block,
-		                         secgroup_name, secgroup_desc].
+		                         exclusive with arguments: [secgroup_name, name,
+		                         vpc_cidr_block, secgroup_desc, region].
 		  --help                 Show this message and exit.
 
 
@@ -2656,7 +2657,7 @@ Module: treadmill.cli.cloud
 		  Show Cell
 		
 		Options:
-		  --vpc-id TEXT     VPC ID of cell
+		  --vpc-name TEXT   VPC Name
 		  --subnet-id TEXT  Subnet ID of cell
 		  --help            Show this message and exit.
 
@@ -2665,8 +2666,8 @@ Module: treadmill.cli.cloud
 		  Show VPC(s)
 		
 		Options:
-		  --vpc-id TEXT  VPC ID of cell
-		  --help         Show this message and exit.
+		  --vpc-name TEXT  VPC Name
+		  --help           Show this message and exit.
 
 
 
