@@ -21,11 +21,11 @@ class Instance(ec2object.EC2Object):
         self.private_ip = self._get_private_ip()
 
     def create_tags(self):
-        self.name = self.name + str(
+        self._name = self._name + str(
             self.metadata['AmiLaunchIndex'] + 1
         )
         if self.role == constants.ROLES['NODE']:
-            self.name = self.name + '-' + self.id
+            self._name = self._name + '-' + self.id
 
         super().create_tags()
 

@@ -1,7 +1,5 @@
-from treadmill.infra import connection
-from treadmill.infra import instances
-from treadmill.infra import constants
-from treadmill.infra import subnet
+from treadmill.infra import connection, constants
+from treadmill.infra import subnet, ec2object, instances
 
 import time
 import logging
@@ -9,13 +7,13 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-class VPC:
-    def __init__(self, id=None, metadata=None):
-        self.ec2_conn = connection.Connection()
-        self.route53_conn = connection.Connection(resource=constants.ROUTE_53)
-        self.id = id
-        self.metadata = metadata
-        self.cidr_block = None
+class VPC(ec2object.EC2Object):
+    def __init__(self, id=None, metadata=None, name=None):
+        super().__init__(
+            id=id,
+            name=name,
+            metadata=metadata,
+        )
         self.instances = []
         self.secgroup_ids = []
         self.subnet_ids = []
@@ -38,31 +36,52 @@ class VPC:
         self.metadata, = self.ec2_conn.describe_vpcs(
             VpcIds=[self.id]
         )['Vpcs']
-        self.cidr_block = self.metadata['CidrBlock']
 
-    def create(self, cidr_block):
-        self.metadata = self.ec2_conn.create_vpc(CidrBlock=cidr_block)['Vpc']
-        self.cidr_block = self.metadata['CidrBlock']
-        self.id = self.metadata['VpcId']
-        self.ec2_conn.create_tags(
-            Resources=[self.id],
-            Tags=[{
-                'Key': 'Name',
-                'Value': 'Treadmill-vpc'
+    @property
+    def cidr_block(self):
+        if self.metadata:
+            return self.metadata.get('CidrBlock', None)
+
+    @classmethod
+    def get_id_from_name(cls, name):
+        vpcs = cls.ec2_conn.describe_vpcs(
+            Filters=[{
+                'Name': 'tag:Name',
+                'Values': [name]
             }]
-        )
-        self.ec2_conn.modify_vpc_attribute(VpcId=self.id,
+        )['Vpcs']
+
+        if len(vpcs) > 1:
+            raise ValueError("Multiple VPCs with name: " + name)
+
+        if vpcs:
+            return vpcs[0]['VpcId']
+
+    @classmethod
+    def create(cls, name, cidr_block):
+        _vpc = VPC(name=name)
+        _vpc.metadata = cls.ec2_conn.create_vpc(CidrBlock=cidr_block)['Vpc']
+        _vpc.id = _vpc.metadata['VpcId']
+        _vpc.ec2_conn.modify_vpc_attribute(VpcId=_vpc.id,
                                            EnableDnsHostnames={
                                                'Value': True
                                            })
+        if _vpc.name:
+            _vpc.create_tags()
+
+        return _vpc
 
     @classmethod
     def all(cls):
-        _ec2_conn = connection.Connection()
-        _vpcs = _ec2_conn.describe_vpcs(
+        _vpcs = cls.ec2_conn.describe_vpcs(
             VpcIds=[]
         )['Vpcs']
-        return [_v['VpcId'] for _v in _vpcs]
+
+        return [
+            VPC(
+                metadata=_vpc,
+                id=_vpc['VpcId']
+            ) for _vpc in _vpcs]
 
     @classmethod
     def setup(
@@ -70,9 +89,9 @@ class VPC:
             cidr_block,
             secgroup_name,
             secgroup_desc,
+            name=None
     ):
-        _vpc = VPC()
-        _vpc.create(cidr_block=cidr_block)
+        _vpc = VPC.create(name=name, cidr_block=cidr_block)
         _vpc.create_internet_gateway()
         _vpc.create_security_group(secgroup_name, secgroup_desc)
         _vpc.create_hosted_zone()
@@ -274,10 +293,12 @@ class VPC:
         self.ec2_conn.delete_vpc(VpcId=self.id)
 
     def show(self):
+        self._load()
         self.get_instances(refresh=True)
         self.load_route_related_ids()
         return {
             'VpcId': self.id,
+            'Name': self.name,
             'Subnets': self.subnet_ids,
             'Instances': list(map(
                 self._instance_details,

@@ -7,6 +7,7 @@ import unittest
 import importlib
 import click
 import click.testing
+import time
 from botocore.exceptions import ClientError
 from treadmill.infra import vpc, subnet
 
@@ -15,6 +16,7 @@ class IPATest(unittest.TestCase):
     """Tests EC2 cell setup."""
 
     def setUp(self):
+        self.vpc_name = 'IntegrationTest-' + str(time.time())
         self.runner = click.testing.CliRunner()
         self.configure_cli = importlib.import_module(
             'treadmill.cli.cloud').init()
@@ -26,7 +28,7 @@ class IPATest(unittest.TestCase):
                     '--domain=treadmill.org',
                     'delete',
                     'vpc',
-                    '--vpc-id=' + self.vpc_id,
+                    '--vpc-name=' + self.vpc_name,
                 ],
                 obj={}
             )
@@ -38,6 +40,7 @@ class IPATest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'init',
                 'vpc',
+                '--name=' + self.vpc_name
             ],
             obj={}
         )
@@ -64,7 +67,7 @@ class IPATest(unittest.TestCase):
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image=RHEL-7.4',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
                 '--subnet-cidr-block=172.23.0.0/24',
                 '--ipa-admin-password=Tre@dmill1',
             ],
@@ -99,7 +102,7 @@ class IPATest(unittest.TestCase):
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image=RHEL-7.4',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
                 '--ldap-subnet-id=' + subnet_info['SubnetId'],
                 '--ipa-admin-password=Tre@dmill1',
             ],
@@ -126,7 +129,7 @@ class IPATest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'delete',
                 'domain',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
                 '--subnet-id=' + subnet_info['SubnetId'],
             ],
             obj={}
@@ -146,7 +149,7 @@ class IPATest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'delete',
                 'ldap',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
                 '--subnet-id=' + subnet_info['SubnetId'],
             ],
             obj={}
@@ -161,7 +164,7 @@ class IPATest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'delete',
                 'vpc',
-                '--vpc-id=' + _vpc.id,
+                '--vpc-name=' + self.vpc_name,
             ],
             obj={}
         )
@@ -185,6 +188,7 @@ class IPATest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'init',
                 'vpc',
+                '--name=' + self.vpc_name
             ],
             obj={}
         )
@@ -210,7 +214,7 @@ class IPATest(unittest.TestCase):
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image=RHEL-7.4',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
                 '--subnet-cidr-block=172.23.0.0/24',
                 '--ipa-admin-password=Tre@dmill1',
             ],
@@ -245,7 +249,7 @@ class IPATest(unittest.TestCase):
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image=RHEL-7.4',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
             ],
             obj={}
         )
@@ -274,7 +278,7 @@ class IPATest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'delete',
                 'domain',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
                 '--subnet-id=' + subnet_info['SubnetId'],
             ],
             obj={}
@@ -290,7 +294,7 @@ class IPATest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'delete',
                 'ldap',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
                 '--subnet-id=' + ldap_subnet_info['SubnetId'],
             ],
             obj={}
@@ -305,7 +309,7 @@ class IPATest(unittest.TestCase):
                 '--domain=treadmill.org'
                 'delete',
                 'vpc',
-                '--vpc-id=' + _vpc.id,
+                '--vpc-name=' + self.vpc_name,
             ],
             obj={}
         )

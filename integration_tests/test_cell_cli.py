@@ -8,7 +8,7 @@ import importlib
 import click
 import click.testing
 from botocore.exceptions import ClientError
-import pkg_resources
+import time
 
 from treadmill.infra import vpc
 
@@ -17,6 +17,8 @@ class CellCLITest(unittest.TestCase):
     """Tests EC2 cell setup."""
 
     def setUp(self):
+
+        self.vpc_name = 'IntegrationTest-' + str(time.time())
         self.runner = click.testing.CliRunner()
         self.configure_cli = importlib.import_module(
             'treadmill.cli.cloud'
@@ -29,16 +31,13 @@ class CellCLITest(unittest.TestCase):
                     '--domain=treadmill.org',
                     'delete',
                     'vpc',
-                    '--vpc-id=' + self.vpc_id,
+                    '--vpc-name=' + self.vpc_name,
                 ],
                 obj={}
             )
 
     def test_setup_cell(self):
         self.destroy_attempted = False
-        options_fixture_file = pkg_resources.resource_filename(
-            __name__, 'init_cell_options.yml'
-        )
 
         result_init = self.runner.invoke(
             self.configure_cli,
@@ -46,13 +45,14 @@ class CellCLITest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'init',
                 'vpc',
-                '-m' + options_fixture_file
+                '--name=' + self.vpc_name
             ],
             obj={}
         )
 
         cell_info = {}
         vpc_info = {}
+
         try:
             vpc_info = ast.literal_eval(result_init.output)
         except Exception as e:
@@ -63,6 +63,7 @@ class CellCLITest(unittest.TestCase):
 
         self.vpc_id = vpc_info['VpcId']
         self.assertIsNotNone(vpc_info['VpcId'])
+        self.assertEqual(vpc_info['Name'], self.vpc_name)
         self.assertEqual(vpc_info['Subnets'], [])
 
         result_cell_init = self.runner.invoke(
@@ -73,7 +74,7 @@ class CellCLITest(unittest.TestCase):
                 '--tm-release=0.1.0',
                 '--key=ms_treadmill_dev',
                 '--image=RHEL-7.4',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name,
                 '--cell-cidr-block=172.23.0.0/24',
                 '--ipa-admin-password=Tre@dmill1',
             ],
@@ -135,7 +136,7 @@ class CellCLITest(unittest.TestCase):
                 'delete',
                 'cell',
                 '--subnet-id=' + cell_info['SubnetId'],
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name
             ],
             obj={}
         )
@@ -145,7 +146,7 @@ class CellCLITest(unittest.TestCase):
                 'delete',
                 'cell',
                 '--subnet-id=' + ldap_info['SubnetId'],
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name
             ],
             obj={}
         )
@@ -160,7 +161,7 @@ class CellCLITest(unittest.TestCase):
                 '--domain=treadmill.org',
                 'delete',
                 'vpc',
-                '--vpc-id=' + vpc_info['VpcId'],
+                '--vpc-name=' + self.vpc_name
             ],
             obj={}
         )
