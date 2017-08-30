@@ -54,7 +54,7 @@ List VPC
 ^^^^^^^^
 ::
 
-  treadmill cloud --domain <domain> list vpc --vpc-id <vpc_id>
+  treadmill cloud --domain <domain> list vpc --vpc-name <vpc_name>
 
 This lists all the EC2 instances and subnets inside the vpc.
 
@@ -73,7 +73,7 @@ Initialize VPC
 
 ::
 
-  treadmill cloud --domain <domain> init vpc
+  treadmill cloud --domain <domain> init vpc --name <vpc_name>
 
 This creates a VPC, Internet Gateway, Security Group and Route53 Hosted Zone. Default values are used to create these resources. The values can be overwritten from command line.
 
@@ -89,7 +89,7 @@ Initialize Domain
 
 ::
 
-  treadmill cloud --domain <domain> init domain --vpc-id <vpc_id> --key <key_name> --image <image_name> --ipa-admin-password <password>
+  treadmill cloud --domain <domain> init domain --vpc-name <vpc_name> --key <key_name> --image <image_name> --ipa-admin-password <password>
 
 ipa-admin-password should be at least 8 characters long.
 
@@ -103,7 +103,7 @@ Initialize Cell
 
 ::
 
-  treadmill cloud --domain <domain> init cell --vpc-id <vpc_id> --key <key_name> --image <image_name>
+  treadmill cloud --domain <domain> init cell --vpc-name <vpc_name> --key <key_name> --image <image_name>
 
 This will setup 1 openldap, 3 masters and 3 zookeeper instances by default.
 
@@ -115,4 +115,4 @@ SpinUp First Node
 
 ::
 
-  treadmill cloud --domain <domain> init node --vpc-id <vpc_id> --key <key_name> --image <image_name> --subnet-id <subnet-id>
+  treadmill cloud --domain <domain> init node --vpc-name <vpc_name> --key <key_name> --image <image_name> --subnet-id <subnet-id>
