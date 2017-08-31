@@ -359,7 +359,7 @@ class CloudTest(unittest.TestCase):
         """
         _subnet_mock = subnet_mock()
         _vpc_mock = vpc_mock()
-        vpc_mock.all = mock.Mock(return_value=['vpc-123', 'vpc-456'])
+        vpc_mock.all = mock.Mock(return_value=[vpc_mock(), vpc_mock()])
 
         result = self.runner.invoke(
             self.configure_cli, [
