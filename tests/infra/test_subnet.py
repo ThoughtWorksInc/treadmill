@@ -56,11 +56,12 @@ class SubnetTest(unittest.TestCase):
         ConnectionMock.context.region_name = 'us-east-1'
         conn_mock = ConnectionMock()
         subnet_json_mock = {
-            'Subnet': {
-                'SubnetId': '1'
-            }
+            'SubnetId': '1'
         }
-        conn_mock.create_subnet = mock.Mock(return_value=subnet_json_mock)
+
+        conn_mock.create_subnet = mock.Mock(return_value={
+            'Subnet': subnet_json_mock
+        })
         conn_mock.create_route_table = mock.Mock(return_value={
             'RouteTable': {'RouteTableId': 'route-table-id'}
         })

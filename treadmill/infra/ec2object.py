@@ -9,10 +9,14 @@ class EC2Object:
     )
 
     def __init__(self, name=None, id=None, metadata=None, role=None):
-        self.id = id
+        self._id = id
         self.metadata = metadata
         self.role = role
         self._name = name
+
+    @property
+    def id(self):
+        return self._extract_id() or self._id
 
     @property
     def name(self):
@@ -35,6 +39,13 @@ class EC2Object:
             'Key': attr.title(),
             'Value': getattr(self, attr)
         }]
+
+    def _extract_id(self):
+        if self.metadata:
+            return self.metadata.get(
+                self.__class__.__name__.title() + 'Id',
+                None
+            )
 
     def _extract_name(self):
         if self._tag_exists():

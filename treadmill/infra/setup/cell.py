@@ -52,7 +52,6 @@ class Cell:
         if not self.vpc.id:
             raise('Provide vpc_id in init or setup vpc prior.')
 
-        self.master.vpc.id = self.vpc.id
         self.master.name = name
         self.master.setup(
             image=image,

@@ -61,7 +61,6 @@ class VPC(ec2object.EC2Object):
     def create(cls, name, cidr_block):
         _vpc = VPC(name=name)
         _vpc.metadata = cls.ec2_conn.create_vpc(CidrBlock=cidr_block)['Vpc']
-        _vpc.id = _vpc.metadata['VpcId']
         _vpc.ec2_conn.modify_vpc_attribute(VpcId=_vpc.id,
                                            EnableDnsHostnames={
                                                'Value': True
