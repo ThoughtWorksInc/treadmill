@@ -509,6 +509,7 @@ class VPCTest(unittest.TestCase):
 
         vpc.VPC.ec2_conn = vpc.VPC.route53_conn = _connectionMock
         _vpc = vpc.VPC(id=self.vpc_id_mock)
+        _vpc.metadata = {'DhcpOptionsId': '1'}
         _vpc.delete()
 
         terminate_instances_mock.assert_called_once()
@@ -518,6 +519,9 @@ class VPCTest(unittest.TestCase):
         delete_hosted_zones_mock.assert_called_once()
         _connectionMock.delete_vpc.assert_called_once_with(
             VpcId=self.vpc_id_mock
+        )
+        _connectionMock.delete_dhcp_options.assert_called_once_with(
+            DhcpOptionsId='1'
         )
 
     @mock.patch('treadmill.infra.connection.Connection')
@@ -795,6 +799,22 @@ class VPCTest(unittest.TestCase):
                 'Name': 'tag:Name',
                 'Values': ['vpc-name']
             }]
+        )
+
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_delete_dhcp_options(
+        self,
+        connectionMock
+    ):
+        _connectionMock = connectionMock()
+
+        vpc.VPC.ec2_conn = _connectionMock
+        _vpc = vpc.VPC(metadata={'DhcpOptionsId': '1'})
+
+        _vpc.delete_dhcp_options()
+
+        _connectionMock.delete_dhcp_options.assert_called_once_with(
+            DhcpOptionsId='1'
         )
 
 
