@@ -144,7 +144,7 @@ class CellCLITest(unittest.TestCase):
             self.configure_cli, [
                 '--domain=treadmill.org',
                 'delete',
-                'cell',
+                'ldap',
                 '--subnet-id=' + ldap_info['SubnetId'],
                 '--vpc-name=' + self.vpc_name
             ],
