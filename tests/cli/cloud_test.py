@@ -422,7 +422,7 @@ class CloudTest(unittest.TestCase):
                 reverse_hosted_zone_id='hostedzone/456'
             )
 
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(click.BadParameter):
                 self.runner.invoke(
                     self.configure_cli, [
                         '--domain=foo.bar',
