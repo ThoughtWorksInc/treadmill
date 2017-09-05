@@ -60,7 +60,7 @@ class IPATest(unittest.TestCase):
             user_data='user-data-script',
             hosted_zone_id='hosted-zone-id',
             reverse_hosted_zone_id='reverse-hosted-zone-id',
-            role='IPA'
+            role='ipa'
         )
         _vpc_mock.load_hosted_zone_ids.assert_called_once()
         _vpc_mock.load_security_group_ids.assert_called_once()
@@ -282,7 +282,7 @@ class IPATest(unittest.TestCase):
         _subnet_mock.destroy.assert_called_once_with(
             hosted_zone_id='hosted-zone-id',
             reverse_hosted_zone_id='reverse-hosted-zone-id',
-            role='IPA'
+            role='ipa'
         )
         expected_calls = [
             mock.mock.call(
