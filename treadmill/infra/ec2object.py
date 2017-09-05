@@ -19,8 +19,12 @@ class EC2Object:
         return self._extract_id() or self._id
 
     @property
+    def role(self):
+        return self._extract_attr_from_tags('Role') or self._role or ''
+
+    @property
     def name(self):
-        return self._extract_name() or self._name or ''
+        return self._extract_attr_from_tags('Name') or self._name or ''
 
     @property
     def role(self):
@@ -51,11 +55,11 @@ class EC2Object:
                 None
             )
 
-    def _extract_name(self):
+    def _extract_attr_from_tags(self, attr):
         if self._tag_exists():
             return [t['Value']
                     for t in self.metadata['Tags']
-                    if t['Key'] == 'Name'][0]
+                    if t['Key'] == attr][0]
 
     def _extract_role(self):
         if self._tag_exists():
