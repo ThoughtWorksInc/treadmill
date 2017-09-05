@@ -48,7 +48,7 @@ class NodeTest(unittest.TestCase):
             filters=[
                 {
                     'Name': 'tag-key',
-                    'Values': ['Name']
+                    'Values': ['name']
                 },
                 {
                     'Name': 'tag-value',

@@ -16,8 +16,8 @@ class BaseProvision:
         self.ec2_conn = connection.Connection()
         self.instances = None
         _role = constants.ROLES.get(
-            self.__class__.__name__.upper(),
-            'DEFAULT'
+            self.__class__.__name__.lower(),
+            'missing'
         )
         self.role = _role
 

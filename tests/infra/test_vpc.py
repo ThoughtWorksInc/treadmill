@@ -50,7 +50,7 @@ class VPCTest(unittest.TestCase):
         _connectionMock.create_tags.assert_called_once_with(
             Resources=[self.vpc_id_mock],
             Tags=[{
-                'Key': 'Name',
+                'Key': 'name',
                 'Value': 'VpcTest'
             }]
         )
@@ -502,7 +502,7 @@ class VPCTest(unittest.TestCase):
                     'Values': ['vpc-123']
                 },
                 {
-                    'Name': 'tag:Name',
+                    'Name': 'tag:name',
                     'Values': [constants.TREADMILL_CELL_SUBNET_NAME]
                 }
             ]
@@ -530,7 +530,7 @@ class VPCTest(unittest.TestCase):
 
         _connectionMock.describe_vpcs.assert_called_once_with(
             Filters=[{
-                'Name': 'tag:Name',
+                'Name': 'tag:name',
                 'Values': ['vpc-name']
             }]
         )
@@ -561,7 +561,7 @@ class VPCTest(unittest.TestCase):
 
         _connectionMock.describe_vpcs.assert_called_once_with(
             Filters=[{
-                'Name': 'tag:Name',
+                'Name': 'tag:name',
                 'Values': ['vpc-name']
             }]
         )
@@ -582,7 +582,7 @@ class VPCTest(unittest.TestCase):
 
         _connectionMock.describe_vpcs.assert_called_once_with(
             Filters=[{
-                'Name': 'tag:Name',
+                'Name': 'tag:name',
                 'Values': ['vpc-name']
             }]
         )
