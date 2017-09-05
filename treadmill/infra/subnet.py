@@ -174,7 +174,7 @@ class Subnet(ec2object.EC2Object):
         return [
             {
                 'Name': 'tag-key',
-                'Values': ['Role']
+                'Values': ['role']
             },
             {
                 'Name': 'tag-value',

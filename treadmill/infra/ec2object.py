@@ -36,7 +36,7 @@ class EC2Object:
 
     def _prepare_tag_attributes_for(self, attr):
         return [{
-            'Key': attr.title(),
+            'Key': attr,
             'Value': getattr(self, attr)
         }]
 
