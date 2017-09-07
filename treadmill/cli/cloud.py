@@ -31,6 +31,12 @@ def init():
         pass
 
     @configure.command(name='vpc')
+    @click.option(
+        '--name',
+        required=True,
+        help='VPC name',
+        callback=cli_callbacks.validate_vpc_name
+    )
     @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-cidr-block', default='172.23.0.0/16',
                   help='CIDR block for the vpc')
@@ -41,12 +47,6 @@ def init():
         default='Treadmill Security Group',
         help='Description for the security group'
     )
-    @click.option(
-        '--name',
-        required=True,
-        help='VPC name',
-        callback=cli_callbacks.validate_vpc_name
-    )
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=mutually_exclusive_option.MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -56,9 +56,9 @@ def init():
                                       'name'],
                   help="Options YAML file. ")
     @click.pass_context
-    def configure_vpc(ctx, region, vpc_cidr_block,
+    def configure_vpc(ctx, name, region, vpc_cidr_block,
                       secgroup_name, secgroup_desc,
-                      name, manifest):
+                      manifest):
         """Configure Treadmill VPC"""
         domain = ctx.obj['DOMAIN']
 
@@ -83,11 +83,11 @@ def init():
                   required=True,
                   callback=cli_callbacks.convert_to_vpc_id,
                   help='VPC name')
-    @click.option('--region', help='Region for the vpc')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--name', required=True, help='LDAP Instance Name')
     @click.option('--image', required=True,
                   help='Image to use for instances e.g. RHEL-7.4')
+    @click.option('--region', help='Region for the vpc')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -121,7 +121,7 @@ def init():
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
-    def configure_ldap(ctx, vpc_id, region, key, name, image,
+    def configure_ldap(ctx, vpc_id, key, name, image, region,
                        instance_type, tm_release, app_root,
                        ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
                        ipa_admin_password, manifest):
@@ -159,14 +159,14 @@ def init():
                   required=True,
                   callback=cli_callbacks.convert_to_vpc_id,
                   help='VPC Name')
+    @click.option('--key', required=True, help='SSH Key Name')
+    @click.option('--image', required=True,
+                  help='Image to use for new instances e.g. RHEL-7.4')
+    @click.option('--count', default='3', type=int,
+                  help='Number of Treadmill masters to spin up')
     @click.option('--region', help='Region for the vpc')
     @click.option('--name', default='TreadmillMaster',
                   help='Treadmill master name')
-    @click.option('--key', required=True, help='SSH Key Name')
-    @click.option('--count', default='3', type=int,
-                  help='Number of Treadmill masters to spin up')
-    @click.option('--image', required=True,
-                  help='Image to use for new instances e.g. RHEL-7.4')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -275,12 +275,15 @@ def init():
         )
 
     @configure.command(name='domain')
-    @click.option('--name', default='TreadmillIPA',
-                  help='Name of the instance')
-    @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-name', 'vpc_id',
                   callback=cli_callbacks.convert_to_vpc_id,
                   required=True, help='VPC Name')
+    @click.option('--key', required=True, help='SSH key name')
+    @click.option('--image', required=True,
+                  help='Image to use for new master instance e.g. RHEL-7.4')
+    @click.option('--name', default='TreadmillIPA',
+                  help='Name of the instance')
+    @click.option('--region', help='Region for the vpc')
     @click.option('--subnet-cidr-block', help='Cidr block of subnet for IPA',
                   default='172.23.2.0/24')
     @click.option('--subnet-id', help='Subnet ID')
@@ -292,12 +295,9 @@ def init():
     @click.option('--tm-release',
                   callback=cli_callbacks.current_release_version,
                   help='Treadmill Release')
-    @click.option('--key', required=True, help='SSH key name')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['medium'],
                   help='Instance type')
-    @click.option('--image', required=True,
-                  help='Image to use for new master instance e.g. RHEL-7.4')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=mutually_exclusive_option.MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -313,10 +313,10 @@ def init():
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
     @click.pass_context
-    def configure_domain(ctx, name, region, vpc_id,
+    def configure_domain(ctx, vpc_id, key, image, name, region,
                          subnet_cidr_block, subnet_id,
-                         count, ipa_admin_password, tm_release, key,
-                         instance_type, image, manifest):
+                         count, ipa_admin_password, tm_release,
+                         instance_type, manifest):
         """Configure Treadmill Domain (IPA)"""
 
         domain = ctx.obj['DOMAIN']
@@ -355,12 +355,13 @@ def init():
     @click.option('--vpc-name', 'vpc_id',
                   callback=cli_callbacks.convert_to_vpc_id,
                   required=True, help='VPC Name')
-    @click.option('--region', help='Region for the vpc')
-    @click.option('--name', default='TreadmillNode',
-                  help='Node name')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--image', required=True,
                   help='Image to use for new node instance e.g. RHEL-7.4')
+    @click.option('--subnet-id', required=True, help='Subnet ID')
+    @click.option('--region', help='Region for the vpc')
+    @click.option('--name', default='TreadmillNode',
+                  help='Node name')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
@@ -369,7 +370,6 @@ def init():
                   help='Treadmill release to use')
     @click.option('--app-root', default='/var/tmp/treadmill-node',
                   help='Treadmill app root')
-    @click.option('--subnet-id', required=True, help='Subnet ID')
     @click.option('--ipa-admin-password',
                   callback=cli_callbacks.ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
@@ -391,9 +391,9 @@ def init():
                                       'with_api'],
                   help="Options YAML file. ")
     @click.pass_context
-    def configure_node(ctx, vpc_id, region, name, key, image,
+    def configure_node(ctx, vpc_id, key, image, subnet_id, region, name,
                        instance_type, tm_release, app_root,
-                       subnet_id, ipa_admin_password, with_api, manifest):
+                       ipa_admin_password, with_api, manifest):
         """Configure new Node in Cell"""
 
         domain = ctx.obj['DOMAIN']
