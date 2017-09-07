@@ -156,7 +156,7 @@ class Node(Configuration):
                     'APP_ROOT': app_root,
                     'SUBNET_ID': subnet_id,
                     'LDAP_HOSTNAME': ldap_hostname,
-                    'ROLE': constants.ROLES['node']
+                    'ROLE': constants.ROLES['NODE']
                 }
             }, {
                 'name': 'install-ipa-client.sh',

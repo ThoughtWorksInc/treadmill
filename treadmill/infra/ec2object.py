@@ -20,11 +20,11 @@ class EC2Object:
 
     @property
     def role(self):
-        return self._extract_attr_from_tags('role') or self._role or ''
+        return self._extract_attr_from_tags('Role') or self._role or ''
 
     @property
     def name(self):
-        return self._extract_attr_from_tags('name') or self._name or ''
+        return self._extract_attr_from_tags('Name') or self._name or ''
 
     def create_tags(self):
         if self.name:
@@ -40,7 +40,7 @@ class EC2Object:
 
     def _prepare_tag_attributes_for(self, attr):
         return [{
-            'Key': attr,
+            'Key': attr.title(),
             'Value': getattr(self, attr)
         }]
 
@@ -53,11 +53,9 @@ class EC2Object:
 
     def _extract_attr_from_tags(self, attr):
         if self._tag_exists():
-            values = [t['Value']
-                      for t in self.metadata['Tags']
-                      if t['Key'] == attr]
-            if values:
-                return values[0]
+            return [t['Value']
+                    for t in self.metadata['Tags']
+                    if t['Key'] == attr][0]
 
     def _tag_exists(self):
         return self.metadata and self.metadata.get('Tags', None)

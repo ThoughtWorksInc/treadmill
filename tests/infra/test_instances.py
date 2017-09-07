@@ -18,7 +18,7 @@ class InstanceTest(unittest.TestCase):
             metadata={
                 'PrivateIpAddress': '1.1.1.1',
                 'Tags': [{
-                    'Key': 'name',
+                    'Key': 'Name',
                     'Value': 'goo'
                 }]
             }
@@ -44,7 +44,7 @@ class InstanceTest(unittest.TestCase):
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
             Tags=[{
-                'Key': 'name',
+                'Key': 'Name',
                 'Value': 'foo101'
             }]
         )
@@ -68,10 +68,10 @@ class InstanceTest(unittest.TestCase):
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
             Tags=[{
-                'Key': 'name',
+                'Key': 'Name',
                 'Value': 'foo101'
             }, {
-                'Key': 'role',
+                'Key': 'Role',
                 'Value': 'role-name'
             }]
         )
@@ -87,7 +87,7 @@ class InstanceTest(unittest.TestCase):
             name='Foo',
             id='instanceid',
             metadata={'AmiLaunchIndex': 100},
-            role='node'
+            role='NODE'
         )
         instance.create_tags()
         self.assertEquals(instance.name, 'Foo101-instanceid')
@@ -96,11 +96,11 @@ class InstanceTest(unittest.TestCase):
         conn_mock.create_tags.assert_called_once_with(
             Resources=['instanceid'],
             Tags=[{
-                'Key': 'name',
+                'Key': 'Name',
                 'Value': 'Foo101-instanceid'
             }, {
-                'Key': 'role',
-                'Value': 'node'
+                'Key': 'Role',
+                'Value': 'NODE'
             }]
         )
 
