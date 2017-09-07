@@ -21,10 +21,10 @@ INSTANCE_TYPES = {
     }
 }
 ROLES = {
-    'master': 'master',
-    'node': 'node',
-    'ldap': 'ldap',
-    'ipa': 'ipa',
-    'zookeeper': 'zookeeper',
-    'missing': ''
+    'MASTER': 'MASTER',
+    'NODE': 'NODE',
+    'LDAP': 'LDAP',
+    'IPA': 'IPA',
+    'ZOOKEEPER': 'ZOOKEEPER',
+    'DEFAULT': 'DEFAULT'
 }

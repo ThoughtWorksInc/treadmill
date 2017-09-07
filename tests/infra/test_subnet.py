@@ -20,7 +20,7 @@ class SubnetTest(unittest.TestCase):
             vpc_id='vpc-id',
             metadata={
                 'Tags': [{
-                    'Key': 'name',
+                    'Key': 'Name',
                     'Value': 'goo'
                 }]
             }
@@ -46,7 +46,7 @@ class SubnetTest(unittest.TestCase):
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
             Tags=[{
-                'Key': 'name',
+                'Key': 'Name',
                 'Value': 'foo'
             }]
         )
@@ -84,7 +84,7 @@ class SubnetTest(unittest.TestCase):
         conn_mock.create_tags.assert_called_once_with(
             Resources=['1'],
             Tags=[{
-                'Key': 'name',
+                'Key': 'Name',
                 'Value': 'foo'
             }]
         )
