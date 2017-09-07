@@ -137,6 +137,12 @@ def init():
         pass
 
     @init.command(name='vpc')
+    @click.option(
+        '--name',
+        required=True,
+        help='VPC name',
+        callback=_validate_vpc_name
+    )
     @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-cidr-block', default='172.23.0.0/16',
                   help='CIDR block for the vpc')
@@ -146,12 +152,6 @@ def init():
         '--secgroup_desc',
         default='Treadmill Security Group',
         help='Description for the security group'
-    )
-    @click.option(
-        '--name',
-        required=True,
-        help='VPC name',
-        callback=_validate_vpc_name
     )
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
@@ -189,12 +189,12 @@ def init():
                   required=True,
                   callback=_convert_to_vpc_id,
                   help='VPC name')
-    @click.option('--region', help='Region for the vpc')
     @click.option('--key', required=True, help='SSH Key Name')
-    @click.option('--count', default='1', type=int,
-                  help='Number of Treadmill ldap instances to spin up')
     @click.option('--image', required=True,
                   help='Image to use for instances e.g. RHEL-7.4')
+    @click.option('--count', default='1', type=int,
+                  help='Number of Treadmill ldap instances to spin up')
+    @click.option('--region', help='Region for the vpc')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -269,14 +269,14 @@ def init():
                   required=True,
                   callback=_convert_to_vpc_id,
                   help='VPC Name')
+    @click.option('--key', required=True, help='SSH Key Name')
+    @click.option('--image', required=True,
+                  help='Image to use for new instances e.g. RHEL-7.4')
+    @click.option('--count', default='3', type=int,
+                  help='Number of Treadmill masters to spin up')
     @click.option('--region', help='Region for the vpc')
     @click.option('--name', default='TreadmillMaster',
                   help='Treadmill master name')
-    @click.option('--key', required=True, help='SSH Key Name')
-    @click.option('--count', default='3', type=int,
-                  help='Number of Treadmill masters to spin up')
-    @click.option('--image', required=True,
-                  help='Image to use for new instances e.g. RHEL-7.4')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -389,12 +389,15 @@ def init():
         )
 
     @init.command(name='domain')
-    @click.option('--name', default='TreadmillIPA',
-                  help='Name of the instance')
-    @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-name', 'vpc_id',
                   callback=_convert_to_vpc_id,
                   required=True, help='VPC Name')
+    @click.option('--key', required=True, help='SSH key name')
+    @click.option('--image', required=True,
+                  help='Image to use for new master instance e.g. RHEL-7.4')
+    @click.option('--name', default='TreadmillIPA',
+                  help='Name of the instance')
+    @click.option('--region', help='Region for the vpc')
     @click.option('--subnet-cidr-block', help='Cidr block of subnet for IPA',
                   default='172.23.2.0/24')
     @click.option('--subnet-id', help='Subnet ID')
@@ -405,12 +408,9 @@ def init():
     @click.option('--tm-release',
                   callback=_current_release_version,
                   help='Treadmill Release')
-    @click.option('--key', required=True, help='SSH key name')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['medium'],
                   help='Instance type')
-    @click.option('--image', required=True,
-                  help='Image to use for new master instance e.g. RHEL-7.4')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -467,14 +467,15 @@ def init():
     @click.option('--vpc-name', 'vpc_id',
                   callback=_convert_to_vpc_id,
                   required=True, help='VPC Name')
+    @click.option('--key', required=True, help='SSH Key Name')
+    @click.option('--image', required=True,
+                  help='Image to use for new node instance e.g. RHEL-7.4')
+    @click.option('--subnet-id', required=True, help='Subnet ID')
     @click.option('--region', help='Region for the vpc')
     @click.option('--name', default='TreadmillNode',
                   help='Node name')
-    @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--count', default='1', type=int,
                   help='Number of Treadmill nodes to spin up')
-    @click.option('--image', required=True,
-                  help='Image to use for new node instance e.g. RHEL-7.4')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
@@ -485,7 +486,6 @@ def init():
                   help='LDAP hostname')
     @click.option('--app-root', default='/var/tmp/treadmill-node',
                   help='Treadmill app root')
-    @click.option('--subnet-id', required=True, help='Subnet ID')
     @click.option('--ipa-admin-password', callback=_ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
                   help='Password for IPA admin')
@@ -699,19 +699,19 @@ def init():
         pass
 
     @port.command(name='enable')
-    @click.option('--protocol', help='Protocol', default='tcp')
     @click.option('-p', '--port', required=True, help='Port')
     @click.option('-s', '--security-group-id', required=True,
                   help='Security Group ID')
+    @click.option('--protocol', help='Protocol', default='tcp')
     def enable_port(security_group_id, port, protocol):
         """Enable Port from my ip"""
         security_group.enable(port, security_group_id, protocol)
 
     @port.command(name='disable')
-    @click.option('--protocol', help='Protocol', default='tcp')
     @click.option('-p', '--port', required=True, help='Port')
     @click.option('-s', '--security-group-id', required=True,
                   help='Security Group ID')
+    @click.option('--protocol', help='Protocol', default='tcp')
     def disable_port(security_group_id, port, protocol):
         """Disable Port from my ip"""
         security_group.disable(port, security_group_id, protocol)
