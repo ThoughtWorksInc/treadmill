@@ -289,7 +289,6 @@ class VPC(ec2object.EC2Object):
     def _instance_details(self, instance):
         return {
             'Name': instance.name,
-            'Role': instance.role,
             'HostName': instance.hostname,
             'InstanceId': instance.id,
             'InstanceState': instance.metadata['State']['Name'],
