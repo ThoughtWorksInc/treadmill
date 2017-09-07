@@ -50,7 +50,6 @@ class API(object):
             result = result.decode('utf-8').strip().split("\n")[-2]
             assert 'members added 1' in result
 
-
         self.create = create
         self.delete = delete
         self.ipa_service_add = ipa_service_add

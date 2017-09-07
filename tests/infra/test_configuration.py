@@ -202,4 +202,3 @@ class NodeTest(unittest.TestCase):
                 expected_script_data[script_data['name']],
                 script_data['vars'].keys()
             )
-            
