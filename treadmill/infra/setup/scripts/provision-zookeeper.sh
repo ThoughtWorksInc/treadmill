@@ -23,9 +23,6 @@ HOST_FQDN=$(hostname -f)
 
 export TREADMILL_CELL=$subnet_id
 
-#echo "{{ IPA_ADMIN_PASSWORD }}" | kinit admin
-#ipa service-add --force "zookeeper/$HOST_FQDN"
-
 echo Adding host to service keytab retrieval list
 
 REQ_URL="http://ipa-ca:8000/cloud-host/ipa/service"
