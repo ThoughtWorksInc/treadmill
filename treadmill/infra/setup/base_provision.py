@@ -16,8 +16,8 @@ class BaseProvision:
         self.route_53_conn = connection.Connection(constants.ROUTE_53)
         self.instances = None
         _role = constants.ROLES.get(
-            self.__class__.__name__.lower(),
-            'missing'
+            self.__class__.__name__.upper(),
+            'DEFAULT'
         )
         self.role = _role
 

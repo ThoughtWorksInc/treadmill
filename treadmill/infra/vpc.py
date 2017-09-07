@@ -46,7 +46,7 @@ class VPC(ec2object.EC2Object):
     def get_id_from_name(cls, name):
         vpcs = cls.ec2_conn.describe_vpcs(
             Filters=[{
-                'Name': 'tag:name',
+                'Name': 'tag:Name',
                 'Values': [name]
             }]
         )['Vpcs']
@@ -343,7 +343,7 @@ class VPC(ec2object.EC2Object):
                     'Values': [self.id]
                 },
                 {
-                    'Name': 'tag:name',
+                    'Name': 'tag:Name',
                     'Values': [constants.TREADMILL_CELL_SUBNET_NAME]
                 }
             ]
