@@ -24,7 +24,7 @@ class Instance(ec2object.EC2Object):
         self._name = self._name + str(
             self.metadata['AmiLaunchIndex'] + 1
         )
-        if self.role == constants.ROLES['node']:
+        if self.role == constants.ROLES['NODE']:
             self._name = self._name + '-' + self.id
 
         super().create_tags()
