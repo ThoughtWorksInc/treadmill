@@ -27,21 +27,33 @@ class API(object):
 
             assert 'Deleted host "' + hostname + '"' in result
 
-        def service_allow_retrieve_keytab(args):
+        def ipa_service_add(args):
+            domain = args.get('domain')
+            hostname = args.get('hostname')
+            _service = args.get('service')
+            _service_with_domain = _service + '@' + domain.upper()
+
+            subprocess.check_output([
+                "ipa",
+                "service-add",
+                "--force",
+                _service
+            ])
+
             result = subprocess.check_output([
                 "ipa",
                 "service-allow-retrieve-keytab",
-                args.get('service'),
-                "--hosts=",
-                args.get('hostname')
+                _service_with_domain,
+                "--hosts=" + hostname
             ])
-            result = result.decode('utf-8').split("\n")[-2]
+
+            result = result.decode('utf-8').strip().split("\n")[-2]
             assert 'members added 1' in result
 
 
         self.create = create
         self.delete = delete
-        self.service_allow_retrieve_keytab = service_allow_retrieve_keytab
+        self.ipa_service_add = ipa_service_add
 
 
 def init(authorizer):

@@ -23,6 +23,7 @@ def init(api, cors, impl):
     req_model = {
         'service': fields.String(description='Service Name'),
         'hostname': fields.String(description='Hostname'),
+        'domain': fields.String(description='Domain')
     }
 
     ipa_service_model = api.model(
@@ -44,8 +45,8 @@ def init(api, cors, impl):
             """Deletes host from IPA."""
             return impl.delete(hostname)
 
-    @namespace.route('/service-allow-retrieve-keytab/')
-    class _ServiceAllowRetrieveKeytab(restplus.Resource):
+    @namespace.route('/ipa/service')
+    class _IPAServiceAdd(restplus.Resource):
         """Treadmill Service Allow Retrieve Keytab"""
         @webutils.post_api(
             api,
@@ -54,4 +55,4 @@ def init(api, cors, impl):
         )
         def post(self):
             """Whitelist host to Allowed hosts for service keytab retrieval."""
-            return impl.service_allow_retrieve_keytab(flask.request.json)
+            return impl.ipa_service_add(flask.request.json)
