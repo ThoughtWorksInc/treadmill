@@ -230,8 +230,8 @@ def init():
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
-    def init_ldap(ctx, vpc_id, region, key, count, image,
-                  instance_type, tm_release, ldap_hostname, app_root,
+    def init_ldap(ctx, vpc_id, key, image, count, region, instance_type,
+                  tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
                   ipa_admin_password, manifest):
         """Initialize Treadmill LDAP"""
@@ -319,7 +319,7 @@ def init():
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
-    def init_cell(ctx, vpc_id, region, name, key, count, image,
+    def init_cell(ctx, vpc_id, key, image, count, region, name,
                   instance_type, tm_release, ldap_hostname, app_root,
                   cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
                   without_ldap, ipa_admin_password, manifest):
@@ -426,9 +426,9 @@ def init():
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
     @click.pass_context
-    def init_domain(ctx, name, region, vpc_id, subnet_cidr_block, subnet_id,
-                    count, ipa_admin_password, tm_release, key,
-                    instance_type, image, manifest):
+    def init_domain(ctx, vpc_id, key, image, name, region, subnet_cidr_block,
+                    subnet_id, count, ipa_admin_password, tm_release,
+                    instance_type, manifest):
         """Initialize Treadmill Domain (IPA)"""
 
         domain = ctx.obj['DOMAIN']
@@ -508,9 +508,9 @@ def init():
                                       'with_api'],
                   help="Options YAML file. ")
     @click.pass_context
-    def init_node(ctx, vpc_id, region, name, key, count, image,
+    def init_node(ctx, vpc_id, key, image, subnet_id, region, name, count,
                   instance_type, tm_release, ldap_hostname, app_root,
-                  subnet_id, ipa_admin_password, with_api, manifest):
+                  ipa_admin_password, with_api, manifest):
         """Initialize new Node in Cell"""
 
         domain = ctx.obj['DOMAIN']
@@ -691,7 +691,7 @@ def init():
     @click.option('-s', '--security-group-id', required=True,
                   help='Security Group ID')
     @click.option('--protocol', help='Protocol', default='tcp')
-    def enable_port(security_group_id, port, protocol):
+    def enable_port(port, security_group_id, protocol):
         """Enable Port from my ip"""
         security_group.enable(port, security_group_id, protocol)
 
@@ -700,7 +700,7 @@ def init():
     @click.option('-s', '--security-group-id', required=True,
                   help='Security Group ID')
     @click.option('--protocol', help='Protocol', default='tcp')
-    def disable_port(security_group_id, port, protocol):
+    def disable_port(port, security_group_id, protocol):
         """Disable Port from my ip"""
         security_group.disable(port, security_group_id, protocol)
 
