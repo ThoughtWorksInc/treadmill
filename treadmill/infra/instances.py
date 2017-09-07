@@ -36,7 +36,8 @@ class Instance(ec2object.EC2Object):
     def configure_dns_record(self, hosted_zone_id, reverse=False):
         self._change_resource_record_sets(
             'UPSERT',
-            hosted_zone_id
+            hosted_zone_id,
+            reverse
         )
 
     def delete_dns_record(self, hosted_zone_id, reverse=False):
