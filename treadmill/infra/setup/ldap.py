@@ -18,22 +18,9 @@ class LDAP(base_provision.BaseProvision):
             ipa_admin_password,
             subnet_id=None
     ):
-        ipa_server_hostname = instances.Instances.get(
-            filters=[
-                {
-                    'Name': 'vpc-id',
-                    'Values': [self.vpc.id]
-                },
-                {
-                    'Name': 'tag-key',
-                    'Values': ['Role']
-                },
-                {
-                    'Name': 'tag-value',
-                    'Values': [constants.ROLES['IPA']]
-                }
-            ]
-        ).instances[0].hostname
+        ipa_server_hostname = instances.Instances.get_ipa(
+            vpc_id=self.vpc.id
+        ).hostname
 
         self.configuration = configuration.LDAP(
             cell_subnet_id=cell_subnet_id,

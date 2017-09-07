@@ -6,22 +6,9 @@ from treadmill.infra import instances
 class Zookeeper(base_provision.BaseProvision):
     def setup(self, image, key, cidr_block, instance_type, ldap_hostname,
               ipa_admin_password, subnet_id=None):
-        ipa_server_hostname = instances.Instances.get(
-            filters=[
-                {
-                    'Name': 'vpc-id',
-                    'Values': [self.vpc.id]
-                },
-                {
-                    'Name': 'tag-key',
-                    'Values': ['Role']
-                },
-                {
-                    'Name': 'tag-value',
-                    'Values': [constants.ROLES['IPA']]
-                }
-            ]
-        ).instances[0].hostname
+        ipa_server_hostname = instances.Instances.get_ipa(
+            vpc_id=self.vpc.id
+        ).hostname
 
         self.configuration = configuration.Zookeeper(
             self.name,
