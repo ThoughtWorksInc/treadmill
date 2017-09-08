@@ -11,7 +11,10 @@ def convert_to_vpc_id(ctx, param, value):
     if not value:
         return value
 
-    return vpc.VPC.get_id_from_name(value)
+    try:
+        return vpc.VPC.get_id_from_name(value)
+    except ValueError as ex:
+        raise click.BadParameter(ex.__str__())
 
 
 def validate_vpc_name(ctx, param, value):
