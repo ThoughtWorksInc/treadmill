@@ -7,8 +7,8 @@ ipa service-add --force "ldap/treadmillldap1.{{ DOMAIN }}@{{ DOMAIN|upper }}"
 
 echo Retrieving LDAP service keytab
 ipa-getkeytab -p "ldap/treadmillldap1.{{ DOMAIN }}" -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/ldap.keytab
-ipa-getkeytab -r -p treadmld -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/treadmld.keytab
-chown treadmld:treadmld /etc/ldap.keytab /etc/treadmld.keytab
+ipa-getkeytab -r -p "${PROID}" -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/"${PROID}".keytab
+chown "${PROID}":"${PROID}" /etc/ldap.keytab /etc/"${PROID}".keytab
 
 # Enable 22389 port for LDAP (requires policycoreutils-python)
 /sbin/semanage  port -a -t ldap_port_t -p tcp 22389
@@ -26,8 +26,8 @@ After=network.target
 
 [Service]
 Environment="KRB5_KTNAME=/etc/ldap.keytab"
-User=treadmld
-Group=treadmld
+User=${PROID}
+Group=${PROID}
 SyslogIdentifier=openldap
 ExecStart=/var/tmp/treadmill-openldap/bin/run.sh
 Restart=always
@@ -38,10 +38,10 @@ WantedBy=multi-user.target
 EOF
 ) > /etc/systemd/system/openldap.service
 
-s6-setuidgid treadmld \
+s6-setuidgid "${PROID}" \
     {{ TREADMILL }} admin install --install-dir /var/tmp/treadmill-openldap \
         openldap \
-        --owner treadmld \
+        --owner "${PROID}" \
         --uri ldap://0.0.0.0:22389 \
         --suffix "${LDAP_DC}" \
         --gssapi
@@ -53,16 +53,16 @@ systemctl status openldap
 
 echo Initializing openldap
 
-su -c "kinit -k -t /etc/treadmld.keytab treadmld" treadmld
+su -c "kinit -k -t /etc/${PROID}.keytab ${PROID}" "${PROID}"
 
-s6-setuidgid treadmld {{ TREADMILL }} admin ldap init
+s6-setuidgid "${PROID}" {{ TREADMILL }} admin ldap init
 
 (
 # FIXME: Flaky command. Works after a few re-runs.
 TIMEOUT=120
 
 retry_count=0
-until ( s6-setuidgid treadmld {{ TREADMILL }} admin ldap schema --update ) || [ $retry_count -eq $TIMEOUT ]
+until ( s6-setuidgid "${PROID}" {{ TREADMILL }} admin ldap schema --update ) || [ $retry_count -eq $TIMEOUT ]
 do
     retry_count=`expr $retry_count + 1`
     echo "Trying ldap schema update : $retry_count"
