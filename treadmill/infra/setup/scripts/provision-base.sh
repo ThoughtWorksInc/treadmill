@@ -28,11 +28,8 @@ export TREADMILL_DNS_DOMAIN={{ DOMAIN }}
 export TREADMILL=/opt/treadmill
 export PEX_ROOT=/tmp/pex
 export PATH=$PATH:/opt/s6/bin:/opt/treadmill/bin
-<<<<<<< HEAD
 export AWS_DEFAULT_REGION={{ REGION }}
-=======
 export PROID={{ PROID }}
->>>>>>> c38a6df... + @pooja-dhupar | Parameterize treadmld
 EOF
 ) >> /etc/profile.d/treadmill_profile.sh
 

@@ -5,8 +5,9 @@ import logging
 
 from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
-from treadmill.infra.utils import security_group, hosted_zones
 from treadmill.infra.utils import mutually_exclusive_option, cli_callbacks
+from treadmill.infra.utils import security_group
+
 
 _LOGGER = logging.getLogger(__name__)
 _OPTIONS_FILE = 'manifest'
@@ -594,12 +595,5 @@ def init():
     def disable_port(security_group_id, port, protocol, anywhere):
         """Disable Port from my ip"""
         security_group.disable(port, security_group_id, protocol, anywhere)
-
-    @cloud.command(name='delete-hosted-zone')
-    @click.option('--zones-to-retain', required=True,
-                  help='Hosted Zone IDs to retain', multiple=True)
-    def delete_hosted_zones(zones_to_retain):
-        """Delete Hosted Zones"""
-        hosted_zones.delete_obsolete(zones_to_retain)
 
     return cloud

@@ -1,12 +1,8 @@
 from treadmill.infra import connection
-from treadmill.infra import constants
 
 
 class EC2Object:
     ec2_conn = connection.Connection()
-    route53_conn = connection.Connection(
-        resource=constants.ROUTE_53
-    )
 
     def __init__(self, name=None, id=None, metadata=None, role=None):
         self._id = id
