@@ -48,7 +48,8 @@ class MasterTest(unittest.TestCase):
         config = configuration.Master('', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
-                'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
+                'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME',
+                'APP_ROOT', 'PROID'
             ],
             'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
@@ -79,7 +80,8 @@ class LDAPTest(unittest.TestCase):
         config = configuration.LDAP('', '', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
-                'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
+                'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME',
+                'APP_ROOT', 'PROID'
             ],
             'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
@@ -116,7 +118,7 @@ class IPATest(unittest.TestCase):
             vpc=mock.Mock(),
         )
         expected_script_data = {
-            'provision-base.sh': ['DOMAIN', 'NAME'],
+            'provision-base.sh': ['DOMAIN', 'NAME', 'PROID'],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'install-ipa-server.sh': [
                 'DOMAIN', 'IPA_ADMIN_PASSWORD', 'CELL', 'REVERSE_ZONE',
@@ -148,7 +150,7 @@ class ZookeeperTest(unittest.TestCase):
             ipa_server_hostname='ipa_server_hostname'
         )
         expected_script_data = {
-            'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME'],
+            'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME', 'PROID'],
             'install-ipa-client.sh': [],
             'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME'],
         }
@@ -183,7 +185,7 @@ class NodeTest(unittest.TestCase):
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'APP_ROOT', 'SUBNET_ID',
-                                  'LDAP_HOSTNAME', 'ROLE'],
+                                  'LDAP_HOSTNAME', 'ROLE', 'PROID'],
             'install-ipa-client.sh': [],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-node.sh': [

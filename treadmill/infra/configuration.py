@@ -43,6 +43,7 @@ class Master(Configuration):
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                     'NAME': name,
+                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-ipa-client.sh',
@@ -74,6 +75,7 @@ class LDAP(Configuration):
                     'SUBNET_ID': cell_subnet_id,
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
+                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-ipa-client.sh',
@@ -103,6 +105,7 @@ class IPA(Configuration):
                 'vars': {
                     'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
+                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-treadmill.sh',
@@ -129,6 +132,7 @@ class Zookeeper(Configuration):
                     'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
                     'LDAP_HOSTNAME': ldap_hostname,
+                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-ipa-client.sh',
@@ -156,7 +160,8 @@ class Node(Configuration):
                     'APP_ROOT': app_root,
                     'SUBNET_ID': subnet_id,
                     'LDAP_HOSTNAME': ldap_hostname,
-                    'ROLE': constants.ROLES['NODE']
+                    'ROLE': constants.ROLES['NODE'],
+                    'PROID': 'foobar'
                 }
             }, {
                 'name': 'install-ipa-client.sh',
