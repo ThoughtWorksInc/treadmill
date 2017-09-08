@@ -129,6 +129,11 @@ def init():
     @click.pass_context
     def cloud(ctx, domain):
         """Manage Treadmill on cloud"""
+        if not connection.Connection.get_credentials():
+            raise click.ClickException(
+                'AWS credentials not specified.'
+            )
+
         ctx.obj['DOMAIN'] = domain
 
     @cloud.group()
