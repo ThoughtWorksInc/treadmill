@@ -438,3 +438,19 @@ class CloudTest(unittest.TestCase):
                         '--subnet-id=subnet-456'
                     ]
                 )
+
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_boto_credentials(self, conn_mock):
+        """Test AWS credentials"""
+        conn_mock.get_credentials = mock.Mock(return_value=None)
+        result = self.runner.invoke(
+            self.configure_cli, [
+                '--domain=foo.bar',
+                'init',
+                'vpc',
+                '--name',
+                'test-vpc',
+            ]
+        )
+        self.assertNotEquals(result.exit_code, 0)
+        self.assertIn('AWS credentials not specified.', result.output)
