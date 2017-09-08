@@ -48,9 +48,10 @@ class VPC(ec2object.EC2Object):
 
         if len(vpcs) > 1:
             raise ValueError("Multiple VPCs with name: " + name)
-
-        if vpcs:
+        elif vpcs:
             return vpcs[0]['VpcId']
+        else:
+            raise ValueError("VPC doesn't exist.")
 
     @classmethod
     def create(cls, name, cidr_block):
