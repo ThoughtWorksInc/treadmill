@@ -54,8 +54,8 @@ After=network.target
 
 [Service]
 Type=forking
-User=treadmld
-Group=treadmld
+User=${PROID}
+Group=${PROID}
 SyslogIdentifier=zookeeper
 Environment=ZOO_LOG_DIR=/var/lib/zookeeper
 ExecStart=/usr/lib/zookeeper/bin/zkServer.sh start
@@ -66,13 +66,13 @@ WantedBy=multi-user.target
 EOF
 ) > /etc/systemd/system/zookeeper.service
 
-chown -R treadmld:treadmld /var/lib/zookeeper
+chown -R "${PROID}":"${PROID}" /var/lib/zookeeper
 
-su -c "zookeeper-server-initialize" treadmld
+su -c "zookeeper-server-initialize" "${PROID}"
 
-su -c "echo {{ IDX }} > /var/lib/zookeeper/myid" treadmld
+su -c "echo {{ IDX }} > /var/lib/zookeeper/myid" "${PROID}"
 
-chown treadmld:treadmld /etc/zk.keytab
+chown "${PROID}":"${PROID}" /etc/zk.keytab
 kinit -k
 
 /bin/systemctl enable zookeeper.service

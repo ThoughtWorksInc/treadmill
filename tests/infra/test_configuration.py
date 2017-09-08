@@ -49,6 +49,7 @@ class MasterTest(unittest.TestCase):
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'HOSTNAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
+                'PROID'
             ],
             'install-ipa-client-with-otp.sh': [
                 'OTP'
@@ -82,6 +83,7 @@ class LDAPTest(unittest.TestCase):
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'HOSTNAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
+                'PROID'
             ],
             'install-ipa-client-with-otp.sh': [
                 'OTP'
@@ -120,7 +122,7 @@ class IPATest(unittest.TestCase):
             vpc=mock.Mock(),
         )
         expected_script_data = {
-            'provision-base.sh': ['DOMAIN', 'NAME', 'REGION'],
+            'provision-base.sh': ['DOMAIN', 'NAME', 'REGION', 'PROID'],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'install-ipa-server.sh': [
                 'DOMAIN', 'IPA_ADMIN_PASSWORD', 'CELL', 'REVERSE_ZONE',
@@ -155,7 +157,7 @@ class ZookeeperTest(unittest.TestCase):
         )
         expected_script_data = {
             'provision-base.sh': [
-                'DOMAIN', 'HOSTNAME', 'LDAP_HOSTNAME'
+                'DOMAIN', 'HOSTNAME', 'LDAP_HOSTNAME', 'PROID'
             ],
             'install-ipa-client-with-otp.sh': ['OTP'],
             'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME', 'IDX'],
@@ -192,7 +194,7 @@ class NodeTest(unittest.TestCase):
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'HOSTNAME', 'APP_ROOT',
-                                  'SUBNET_ID', 'LDAP_HOSTNAME'],
+                                  'PROID', 'SUBNET_ID', 'LDAP_HOSTNAME'],
             'install-ipa-client-with-otp.sh': ['OTP'],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-node.sh': [

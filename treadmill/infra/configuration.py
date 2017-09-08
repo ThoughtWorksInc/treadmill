@@ -43,6 +43,7 @@ class Master(Configuration):
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                     'HOSTNAME': hostname,
+                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-ipa-client-with-otp.sh',
@@ -76,7 +77,8 @@ class LDAP(Configuration):
                     'SUBNET_ID': cell_subnet_id,
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': hostname,
-                    'HOSTNAME': hostname
+                    'HOSTNAME': hostname,
+                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-ipa-client-with-otp.sh',
@@ -108,7 +110,8 @@ class IPA(Configuration):
                 'vars': {
                     'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
-                    'REGION': connection.Connection.context.region_name
+                    'REGION': connection.Connection.context.region_name,
+                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-treadmill.sh',
@@ -135,6 +138,7 @@ class Zookeeper(Configuration):
                     'DOMAIN': connection.Connection.context.domain,
                     'HOSTNAME': hostname,
                     'LDAP_HOSTNAME': ldap_hostname,
+                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-ipa-client-with-otp.sh',
@@ -164,7 +168,8 @@ class Node(Configuration):
                     'APP_ROOT': app_root,
                     'SUBNET_ID': subnet_id,
                     'LDAP_HOSTNAME': ldap_hostname,
-                    'HOSTNAME': hostname
+                    'HOSTNAME': hostname,
+                    'PROID': 'foobar'
                 }
             }, {
                 'name': 'install-ipa-client-with-otp.sh',

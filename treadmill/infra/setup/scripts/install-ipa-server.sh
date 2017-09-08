@@ -59,11 +59,11 @@ export TREADMILL_CELL="{{ CELL }}"
 nohup su -c "{{ TREADMILL }} sproc restapi -p 5108 --title 'Treadmill_API' \
     -m ipa,cloud --cors-origin='.*'" tmhostadm > /var/log/ipa_api.out 2>&1 &
 
-TREADMLD_OUTPUT=$(ipa -n user-add --first=treadmld --last=proid --shell /bin/bash --class proid --random treadmld)
+TREADMLD_OUTPUT=$(ipa -n user-add --first="${PROID}" --last=proid --shell /bin/bash --class proid --random "${PROID}")
 TMP_TREADMLD_PASSWORD=$(echo "${TREADMLD_OUTPUT}" | grep 'Random password:' | awk '{print $3}')
 NEW_TREADMLD_PASSWORD=$(openssl rand -base64 12)
 
-kpasswd treadmld <<EOF
+kpasswd "${PROID}" <<EOF
 ${TMP_TREADMLD_PASSWORD}
 ${NEW_TREADMLD_PASSWORD}
 ${NEW_TREADMLD_PASSWORD}
