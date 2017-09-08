@@ -32,8 +32,6 @@ def init():
         except ValueError as ex:
             raise click.BadParameter(ex.__str__())
 
-
-
     def _validate_vpc_name(ctx, param, value):
         _vpc_id = vpc.VPC.get_id_from_name(value)
         if _vpc_id:
