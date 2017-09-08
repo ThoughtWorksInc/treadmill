@@ -403,36 +403,26 @@ class CloudTest(unittest.TestCase):
         self.assertEquals(result.exit_code, 0)
         self.assertEquals(_vpc_mock.list_cells.call_count, 3)
 
-        @mock.patch('treadmill.cli.cloud.vpc.VPC')
-        @mock.patch('treadmill.cli.cloud.subnet.Subnet')
-        def test_delete_cell(self, subnet_mock, vpc_mock):
-            _vpc_mock = vpc_mock()
-            _subnet_mock = subnet_mock()
-            _vpc_mock.list_cells = mock.Mock(return_value=['subnet-123'])
+    @mock.patch('treadmill.cli.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.cloud.subnet.Subnet')
+    def test_delete_cell(self, subnet_mock, vpc_mock):
+        _vpc_mock = vpc_mock()
+        _subnet_mock = subnet_mock()
+        _vpc_mock.list_cells = mock.Mock(return_value=['subnet-123'])
 
-            result = self.runner.invoke(
-                self.configure_cli, [
-                    '--domain=foo.bar',
-                    'delete',
-                    'cell',
-                    '--vpc-name=' + self.vpc_name,
-                    '--subnet-id=subnet-123'
-                ]
-            )
+        result = self.runner.invoke(
+            self.configure_cli, [
+                '--domain=foo.bar',
+                'delete',
+                'cell',
+                '--vpc-name=' + self.vpc_name,
+                '--subnet-id=subnet-123'
+            ],
+            obj={}
+        )
 
-            self.assertEquals(result.exit_code, 0)
-            _subnet_mock.destroy.assert_called_once_with()
-
-            with self.assertRaises(click.BadParameter):
-                self.runner.invoke(
-                    self.configure_cli, [
-                        '--domain=foo.bar',
-                        'delete',
-                        'cell',
-                        '--vpc-name=' + self.vpc_name,
-                        '--subnet-id=subnet-456'
-                    ]
-                )
+        self.assertEquals(result.exit_code, 0)
+        _subnet_mock.destroy.assert_called_once_with()
 
     @mock.patch('treadmill.infra.connection.Connection')
     def test_boto_credentials(self, conn_mock):
