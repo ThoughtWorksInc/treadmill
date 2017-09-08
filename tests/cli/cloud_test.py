@@ -408,8 +408,6 @@ class CloudTest(unittest.TestCase):
         def test_delete_cell(self, subnet_mock, vpc_mock):
             _vpc_mock = vpc_mock()
             _subnet_mock = subnet_mock()
-            _vpc_mock.hosted_zone_id = 'hostedzone/123'
-            _vpc_mock.reverse_hosted_zone_id = 'hostedzone/456'
             _vpc_mock.list_cells = mock.Mock(return_value=['subnet-123'])
 
             result = self.runner.invoke(
@@ -423,10 +421,7 @@ class CloudTest(unittest.TestCase):
             )
 
             self.assertEquals(result.exit_code, 0)
-            _subnet_mock.destroy.assert_called_once_with(
-                hosted_zone_id='hostedzone/123',
-                reverse_hosted_zone_id='hostedzone/456'
-            )
+            _subnet_mock.destroy.assert_called_once_with()
 
             with self.assertRaises(click.BadParameter):
                 self.runner.invoke(
