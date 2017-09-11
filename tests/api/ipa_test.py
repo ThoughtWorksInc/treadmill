@@ -1,18 +1,18 @@
-"""Cloud Host API tests."""
+"""IPA API tests."""
 
 import unittest
 
 import mock
 
-from treadmill.api import cloud_host
+from treadmill.api import ipa
 import subprocess
 
 
-class ApiCloudHostTest(unittest.TestCase):
-    """treadmill.api.cloud_host tests."""
+class ApiIPATest(unittest.TestCase):
+    """treadmill.api.ipa tests."""
 
     def setUp(self):
-        self.cloud_host = cloud_host.API()
+        self.ipa = ipa.API()
 
     def tearDown(self):
         pass
@@ -22,7 +22,7 @@ class ApiCloudHostTest(unittest.TestCase):
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         self.assertEqual(
-            self.cloud_host.create('some-host'),
+            self.ipa.create('some-host'),
             'tao-pass-goo-foo'
         )
 
@@ -38,7 +38,7 @@ class ApiCloudHostTest(unittest.TestCase):
         _ipa_result_mock = b'------------------\nDeleted host "some-host"\n------------------\n' # noqa :E501
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
-        self.cloud_host.delete('some-host')
+        self.ipa.delete('some-host')
 
         subprocess.check_output.assert_called_once_with([
             "ipa",
@@ -51,7 +51,7 @@ class ApiCloudHostTest(unittest.TestCase):
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         with self.assertRaises(AssertionError):
-            self.cloud_host.delete('some-host')
+            self.ipa.delete('some-host')
 
         subprocess.check_output.assert_called_once_with([
             "ipa",
