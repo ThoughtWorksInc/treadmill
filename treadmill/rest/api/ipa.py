@@ -26,7 +26,7 @@ def init(api, cors, impl):
         'domain': fields.String(description='Domain')
     }
 
-    ipa_service_model = api.model(
+    service_model = api.model(
         'service', service_req_model
     )
 
@@ -51,7 +51,7 @@ def init(api, cors, impl):
         @webutils.post_api(
             api,
             cors,
-            req_model=ipa_service_model
+            req_model=service_model
         )
         def post(self):
             """Whitelist host to Allowed hosts for service keytab retrieval."""
