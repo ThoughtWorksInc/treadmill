@@ -1,5 +1,5 @@
 """
-Treadmill Cloud Host REST api.
+Treadmill IPA REST api.
 """
 
 import flask
@@ -14,26 +14,26 @@ from treadmill import webutils  # pylint: disable=E0611
 #
 # pylint: disable=W0232
 def init(api, cors, impl):
-    """Configures REST handlers for cloud host resource."""
+    """Configures REST handlers for ipa resource."""
 
     namespace = webutils.namespace(
-        api, __name__, 'Cloud Host REST operations'
+        api, __name__, 'IPA REST operations'
     )
 
-    req_model = {
+    service_req_model = {
         'service': fields.String(description='Service Name'),
         'hostname': fields.String(description='Hostname'),
         'domain': fields.String(description='Domain')
     }
 
     ipa_service_model = api.model(
-        'IPA', req_model
+        'service', service_req_model
     )
 
     @namespace.route('/<hostname>')
     @api.doc(params={'hostname': 'hostname'})
-    class _CloudHostResource(restplus.Resource):
-        """Treadmill Cloud Host resource"""
+    class _Host(restplus.Resource):
+        """Treadmill IPA resource"""
 
         @webutils.post_api(api, cors, marshal=api.marshal_list_with)
         def post(self, hostname):
@@ -45,8 +45,8 @@ def init(api, cors, impl):
             """Deletes host from IPA."""
             return impl.delete(hostname)
 
-    @namespace.route('/ipa/service')
-    class _IPAServiceAdd(restplus.Resource):
+    @namespace.route('/service')
+    class _Service(restplus.Resource):
         """Treadmill Service Allow Retrieve Keytab"""
         @webutils.post_api(
             api,
@@ -55,4 +55,4 @@ def init(api, cors, impl):
         )
         def post(self):
             """Whitelist host to Allowed hosts for service keytab retrieval."""
-            return impl.ipa_service_add(flask.request.json)
+            return impl.service_add(flask.request.json)

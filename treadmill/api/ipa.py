@@ -3,7 +3,7 @@ import subprocess
 
 
 class API(object):
-    """Treadmill Cloud Host REST API."""
+    """Treadmill IPA REST API."""
 
     def __init__(self):
 
@@ -27,7 +27,7 @@ class API(object):
 
             assert 'Deleted host "' + hostname + '"' in result
 
-        def ipa_service_add(args):
+        def service_add(args):
             domain = args.get('domain')
             hostname = args.get('hostname')
             _service = args.get('service')
@@ -52,7 +52,7 @@ class API(object):
 
         self.create = create
         self.delete = delete
-        self.ipa_service_add = ipa_service_add
+        self.service_add = service_add
 
 
 def init(authorizer):
