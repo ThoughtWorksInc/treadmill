@@ -19,7 +19,8 @@ class IPA(base_provision.BaseProvision):
             tm_release,
             key,
             instance_type,
-            subnet_id=None
+            proid,
+            subnet_id=None,
     ):
         treadmill.infra.get_iam_role(
             name=constants.IPA_EC2_IAM_ROLE,
@@ -32,6 +33,7 @@ class IPA(base_provision.BaseProvision):
             vpc=self.vpc,
             ipa_admin_password=ipa_admin_password,
             tm_release=tm_release,
+            proid=proid
         )
         super().setup(
             image=image,

@@ -33,7 +33,8 @@ class Configuration:
 
 class Master(Configuration):
     def __init__(self, hostname, otp, subnet_id,
-                 app_root, ldap_hostname, tm_release, ipa_admin_password, idx):
+                 app_root, ldap_hostname, tm_release, ipa_admin_password, idx,
+                 proid):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -42,7 +43,6 @@ class Master(Configuration):
                     'SUBNET_ID': subnet_id,
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
-                    'HOSTNAME': hostname,
                     'PROID': 'foobar'
                 },
             }, {
@@ -68,7 +68,7 @@ class Master(Configuration):
 
 class LDAP(Configuration):
     def __init__(self, cell_subnet_id, tm_release, app_root, otp,
-                 ipa_admin_password, ipa_server_hostname, hostname):
+                 ipa_admin_password, ipa_server_hostname, hostname, proid):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -76,9 +76,8 @@ class LDAP(Configuration):
                     'DOMAIN': connection.Connection.context.domain,
                     'SUBNET_ID': cell_subnet_id,
                     'APP_ROOT': app_root,
-                    'LDAP_HOSTNAME': hostname,
-                    'HOSTNAME': hostname,
-                    'PROID': 'foobar'
+                    'LDAP_HOSTNAME': ldap_hostname,
+                    'PROID': proid
                 },
             }, {
                 'name': 'install-ipa-client-with-otp.sh',
@@ -103,7 +102,7 @@ class LDAP(Configuration):
 
 
 class IPA(Configuration):
-    def __init__(self, name, vpc, cell, ipa_admin_password, tm_release):
+    def __init__(self, name, vpc, cell, ipa_admin_password, tm_release, proid):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -111,7 +110,7 @@ class IPA(Configuration):
                     'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
                     'REGION': connection.Connection.context.region_name,
-                    'PROID': 'foobar'
+                    'PROID': proid
                 },
             }, {
                 'name': 'install-treadmill.sh',
@@ -138,7 +137,6 @@ class Zookeeper(Configuration):
                     'DOMAIN': connection.Connection.context.domain,
                     'HOSTNAME': hostname,
                     'LDAP_HOSTNAME': ldap_hostname,
-                    'PROID': 'foobar'
                 },
             }, {
                 'name': 'install-ipa-client-with-otp.sh',
@@ -159,7 +157,8 @@ class Zookeeper(Configuration):
 
 class Node(Configuration):
     def __init__(self, tm_release, app_root, subnet_id,
-                 ldap_hostname, otp, with_api, hostname, ipa_admin_password):
+                 ldap_hostname, otp, with_api, hostname,
+                 ipa_admin_password, proid):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -169,7 +168,7 @@ class Node(Configuration):
                     'SUBNET_ID': subnet_id,
                     'LDAP_HOSTNAME': ldap_hostname,
                     'HOSTNAME': hostname,
-                    'PROID': 'foobar'
+                    'PROID': proid
                 }
             }, {
                 'name': 'install-ipa-client-with-otp.sh',

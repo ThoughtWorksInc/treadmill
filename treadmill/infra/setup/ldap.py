@@ -16,6 +16,7 @@ class LDAP(base_provision.BaseProvision):
             app_root,
             cell_subnet_id,
             ipa_admin_password,
+            proid,
             subnet_id=None
     ):
         # TODO: remove count as parameter
@@ -38,7 +39,8 @@ class LDAP(base_provision.BaseProvision):
             hostname=hostname,
             ipa_admin_password=ipa_admin_password,
             ipa_server_hostname=ipa_server_hostname,
-            otp=otp
+            otp=otp,
+            proid=proid
         )
         super().setup(
             image=image,

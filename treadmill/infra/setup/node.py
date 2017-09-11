@@ -14,7 +14,8 @@ class Node(base_provision.BaseProvision):
             app_root,
             subnet_id,
             with_api,
-            ipa_admin_password
+            ipa_admin_password,
+            proid,
     ):
         self.name = self.name + '-' + str(time.time())
         self.hostname = self.name + '.' + connection.Connection.context.domain
@@ -34,7 +35,8 @@ class Node(base_provision.BaseProvision):
             otp=otp,
             with_api=with_api,
             hostname=self.hostname,
-            ipa_admin_password=ipa_admin_password
+            ipa_admin_password=ipa_admin_password,
+            proid=proid
         )
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         super().setup(

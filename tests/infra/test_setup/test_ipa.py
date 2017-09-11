@@ -66,7 +66,8 @@ class IPATest(unittest.TestCase):
             key='some-key',
             tm_release='release',
             ipa_admin_password='ipa-admin-password',
-            instance_type='small'
+            instance_type='small',
+            proid='foobar'
         )
 
         get_iam_role_mock.assert_called_once_with(
@@ -105,6 +106,7 @@ class IPATest(unittest.TestCase):
                 cell=None,
                 name='ipa',
                 vpc=_vpc_mock,
+                proid='foobar'
             )
         )
         _ipa_configuration_mock.get_userdata.assert_called_once()

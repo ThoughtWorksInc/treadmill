@@ -14,6 +14,7 @@ class Master(base_provision.BaseProvision):
             instance_type,
             app_root,
             ipa_admin_password,
+            proid,
             subnet_id=None,
     ):
         _hostnames = instances.Instances.get_hostnames_by_roles(
@@ -45,7 +46,8 @@ class Master(base_provision.BaseProvision):
                 tm_release=tm_release,
                 app_root=app_root,
                 ipa_admin_password=ipa_admin_password,
-                idx=_idx
+                idx=_idx,
+                proid=proid
             )
             self.name = _name + _idx
             super().setup(

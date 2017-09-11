@@ -27,9 +27,12 @@ def init():
         ctx.obj['DOMAIN'] = domain
 
     @cloud.group()
-    def configure():
+    @click.option('--proid', default='treadmld',
+                  help='Proid user for treadmill')
+    @click.pass_context
+    def configure(ctx, proid):
         """Configure Treadmill EC2 Objects"""
-        pass
+        ctx.obj['PROID'] = proid
 
     @configure.command(name='vpc')
     @click.option(
@@ -128,6 +131,8 @@ def init():
                        ipa_admin_password, manifest):
         """Configure Treadmill LDAP"""
         domain = ctx.obj['DOMAIN']
+        proid = ctx.obj['PROID']
+
         if region:
             connection.Connection.context.region_name = region
 
@@ -149,6 +154,7 @@ def init():
             cell_subnet_id=cell_subnet_id,
             subnet_id=ldap_subnet_id,
             ipa_admin_password=ipa_admin_password,
+            proid=proid
         )
 
         click.echo(
@@ -214,6 +220,7 @@ def init():
                        without_ldap, ipa_admin_password, manifest):
         """Configure Treadmill Cell"""
         domain = ctx.obj['DOMAIN']
+        proid = ctx.obj['PROID']
 
         if region:
             connection.Connection.context.region_name = region
@@ -243,6 +250,7 @@ def init():
                 cell_subnet_id=_cell.id,
                 subnet_id=ldap_subnet_id,
                 ipa_admin_password=ipa_admin_password,
+                proid=proid
             )
 
             result['Ldap'] = _ldap.subnet.show()
@@ -256,7 +264,6 @@ def init():
             subnet_cidr_block=cell_cidr_block,
             ipa_admin_password=ipa_admin_password
         )
-
         _cell.setup_master(
             name=name,
             key=key,
@@ -266,7 +273,8 @@ def init():
             tm_release=tm_release,
             app_root=app_root,
             subnet_cidr_block=cell_cidr_block,
-            ipa_admin_password=ipa_admin_password
+            ipa_admin_password=ipa_admin_password,
+            proid=proid
         )
 
         result['Cell'] = _cell.show()
@@ -321,6 +329,7 @@ def init():
         """Configure Treadmill Domain (IPA)"""
 
         domain = ctx.obj['DOMAIN']
+        proid = ctx.obj['PROID']
 
         connection.Connection.context.domain = domain
         if region:
@@ -346,6 +355,7 @@ def init():
             instance_type=instance_type,
             image=image,
             cidr_block=subnet_cidr_block,
+            proid=proid
         )
 
         click.echo(
@@ -398,6 +408,7 @@ def init():
         """Configure new Node in Cell"""
 
         domain = ctx.obj['DOMAIN']
+        proid = ctx.obj['PROID']
 
         connection.Connection.context.domain = domain
         if region:
@@ -419,6 +430,7 @@ def init():
             subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
             with_api=with_api,
+            proid=proid
         )
         click.echo(
             pprint(_node.subnet.show())
