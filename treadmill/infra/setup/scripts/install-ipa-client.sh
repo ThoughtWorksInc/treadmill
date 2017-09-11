@@ -1,7 +1,7 @@
 # install
 yum install -y ipa-client ipa-server-dns
 
-# get OTP from IPA cloud-host service
+# get OTP from IPA service
 HOST_FQDN=$(hostname -f)
 REQ_URL="http://ipa-ca:8000/ipa/${HOST_FQDN}"
 
