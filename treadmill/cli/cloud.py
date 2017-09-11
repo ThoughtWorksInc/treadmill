@@ -27,10 +27,10 @@ def init():
         """Returns VPC ID from Name"""
         if not value:
             return value
-        try:
-            return vpc.VPC.get_id_from_name(value)
-        except ValueError as ex:
-            raise click.BadParameter(ex.__str__())
+        vpc_id = vpc.VPC.get_id_from_name(value)
+        if not vpc_id:
+            raise click.BadParameter("VPC doesn't exist.")
+        return vpc_id
 
     def _validate_vpc_name(ctx, param, value):
         _vpc_id = vpc.VPC.get_id_from_name(value)
