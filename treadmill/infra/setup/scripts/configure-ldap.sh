@@ -2,9 +2,6 @@ echo Installing openldap
 
 yum -y install openldap openldap-clients openldap-servers ipa-admintools
 
-# echo "{{ IPA_ADMIN_PASSWORD }}" | kinit admin
-# ipa service-add --force "ldap/treadmillldap1.{{ DOMAIN }}@{{ DOMAIN|upper }}"
-
 echo Adding host to service keytab retrieval list
 
 REQ_URL="http://ipa-ca:8000/cloud-host/ipa/service"
