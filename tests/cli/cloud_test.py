@@ -40,7 +40,7 @@ class CloudTest(unittest.TestCase):
                 '--vpc-cidr-block=172.24.0.0/16',
                 '--secgroup_name=sg_common',
                 '--secgroup_desc=Test',
-                '--name=' + self.vpc_name
+                '--name=' + self.vpc_name,
             ],
             obj={}
         )
@@ -123,7 +123,8 @@ class CloudTest(unittest.TestCase):
             ldap_hostname='treadmillldap1',
             app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
-            ipa_admin_password='ipa_pass'
+            ipa_admin_password='ipa_pass',
+            proid='treadmld'
         )
         self.assertEqual(
             ldap_mock.mock_calls[1],
@@ -144,6 +145,7 @@ class CloudTest(unittest.TestCase):
             subnet_id=None,
             cell_subnet_id='sub-123',
             ipa_admin_password='ipa_pass',
+            proid='treadmld'
         )
 
     @mock.patch('treadmill.cli.cloud.vpc.VPC')
@@ -194,7 +196,8 @@ class CloudTest(unittest.TestCase):
             ldap_hostname='treadmillldap1',
             app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
-            ipa_admin_password='ipa_pass'
+            ipa_admin_password='ipa_pass',
+            proid='treadmld'
         )
 
         _ldap_mock.setup.assert_not_called()
@@ -236,6 +239,7 @@ class CloudTest(unittest.TestCase):
             tm_release='0.1.0',
             ipa_admin_password='Tre@admill1',
             with_api=False,
+            proid='treadmld'
         )
 
     @mock.patch('treadmill.cli.cloud.vpc.VPC')
@@ -268,7 +272,8 @@ class CloudTest(unittest.TestCase):
             tm_release='0.1.0',
             key='key',
             instance_type=constants.INSTANCE_TYPES['EC2']['medium'],
-            subnet_id=None
+            subnet_id=None,
+            proid='treadmld'
         )
 
     @mock.patch('treadmill.cli.cloud.vpc.VPC')

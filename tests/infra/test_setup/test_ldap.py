@@ -47,6 +47,7 @@ class LDAPTest(unittest.TestCase):
             ldap_hostname='hostname',
             cell_subnet_id='sub-123',
             ipa_admin_password='ipa_pass',
+            proid='foobar'
         )
 
         self.assertEqual(ldap.subnet.instances, instances_mock)
@@ -78,7 +79,8 @@ class LDAPTest(unittest.TestCase):
                 name='ldap',
                 app_root='app-root',
                 ipa_admin_password='ipa_pass',
-                ipa_server_hostname='ipa-server-hostname'
+                ipa_server_hostname='ipa-server-hostname',
+                proid='foobar'
             )
         )
         _ldap_configuration_mock.get_userdata.assert_called_once()

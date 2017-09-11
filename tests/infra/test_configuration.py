@@ -45,7 +45,7 @@ class MasterTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_master_configuration_script_data(self, open_mock):
-        config = configuration.Master('', '', '', '', '', '')
+        config = configuration.Master('', '', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME',
@@ -116,6 +116,7 @@ class IPATest(unittest.TestCase):
             name='ipa',
             cell='subnet-id',
             vpc=mock.Mock(),
+            proid='foobar'
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'PROID'],
@@ -150,7 +151,7 @@ class ZookeeperTest(unittest.TestCase):
             ipa_server_hostname='ipa_server_hostname'
         )
         expected_script_data = {
-            'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME', 'PROID'],
+            'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME'],
             'install-ipa-client.sh': [],
             'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME'],
         }
@@ -182,6 +183,7 @@ class NodeTest(unittest.TestCase):
             ldap_hostname='ldap_host',
             ipa_admin_password='Tre@admill1',
             with_api=False,
+            proid='foobar'
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'APP_ROOT', 'SUBNET_ID',
