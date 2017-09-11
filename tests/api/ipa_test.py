@@ -22,7 +22,7 @@ class ApiIPATest(unittest.TestCase):
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         self.assertEqual(
-            self.ipa.create('some-host'),
+            self.ipa.create({'hostname': 'some-host'}),
             'tao-pass-goo-foo'
         )
 
@@ -38,7 +38,7 @@ class ApiIPATest(unittest.TestCase):
         _ipa_result_mock = b'------------------\nDeleted host "some-host"\n------------------\n' # noqa :E501
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
-        self.ipa.delete('some-host')
+        self.ipa.delete({'hostname': 'some-host'})
 
         subprocess.check_output.assert_called_once_with([
             'ipa',
@@ -51,7 +51,7 @@ class ApiIPATest(unittest.TestCase):
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         with self.assertRaises(AssertionError):
-            self.ipa.delete('some-host')
+            self.ipa.delete({'hostname': 'some-host'})
 
         subprocess.check_output.assert_called_once_with([
             'ipa',
