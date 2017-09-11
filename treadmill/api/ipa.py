@@ -7,7 +7,8 @@ class API(object):
 
     def __init__(self):
 
-        def create(hostname):
+        def create(args):
+            hostname = args.get('hostname')
             result = subprocess.check_output([
                 'ipa',
                 'host-add',
@@ -18,11 +19,12 @@ class API(object):
             password_string = result.decode('utf-8').split('\n')[4]
             return password_string.split('password:')[-1].strip()
 
-        def delete(hostname):
+        def delete(args):
+            hostname = args.get('hostname')
             result = subprocess.check_output([
                 'ipa',
                 'host-del',
-                hostname,
+                hostname
             ]).decode('utf-8')
 
             assert 'Deleted host "' + hostname + '"' in result

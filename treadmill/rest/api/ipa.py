@@ -30,20 +30,35 @@ def init(api, cors, impl):
         'service', service_req_model
     )
 
-    @namespace.route('/<hostname>')
-    @api.doc(params={'hostname': 'hostname'})
+    host_req_model = {
+        'hostname': fields.String(description='Hostname'),
+    }
+
+    host_model = api.model(
+        'host', host_req_model
+    )
+
+    @namespace.route('/host')
     class _Host(restplus.Resource):
         """Treadmill IPA resource"""
 
-        @webutils.post_api(api, cors, marshal=api.marshal_list_with)
-        def post(self, hostname):
+        @webutils.post_api(
+            api,
+            cors,
+            req_model=host_model
+        )
+        def post(self):
             """Adds host to IPA."""
-            return impl.create(hostname)
+            return impl.create(flask.request.json)
 
-        @webutils.delete_api(api, cors)
-        def delete(self, hostname):
+        @webutils.delete_api(
+            api,
+            cors,
+            req_model=host_model
+        )
+        def delete(self, ):
             """Deletes host from IPA."""
-            return impl.delete(hostname)
+            return impl.delete(flask.request.json)
 
     @namespace.route('/service')
     class _Service(restplus.Resource):
