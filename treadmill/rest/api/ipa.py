@@ -49,7 +49,7 @@ def init(api, cors, impl):
         )
         def post(self):
             """Adds host to IPA."""
-            return impl.create(flask.request.json)
+            return impl.add_host(flask.request.json)
 
         @webutils.delete_api(
             api,
@@ -58,7 +58,7 @@ def init(api, cors, impl):
         )
         def delete(self, ):
             """Deletes host from IPA."""
-            return impl.delete(flask.request.json)
+            return impl.delete_host(flask.request.json)
 
     @namespace.route('/service')
     class _Service(restplus.Resource):

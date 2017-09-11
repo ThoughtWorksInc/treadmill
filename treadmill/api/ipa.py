@@ -7,7 +7,7 @@ class API(object):
 
     def __init__(self):
 
-        def create(args):
+        def add_host(args):
             hostname = args.get('hostname')
             result = subprocess.check_output([
                 'ipa',
@@ -19,7 +19,7 @@ class API(object):
             password_string = result.decode('utf-8').split('\n')[4]
             return password_string.split('password:')[-1].strip()
 
-        def delete(args):
+        def delete_host(args):
             hostname = args.get('hostname')
             result = subprocess.check_output([
                 'ipa',
@@ -53,8 +53,8 @@ class API(object):
 
             assert 'members added 1' in _result
 
-        self.create = create
-        self.delete = delete
+        self.add_host = add_host
+        self.delete_host = delete_host
         self.service_add = service_add
 
 

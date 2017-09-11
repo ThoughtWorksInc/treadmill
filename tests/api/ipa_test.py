@@ -17,12 +17,12 @@ class ApiIPATest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_create(self):
+    def test_add_host(self):
         _ipa_result_mock = b'foo\n bar\n goo\n tao\n random password: tao-pass-goo-foo' # noqa :E501
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         self.assertEqual(
-            self.ipa.create({'hostname': 'some-host'}),
+            self.ipa.add_host({'hostname': 'some-host'}),
             'tao-pass-goo-foo'
         )
 
@@ -34,11 +34,11 @@ class ApiIPATest(unittest.TestCase):
             '--force'
         ])
 
-    def test_delete(self):
+    def test_delete_host(self):
         _ipa_result_mock = b'------------------\nDeleted host "some-host"\n------------------\n' # noqa :E501
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
-        self.ipa.delete({'hostname': 'some-host'})
+        self.ipa.delete_host({'hostname': 'some-host'})
 
         subprocess.check_output.assert_called_once_with([
             'ipa',
@@ -46,12 +46,12 @@ class ApiIPATest(unittest.TestCase):
             'some-host'
         ])
 
-    def test_delete_failure(self):
+    def test_delete_host_failure(self):
         _ipa_result_mock = b'------------------\nCould not Delete host "some-host"\n------------------\n' # noqa :E501
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         with self.assertRaises(AssertionError):
-            self.ipa.delete({'hostname': 'some-host'})
+            self.ipa.delete_host({'hostname': 'some-host'})
 
         subprocess.check_output.assert_called_once_with([
             'ipa',
