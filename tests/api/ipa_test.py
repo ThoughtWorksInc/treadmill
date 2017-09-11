@@ -1,4 +1,4 @@
-"""IPA API tests."""
+'''IPA API tests.'''
 
 import unittest
 
@@ -9,7 +9,7 @@ import subprocess
 
 
 class ApiIPATest(unittest.TestCase):
-    """treadmill.api.ipa tests."""
+    '''treadmill.api.ipa tests.'''
 
     def setUp(self):
         self.ipa = ipa.API()
@@ -27,11 +27,11 @@ class ApiIPATest(unittest.TestCase):
         )
 
         subprocess.check_output.assert_called_once_with([
-            "ipa",
-            "host-add",
+            'ipa',
+            'host-add',
             'some-host',
-            "--random",
-            "--force"
+            '--random',
+            '--force'
         ])
 
     def test_delete(self):
@@ -41,8 +41,8 @@ class ApiIPATest(unittest.TestCase):
         self.ipa.delete('some-host')
 
         subprocess.check_output.assert_called_once_with([
-            "ipa",
-            "host-del",
+            'ipa',
+            'host-del',
             'some-host'
         ])
 
@@ -54,13 +54,13 @@ class ApiIPATest(unittest.TestCase):
             self.ipa.delete('some-host')
 
         subprocess.check_output.assert_called_once_with([
-            "ipa",
-            "host-del",
+            'ipa',
+            'host-del',
             'some-host'
         ])
 
     def test_service_add(self):
-        _ipa_result_mock = b'------------------\nmembers added 1"\n------------------\n' # noqa :E501
+        _ipa_result_mock = b'------------------\nmembers added 1\n------------------\n' # noqa :E501
         subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
 
         self.ipa.service_add(
@@ -75,14 +75,14 @@ class ApiIPATest(unittest.TestCase):
             subprocess.check_output.mock_calls,
             [
                 mock.call([
-                    "ipa",
-                    "service-add",
+                    'ipa',
+                    'service-add',
                     '--force',
                     'some-service'
                 ]),
                 mock.call([
-                    "ipa",
-                    "service-allow-retrieve-keytab",
+                    'ipa',
+                    'service-allow-retrieve-keytab',
                     'some-service@SOME-DOMAIN',
                     '--hosts=some-host'
                 ])

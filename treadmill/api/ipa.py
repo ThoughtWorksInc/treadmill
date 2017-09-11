@@ -9,19 +9,19 @@ class API(object):
 
         def create(hostname):
             result = subprocess.check_output([
-                "ipa",
-                "host-add",
+                'ipa',
+                'host-add',
                 hostname,
-                "--random",
-                "--force"
+                '--random',
+                '--force'
             ])
-            password_string = result.decode('utf-8').split("\n")[4]
-            return password_string.split("password:")[-1].strip()
+            password_string = result.decode('utf-8').split('\n')[4]
+            return password_string.split('password:')[-1].strip()
 
         def delete(hostname):
             result = subprocess.check_output([
-                "ipa",
-                "host-del",
+                'ipa',
+                'host-del',
                 hostname,
             ]).decode('utf-8')
 
@@ -34,20 +34,20 @@ class API(object):
             _service_with_domain = _service + '@' + domain.upper()
 
             subprocess.check_output([
-                "ipa",
-                "service-add",
-                "--force",
+                'ipa',
+                'service-add',
+                '--force',
                 _service
             ])
 
             result = subprocess.check_output([
-                "ipa",
-                "service-allow-retrieve-keytab",
+                'ipa',
+                'service-allow-retrieve-keytab',
                 _service_with_domain,
-                "--hosts=" + hostname
+                '--hosts=' + hostname
             ])
 
-            _result = result.decode('utf-8').strip().split("\n")[-2]
+            _result = result.decode('utf-8').strip().split('\n')[-2]
 
             assert 'members added 1' in _result
 
