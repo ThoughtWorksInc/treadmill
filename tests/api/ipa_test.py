@@ -59,6 +59,36 @@ class ApiIPATest(unittest.TestCase):
             'some-host'
         ])
 
+    def test_service_add(self):
+        _ipa_result_mock = b'------------------\nmembers added 1"\n------------------\n' # noqa :E501
+        subprocess.check_output = mock.Mock(return_value=_ipa_result_mock)
+
+        self.ipa.service_add(
+            {
+                'domain': 'some-domain',
+                'hostname': 'some-host',
+                'service': 'some-service'
+            }
+        )
+
+        self.assertEqual(
+            subprocess.check_output.mock_calls,
+            [
+                mock.call([
+                    "ipa",
+                    "service-add",
+                    '--force',
+                    'some-service'
+                ]),
+                mock.call([
+                    "ipa",
+                    "service-allow-retrieve-keytab",
+                    'some-service@SOME-DOMAIN',
+                    '--hosts=some-host'
+                ])
+            ]
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -47,8 +47,9 @@ class API(object):
                 "--hosts=" + hostname
             ])
 
-            result = result.decode('utf-8').strip().split("\n")[-2]
-            assert 'members added 1' in result
+            _result = result.decode('utf-8').strip().split("\n")[-2]
+
+            assert 'members added 1' in _result
 
         self.create = create
         self.delete = delete
