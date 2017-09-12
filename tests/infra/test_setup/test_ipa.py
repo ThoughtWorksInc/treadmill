@@ -64,7 +64,8 @@ class IPATest(unittest.TestCase):
             tm_release='release',
             ipa_admin_password='ipa-admin-password',
             instance_type='small',
-            proid='foobar'
+            proid='foobar',
+            subnet_name='sub-name'
         )
 
         _vpc_mock.associate_dhcp_options.assert_called_once_with([{
@@ -86,7 +87,7 @@ class IPATest(unittest.TestCase):
         _vpc_mock.load_security_group_ids.assert_called_once()
         _vpc_mock.create_subnet.assert_called_once_with(
             cidr_block='cidr-block',
-            name='ipa',
+            name='sub-name',
             gateway_id=123
         )
 

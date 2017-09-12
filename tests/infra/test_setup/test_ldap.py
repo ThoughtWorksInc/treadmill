@@ -46,7 +46,8 @@ class LDAPTest(unittest.TestCase):
             app_root='app-root',
             ldap_hostname='hostname',
             ipa_admin_password='ipa_pass',
-            proid='foobar'
+            proid='foobar',
+            subnet_name='sub-name'
         )
 
         self.assertEqual(ldap.subnet.instances, instances_mock)
@@ -65,7 +66,7 @@ class LDAPTest(unittest.TestCase):
         _vpc_mock.load_security_group_ids.assert_called_once()
         _vpc_mock.create_subnet.assert_called_once_with(
             cidr_block='cidr-block',
-            name='ldap-subnet-name',
+            name='sub-name',
             gateway_id=123
         )
 

@@ -1,5 +1,5 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants
+from treadmill.infra import configuration
 
 
 class Master(base_provision.BaseProvision):
@@ -15,6 +15,7 @@ class Master(base_provision.BaseProvision):
             app_root,
             ipa_admin_password,
             proid,
+            subnet_name,
             subnet_id=None,
     ):
         self.configuration = configuration.Master(
@@ -26,12 +27,12 @@ class Master(base_provision.BaseProvision):
             ipa_admin_password=ipa_admin_password,
             proid=proid
         )
-        self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         super().setup(
             image=image,
             count=count,
             cidr_block=cidr_block,
             subnet_id=subnet_id,
             key=key,
-            instance_type=instance_type
+            instance_type=instance_type,
+            subnet_name=subnet_name
         )

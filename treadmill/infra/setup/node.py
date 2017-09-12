@@ -1,5 +1,5 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants, instances
+from treadmill.infra import configuration, instances
 
 
 class Node(base_provision.BaseProvision):
@@ -16,6 +16,7 @@ class Node(base_provision.BaseProvision):
             ipa_admin_password,
             with_api,
             proid,
+            subnet_name
     ):
         self.configuration = configuration.Node(
             name=self.name,
@@ -27,13 +28,13 @@ class Node(base_provision.BaseProvision):
             with_api=with_api,
             proid=proid
         )
-        self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         super().setup(
             image=image,
             count=count,
             subnet_id=subnet_id,
             key=key,
-            instance_type=instance_type
+            instance_type=instance_type,
+            subnet_name=subnet_name
         )
 
     def destroy(self, instance_id=None):

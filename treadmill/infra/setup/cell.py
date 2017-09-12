@@ -32,7 +32,7 @@ class Cell:
 
     def setup_zookeeper(self, name, key, image, instance_type,
                         subnet_cidr_block, ldap_hostname, ipa_admin_password,
-                        proid):
+                        proid, subnet_name):
         self.zookeeper = zookeeper.Zookeeper(name, self.vpc.id)
         self.zookeeper.setup(
             image=image,
@@ -43,13 +43,15 @@ class Cell:
             ipa_admin_password=ipa_admin_password,
             proid=proid,
             subnet_id=self.id,
+            subnet_name=subnet_name
         )
         if not self.id:
             self.id = self.zookeeper.subnet.id
 
     def setup_master(self, name, key, count, image, instance_type,
                      tm_release, ldap_hostname, app_root,
-                     ipa_admin_password, proid, subnet_cidr_block=None):
+                     ipa_admin_password, proid, subnet_name,
+                     subnet_cidr_block=None):
         if not self.vpc.id:
             raise('Provide vpc_id in init or setup vpc prior.')
 
@@ -65,7 +67,8 @@ class Cell:
             app_root=app_root,
             subnet_id=self.id,
             ipa_admin_password=ipa_admin_password,
-            proid=proid
+            proid=proid,
+            subnet_name=subnet_name
         )
         self.show()
 

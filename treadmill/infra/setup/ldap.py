@@ -16,6 +16,7 @@ class LDAP(base_provision.BaseProvision):
             ldap_hostname,
             ipa_admin_password,
             proid,
+            subnet_name,
             subnet_id=None
     ):
         ipa_server_hostname = instances.Instances.get_ipa(
@@ -37,5 +38,6 @@ class LDAP(base_provision.BaseProvision):
             cidr_block=cidr_block,
             subnet_id=subnet_id,
             key=key,
-            instance_type=instance_type
+            instance_type=instance_type,
+            subnet_name=subnet_name
         )

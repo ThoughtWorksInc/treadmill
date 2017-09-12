@@ -20,6 +20,27 @@ class Subnet(ec2object.EC2Object):
         self.instances = instances
 
     @classmethod
+    def get_subnet_id_from_name(cls, vpc_id, subnet_name):
+        _ec2_conn = connection.Connection()
+        subnets = _ec2_conn.describe_subnets(
+            Filters=[
+                {
+                    'Name': 'vpc-id',
+                    'Values': [vpc_id]
+                },
+                {
+                    'Name': 'tag:Name',
+                    'Values': [subnet_name]
+                }
+            ]
+        )['Subnets']
+
+        if len(subnets) > 1:
+            raise ValueError("Multiple Subnets with name: " + subnet_name)
+        elif subnets:
+            return subnets[0]['SubnetId']
+
+    @classmethod
     def create(cls, cidr_block, vpc_id, name, gateway_id):
         _ec2_conn = connection.Connection()
         metadata = _ec2_conn.create_subnet(
