@@ -91,6 +91,16 @@ class API(object):
                 input=otp.encode('utf-8') + b'\n' + new_pwd + new_pwd
             )
 
+        def delete_user(args):
+            username = args.get('username')
+            result = subprocess.check_output([
+                'ipa',
+                'user-del',
+                username
+            ])
+
+            assert 'Deleted user "' + username + '"' in result
+
         self.add_host = add_host
         self.delete_host = delete_host
         self.service_add = service_add
