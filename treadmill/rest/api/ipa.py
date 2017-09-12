@@ -92,12 +92,12 @@ def init(api, cors, impl):
 
     @namespace.route('/service')
     class _Service(restplus.Resource):
-        """Treadmill Service Allow Retrieve Keytab"""
+        """Treadmill IPA Service"""
         @webutils.post_api(
             api,
             cors,
             req_model=service_model
         )
         def post(self):
-            """Whitelist host to Allowed hosts for service keytab retrieval."""
+            """Add Service to IPA"""
             return impl.service_add(flask.request.json)
