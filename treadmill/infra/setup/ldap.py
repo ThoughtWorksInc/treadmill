@@ -16,6 +16,7 @@ class LDAP(base_provision.BaseProvision):
             app_root,
             ipa_admin_password,
             proid,
+            subnet_name,
             subnet_id=None
     ):
         # TODO: remove count as parameter
@@ -46,5 +47,6 @@ class LDAP(base_provision.BaseProvision):
             cidr_block=cidr_block,
             subnet_id=subnet_id,
             key=key,
-            instance_type=instance_type
+            instance_type=instance_type,
+            subnet_name=subnet_name
         )

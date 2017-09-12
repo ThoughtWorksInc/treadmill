@@ -117,7 +117,7 @@ def init():
                                       'instance_type',
                                       'tm_release',
                                       'app_root',
-                                      'ldap_subnet_id',
+                                      'subnet_name',
                                       'ipa_admin_password'
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
@@ -138,7 +138,9 @@ def init():
             name=name,
             vpc_id=vpc_id,
         )
+
         subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
+
         _ldap.setup(
             key=key,
             count=1,
@@ -149,7 +151,8 @@ def init():
             cidr_block=ldap_cidr_block,
             subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
-            proid=proid
+            proid=proid,
+            subnet_name=subnet_name
         )
 
         click.echo(
@@ -183,7 +186,8 @@ def init():
     @click.option('--ldap-cidr-block', default='172.23.1.0/24',
                   help='CIDR block for LDAP')
     @click.option('--ldap-subnet-name',
-                  help='Subnet Name for Cell')
+                  help='Subnet Name for LDAP',
+                  default='TreadmillLDAP')
     @click.option('--without-ldap', required=False, is_flag=True,
                   default=False, help='Flag for LDAP Server')
     @click.option('--ipa-admin-password',
@@ -203,7 +207,6 @@ def init():
                                       'app_root',
                                       'cell_cidr_block'
                                       'ldap_subnet_name',
-                                      'cell_subnet_name',
                                       'ipa_admin_password',
                                       'without_ldap',
                                       'ldap_cidr_block'],
@@ -239,6 +242,10 @@ def init():
                 vpc_id=vpc_id,
             )
 
+            ldap_subnet_id = subnet.Subnet.get_subnet_id_from_name(
+                vpc_id, ldap_subnet_name
+            )
+
             _ldap.setup(
                 key=key,
                 count=1,
@@ -247,9 +254,10 @@ def init():
                 tm_release=tm_release,
                 app_root=app_root,
                 cidr_block=ldap_cidr_block,
-                subnet_id=subnet_id,
+                subnet_id=ldap_subnet_id,
                 ipa_admin_password=ipa_admin_password,
-                proid=proid
+                proid=proid,
+                subnet_name=ldap_subnet_name
             )
 
             result['Ldap'] = _ldap.subnet.show()
@@ -320,7 +328,7 @@ def init():
                                       'instance_type',
                                       'tm_release',
                                       'subnet_cidr_block'
-                                      'subnet_id',
+                                      'subnet_name',
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
     @click.pass_context
@@ -349,6 +357,9 @@ def init():
         subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
 
         _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
+
+        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
+
         _ipa.setup(
             subnet_id=subnet_id,
             count=count,
@@ -358,7 +369,8 @@ def init():
             instance_type=instance_type,
             image=image,
             cidr_block=subnet_cidr_block,
-            proid=proid
+            proid=proid,
+            subnet_name=subnet_name
         )
 
         click.echo(
@@ -372,7 +384,7 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--image', required=True,
                   help='Image to use for new node instance e.g. RHEL-7.4')
-    @click.option('--subnet-id', required=True, help='Subnet ID')
+    @click.option('--subnet-name', required=True, help='Subnet Name')
     @click.option('--region', help='Region for the vpc')
     @click.option('--name', default='TreadmillNode',
                   help='Node name')
@@ -400,12 +412,12 @@ def init():
                                       'instance_type',
                                       'tm_release',
                                       'app_root',
-                                      'subnet_id',
+                                      'subnet_name',
                                       'ipa_admin_password'
                                       'with_api'],
                   help="Options YAML file. ")
     @click.pass_context
-    def configure_node(ctx, vpc_id, key, image, subnet_id, region, name,
+    def configure_node(ctx, vpc_id, key, image, subnet_name, region, name,
                        instance_type, tm_release, app_root,
                        ipa_admin_password, with_api, manifest):
         """Configure new Node in Cell"""
@@ -424,6 +436,15 @@ def init():
             )
 
         _node = node.Node(name, vpc_id)
+
+        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
+
+        if not subnet_id:
+            raise click.BadParameter(
+                "Subnet doesn't exist with name %s",
+                subnet_name
+            )
+
         _node.setup(
             key=key,
             image=image,
@@ -433,7 +454,8 @@ def init():
             subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
             with_api=with_api,
-            proid=proid
+            proid=proid,
+            subnet_name=subnet_name
         )
         click.echo(
             pprint(_node.subnet.show())

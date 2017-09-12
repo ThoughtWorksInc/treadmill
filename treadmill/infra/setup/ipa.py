@@ -20,6 +20,7 @@ class IPA(base_provision.BaseProvision):
             key,
             instance_type,
             proid,
+            subnet_name,
             subnet_id=None,
     ):
         treadmill.infra.get_iam_role(
@@ -41,7 +42,8 @@ class IPA(base_provision.BaseProvision):
             cidr_block=cidr_block,
             subnet_id=subnet_id,
             key=key,
-            instance_type=instance_type
+            instance_type=instance_type,
+            subnet_name=subnet_name
         )
 
         def get_ipa_status():

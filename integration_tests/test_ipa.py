@@ -104,7 +104,7 @@ class IPATest(unittest.TestCase):
                 '--key=ms_treadmill_dev',
                 '--image=RHEL-7.4',
                 '--vpc-name=' + self.vpc_name,
-                '--ldap-subnet-id=' + subnet_info['SubnetId'],
+                '--subnet-name=TreadmillIPA',
                 '--ipa-admin-password=Tre@dmill1',
             ],
             obj={}

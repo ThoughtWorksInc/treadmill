@@ -15,6 +15,7 @@ class Master(base_provision.BaseProvision):
             app_root,
             ipa_admin_password,
             proid,
+            subnet_name,
             subnet_id=None,
     ):
         _hostnames = instances.Instances.get_hostnames_by_roles(
@@ -56,5 +57,6 @@ class Master(base_provision.BaseProvision):
                 cidr_block=cidr_block,
                 subnet_id=_subnet_id(subnet_id),
                 key=key,
-                instance_type=instance_type
+                instance_type=instance_type,
+                subnet_name=subnet_name,
             )
