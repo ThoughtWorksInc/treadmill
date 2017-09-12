@@ -381,7 +381,8 @@ def init():
             instance_type=instance_type,
             subnet_cidr_block=cell_cidr_block,
             ldap_hostname=ldap_hostname,
-            ipa_admin_password=ipa_admin_password
+            ipa_admin_password=ipa_admin_password,
+            proid=proid
         )
         _cell.setup_master(
             name=name,

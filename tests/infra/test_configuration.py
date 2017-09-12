@@ -148,10 +148,12 @@ class ZookeeperTest(unittest.TestCase):
         config = configuration.Zookeeper(
             name='zookeeper',
             ldap_hostname='ldap_host',
-            ipa_server_hostname='ipa_server_hostname'
+            ipa_server_hostname='ipa_server_hostname',
+            ipa_admin_password='ipa_admin_password',
+            proid='foobar'
         )
         expected_script_data = {
-            'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME'],
+            'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME', 'PROID'],
             'install-ipa-client.sh': [],
             'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME'],
         }

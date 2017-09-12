@@ -125,7 +125,7 @@ class IPA(Configuration):
 
 
 class Zookeeper(Configuration):
-    def __init__(self, name, ldap_hostname, ipa_server_hostname):
+    def __init__(self, name, ldap_hostname, ipa_server_hostname, proid):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -133,6 +133,7 @@ class Zookeeper(Configuration):
                     'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
                     'LDAP_HOSTNAME': ldap_hostname,
+                    'PROID': proid
                 },
             }, {
                 'name': 'install-ipa-client.sh',
