@@ -81,8 +81,10 @@ class API(object):
             ])
 
             kpasswd_proc = subprocess.Popen(
-                'kpasswd',
-                username,
+                [
+                    'kpasswd',
+                    username
+                ],
                 stdout=subprocess.PIPE,
                 stdin=subprocess.PIPE,
                 stderr=subprocess.PIPE
@@ -97,7 +99,7 @@ class API(object):
                 'ipa',
                 'user-del',
                 username
-            ])
+            ]).decode('utf-8')
 
             assert 'Deleted user "' + username + '"' in result
 
@@ -105,6 +107,7 @@ class API(object):
         self.delete_host = delete_host
         self.service_add = service_add
         self.add_user = add_user
+        self.delete_user = delete_user
 
 
 def init(authorizer):
