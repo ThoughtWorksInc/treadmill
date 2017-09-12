@@ -6,7 +6,7 @@ from treadmill.api import ipa
 
 class Zookeeper(base_provision.BaseProvision):
     def setup(self, image, key, cidr_block, instance_type,
-              ipa_admin_password, subnet_id=None, count=3):
+              ipa_admin_password, proid, subnet_id=None):
         _hostnames = instances.Instances.get_hostnames_by_roles(
             vpc_id=self.vpc.id,
             roles=[
@@ -17,7 +17,7 @@ class Zookeeper(base_provision.BaseProvision):
 
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         _ipa = ipa.API()
-        _zk_hostnames = self._hostname_cluster(count)
+        _zk_hostnames = self._hostname_cluster(count=3)
 
         def _subnet_id(subnet_id):
             if getattr(self, 'subnet', None) and self.subnet.id:
@@ -33,7 +33,8 @@ class Zookeeper(base_provision.BaseProvision):
                 ipa_server_hostname=_hostnames[constants.ROLES['IPA']],
                 hostname=_zk_h,
                 otp=_otp,
-                idx=_idx
+                idx=_idx,
+                proid=proid,
             )
 
             self.name = _name + _idx

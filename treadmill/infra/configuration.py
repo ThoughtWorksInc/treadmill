@@ -129,7 +129,8 @@ class IPA(Configuration):
 
 
 class Zookeeper(Configuration):
-    def __init__(self, hostname, ldap_hostname, ipa_server_hostname, otp, idx):
+    def __init__(self, hostname, ldap_hostname, ipa_server_hostname, otp, idx,
+                 proid):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
@@ -137,6 +138,7 @@ class Zookeeper(Configuration):
                     'DOMAIN': connection.Connection.context.domain,
                     'HOSTNAME': hostname,
                     'LDAP_HOSTNAME': ldap_hostname,
+                    'PROID': proid
                 },
             }, {
                 'name': 'install-ipa-client-with-otp.sh',

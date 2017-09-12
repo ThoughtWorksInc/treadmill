@@ -32,7 +32,7 @@ class Cell:
 
     def setup_zookeeper(self, name, key, image, instance_type,
                         subnet_cidr_block,
-                        ipa_admin_password, count=3):
+                        ipa_admin_password, proid):
         self.zookeeper = zookeeper.Zookeeper(name, self.vpc.id)
         self.zookeeper.setup(
             image=image,
@@ -40,8 +40,8 @@ class Cell:
             cidr_block=subnet_cidr_block,
             instance_type=instance_type,
             ipa_admin_password=ipa_admin_password,
+            proid=proid,
             subnet_id=self.id,
-            count=count
         )
         if not self.id:
             self.id = self.zookeeper.subnet.id

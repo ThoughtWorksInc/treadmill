@@ -154,20 +154,16 @@ class ZookeeperTest(unittest.TestCase):
             ldap_hostname='ldap_host',
             ipa_server_hostname='ipa_server_hostname',
             otp='otp',
-            idx='idx'
+            idx='idx',
+            ipa_admin_password='ipa_admin_password',
+            proid='foobar'
         )
         expected_script_data = {
-<<<<<<< HEAD
             'provision-base.sh': [
                 'DOMAIN', 'HOSTNAME', 'LDAP_HOSTNAME', 'PROID'
             ],
             'install-ipa-client-with-otp.sh': ['OTP'],
             'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME', 'IDX'],
-=======
-            'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME'],
-            'install-ipa-client.sh': [],
-            'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME'],
->>>>>>> cf989ed... + @pooja-dhupar | Add proid in cloud init cli
         }
 
         self.assertCountEqual(
@@ -197,11 +193,8 @@ class NodeTest(unittest.TestCase):
             ldap_hostname='ldap_host',
             ipa_admin_password='Tre@admill1',
             with_api=False,
-<<<<<<< HEAD
-            otp='otp'
-=======
-            proid='foobar'
->>>>>>> cf989ed... + @pooja-dhupar | Add proid in cloud init cli
+            otp='otp',
+            proid='foobar',
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'HOSTNAME', 'APP_ROOT',
