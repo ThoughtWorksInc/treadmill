@@ -1,5 +1,6 @@
 from treadmill import authz
 import subprocess
+import re
 
 
 class API(object):
@@ -53,9 +54,47 @@ class API(object):
 
             assert 'members added 1' in _result
 
+        def add_user(args):
+            username = args.get('username')
+            result = subprocess.check_output([
+                'ipa',
+                '-n',
+                'user-add',
+                '--first=' + username,
+                '--last=proid',
+                '--shell=/bin/bash',
+                '--class=proid',
+                '--random',
+                username
+            ])
+
+            otp = re.search(
+                r'Random password: .*',
+                result.decode('utf-8')
+            ).group(0).split(": ")[-1]
+
+            new_pwd = subprocess.check_output([
+                'openssl',
+                'rand',
+                '-base64',
+                '12'
+            ])
+
+            kpasswd_proc = subprocess.Popen(
+                'kpasswd',
+                username,
+                stdout=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            kpasswd_proc.communicate(
+                input=otp.encode('utf-8') + b'\n' + new_pwd + new_pwd
+            )
+
         self.add_host = add_host
         self.delete_host = delete_host
         self.service_add = service_add
+        self.add_user = add_user
 
 
 def init(authorizer):
