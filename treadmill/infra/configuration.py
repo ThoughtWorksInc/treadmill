@@ -64,16 +64,14 @@ class Master(Configuration):
 
 
 class LDAP(Configuration):
-    def __init__(self, name, cell_subnet_id, tm_release, app_root,
-                 ldap_hostname, ipa_admin_password, ipa_server_hostname,
-                 proid):
+    def __init__(self, name, tm_release, app_root, ldap_hostname,
+                 ipa_admin_password, ipa_server_hostname, proid):
         setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
                     'DOMAIN': connection.Connection.context.domain,
                     'NAME': name,
-                    'SUBNET_ID': cell_subnet_id,
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                     'PROID': proid
@@ -87,7 +85,6 @@ class LDAP(Configuration):
             }, {
                 'name': 'configure-ldap.sh',
                 'vars': {
-                    'SUBNET_ID': cell_subnet_id,
                     'APP_ROOT': app_root,
                     'IPA_ADMIN_PASSWORD': ipa_admin_password,
                     'DOMAIN': connection.Connection.context.domain,

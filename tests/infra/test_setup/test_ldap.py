@@ -45,7 +45,6 @@ class LDAPTest(unittest.TestCase):
             tm_release='release',
             app_root='app-root',
             ldap_hostname='hostname',
-            cell_subnet_id='sub-123',
             ipa_admin_password='ipa_pass',
             proid='foobar'
         )
@@ -75,7 +74,6 @@ class LDAPTest(unittest.TestCase):
             mock.mock.call(
                 ldap_hostname='hostname',
                 tm_release='release',
-                cell_subnet_id='sub-123',
                 name='ldap',
                 app_root='app-root',
                 ipa_admin_password='ipa_pass',

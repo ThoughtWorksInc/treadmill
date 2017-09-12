@@ -219,7 +219,6 @@ def init():
     @click.option('--ldap-cidr-block', default='172.23.1.0/24',
                   help='CIDR block for LDAP')
     @click.option('--ldap-subnet-id', help='Subnet ID for LDAP')
-    @click.option('--cell-subnet-id', help='Subnet ID of Cell')
     @click.option('--ipa-admin-password', callback=_ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
                   help='Password for IPA admin')
@@ -235,15 +234,13 @@ def init():
                                       'ldap_hostname',
                                       'app_root',
                                       'ldap_subnet_id',
-                                      'cell_subnet_id',
                                       'ipa_admin_password'
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
     def init_ldap(ctx, vpc_id, key, image, count, region, instance_type,
-                  tm_release, ldap_hostname, app_root,
-                  ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
-                  ipa_admin_password, manifest):
+                  tm_release, ldap_hostname, app_root, ldap_cidr_block,
+                  ldap_subnet_id, ipa_admin_password, manifest):
         """Initialize Treadmill LDAP"""
         domain = ctx.obj['DOMAIN']
         proid = ctx.obj['PROID']
@@ -267,7 +264,6 @@ def init():
             app_root=app_root,
             ldap_hostname=ldap_hostname,
             cidr_block=ldap_cidr_block,
-            cell_subnet_id=cell_subnet_id,
             subnet_id=ldap_subnet_id,
             ipa_admin_password=ipa_admin_password,
             proid=proid
@@ -366,7 +362,6 @@ def init():
                 app_root=app_root,
                 ldap_hostname=ldap_hostname,
                 cidr_block=ldap_cidr_block,
-                cell_subnet_id=_cell.id,
                 subnet_id=ldap_subnet_id,
                 ipa_admin_password=ipa_admin_password,
                 proid=proid
