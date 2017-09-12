@@ -79,10 +79,10 @@ class LDAPTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_ldap_configuration_script_data(self, open_mock):
-        config = configuration.LDAP('', '', '', '', '', '', '')
+        config = configuration.LDAP('', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
-                'DOMAIN', 'HOSTNAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
+                'DOMAIN', 'HOSTNAME', 'LDAP_HOSTNAME', 'APP_ROOT',
                 'PROID'
             ],
             'install-ipa-client-with-otp.sh': [
@@ -90,7 +90,7 @@ class LDAPTest(unittest.TestCase):
             ],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-ldap.sh': [
-                'SUBNET_ID', 'APP_ROOT', 'IPA_ADMIN_PASSWORD', 'DOMAIN',
+                'APP_ROOT', 'IPA_ADMIN_PASSWORD', 'DOMAIN',
                 'IPA_SERVER_HOSTNAME'
             ],
         }

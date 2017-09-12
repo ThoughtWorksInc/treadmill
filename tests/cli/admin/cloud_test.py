@@ -141,7 +141,6 @@ class CloudTest(unittest.TestCase):
             app_root='/var/tmp',
             cidr_block='172.23.1.0/24',
             subnet_id=None,
-            cell_subnet_id='sub-123',
             ipa_admin_password='ipa_pass',
             proid='treadmld'
         )

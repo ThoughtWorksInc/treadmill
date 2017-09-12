@@ -14,7 +14,6 @@ class LDAP(base_provision.BaseProvision):
             tm_release,
             instance_type,
             app_root,
-            cell_subnet_id,
             ipa_admin_password,
             proid,
             subnet_id=None
@@ -33,7 +32,6 @@ class LDAP(base_provision.BaseProvision):
         )[constants.ROLES['IPA']]
 
         self.configuration = configuration.LDAP(
-            cell_subnet_id=cell_subnet_id,
             tm_release=tm_release,
             app_root=app_root,
             hostname=hostname,
