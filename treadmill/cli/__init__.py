@@ -52,6 +52,10 @@ def init_logger(name):
 
 def make_multi_command(module_name, **click_args):
     """Make a Click multicommand from all submodules of the module."""
+    def _get_plugin_packages():
+        with open(os.path.expanduser('~/.treadmill.cfg')) as f:
+            plugin_packages = f.read().splitlines()
+            return list(map(lambda p: p + '.cli', plugin_packages))
 
     class MCommand(click.MultiCommand):
         """Treadmill CLI driver."""
@@ -71,17 +75,20 @@ def make_multi_command(module_name, **click_args):
             return sorted([cmd.replace('_', '-') for cmd in commands])
 
         def get_command(self, ctx, name):
-            try:
-                full_name = '.'.join([module_name, name.replace('-', '_')])
-                mod = importlib.import_module(full_name)
-                return mod.init()
-            except Exception:  # pylint: disable=W0703
-                with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
-                    traceback.print_exc(file=f)
-                    click.echo(
-                        'Unable to load plugin: %s [ %s ]' % (name, f.name),
-                        err=True)
-                return
+            modules = _get_plugin_packages()
+            modules.insert(0, module_name)
+            for mod_name in modules:
+                try:
+                    full_name = '.'.join([mod_name, name.replace('-', '_')])
+                    mod = importlib.import_module(full_name)
+                    return mod.init()
+                except Exception:  # pylint: disable=W0703
+                    with tempfile.NamedTemporaryFile(
+                            delete=False, mode='w') as f:
+                        traceback.print_exc(file=f)
+                        error = 'Unable to load plugin: %s [ %s ]' % (
+                            name, f.name)
+            click.echo(error)
 
     return MCommand
 
