@@ -9,6 +9,7 @@ IPA_HOSTNAME = 'treadmillipa'
 MASTER_INSTANCES_COUNT = 3
 TREADMILL_CELL_SUBNET_NAME = 'TreadmillCell'
 IPA_EC2_IAM_ROLE = 'IPA-EC2FullAccess'
+TREADMILL_DEFAULT_URL = 'https://github.com/ThoughtWorksInc/treadmill/releases/download'  # noqa
 INSTANCE_TYPES = {
     'EC2': {
         'micro': 't2.micro',

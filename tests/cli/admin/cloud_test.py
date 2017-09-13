@@ -119,7 +119,9 @@ class CloudTest(unittest.TestCase):
             count=3,
             image='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
-            tm_release='0.1.0',
+            tm_release='{}/{}/treadmill'.format(
+                constants.TREADMILL_DEFAULT_URL, '0.1.0',
+            ),
             app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
             ipa_admin_password='ipa_pass',
@@ -137,7 +139,9 @@ class CloudTest(unittest.TestCase):
             count=1,
             image='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
-            tm_release='0.1.0',
+            tm_release='{}/{}/treadmill'.format(
+                constants.TREADMILL_DEFAULT_URL, '0.1.0',
+            ),
             app_root='/var/tmp',
             cidr_block='172.23.1.0/24',
             subnet_id=None,
@@ -189,7 +193,9 @@ class CloudTest(unittest.TestCase):
             count=3,
             image='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
-            tm_release='0.1.0',
+            tm_release='{}/{}/treadmill'.format(
+                constants.TREADMILL_DEFAULT_URL, '0.1.0',
+            ),
             app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
             ipa_admin_password='ipa_pass',
@@ -229,7 +235,9 @@ class CloudTest(unittest.TestCase):
             instance_type=constants.INSTANCE_TYPES['EC2']['large'],
             key='key',
             subnet_id='sub-123',
-            tm_release='0.1.0',
+            tm_release='{}/{}/treadmill'.format(
+                constants.TREADMILL_DEFAULT_URL, '0.1.0',
+            ),
             ipa_admin_password='Tre@admill1',
             with_api=False,
             proid='treadmld'
@@ -262,7 +270,9 @@ class CloudTest(unittest.TestCase):
             count=1,
             cidr_block='172.23.2.0/24',
             ipa_admin_password='Tre@dmil1',
-            tm_release='0.1.0',
+            tm_release='{}/{}/treadmill'.format(
+                constants.TREADMILL_DEFAULT_URL, '0.1.0',
+            ),
             key='key',
             instance_type=constants.INSTANCE_TYPES['EC2']['medium'],
             subnet_id=None,

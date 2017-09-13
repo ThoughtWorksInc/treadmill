@@ -8,7 +8,6 @@ from treadmill.infra.setup import ipa, ldap, node, cell
 from treadmill.infra.utils import mutually_exclusive_option, cli_callbacks
 from treadmill.infra.utils import security_group
 
-
 _LOGGER = logging.getLogger(__name__)
 _OPTIONS_FILE = 'manifest'
 
