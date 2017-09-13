@@ -214,9 +214,6 @@ class VPC(ec2object.EC2Object):
             )
 
     def delete_dhcp_options(self):
-        if not self.metadata:
-            self._load()
-
         self.ec2_conn.delete_dhcp_options(
             DhcpOptionsId=self.metadata['DhcpOptionsId']
         )
@@ -226,6 +223,10 @@ class VPC(ec2object.EC2Object):
         self.delete_internet_gateway()
         self.delete_security_groups()
         self.delete_route_tables()
+
+        if not self.metadata:
+            self._load()
+
         self.ec2_conn.delete_vpc(VpcId=self.id)
         self.delete_dhcp_options()
 
