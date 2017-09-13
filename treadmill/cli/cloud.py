@@ -43,8 +43,16 @@ def init():
         else:
             return value
 
+    def _convert_to_subnet_id(vpc_id, subnet_name):
+        if not subnet_name:
+            return subnet_name
+        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
+        if not subnet_id:
+            raise click.BadParameter("Subnet doesn't exist.")
+        return subnet_id
+
     def _validate_ipa_password(ctx, param, value):
-        """IPA admin password valdiation"""
+        """IPA admin password validation"""
         value = value or click.prompt(
             'IPA admin password ', hide_input=True, confirmation_prompt=True
         )
@@ -213,6 +221,8 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--image', required=True,
                   help='Image to use for instances e.g. RHEL-7.4')
+    @click.option('--subnet-name', help='Subnet Name for LDAP',
+                  required=True)
     @click.option('--count', default='1', type=int,
                   help='Number of Treadmill ldap instances to spin up')
     @click.option('--region', help='Region for the vpc')
@@ -229,8 +239,6 @@ def init():
                   help='Treadmill app root')
     @click.option('--ldap-cidr-block', default='172.23.1.0/24',
                   help='CIDR block for LDAP')
-    @click.option('--subnet-name', help='Subnet Name for LDAP',
-                  default='TreadmillLDAP')
     @click.option('--ipa-admin-password', callback=_ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
                   help='Password for IPA admin')
@@ -250,9 +258,9 @@ def init():
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
-    def init_ldap(ctx, vpc_id, key, image, count, region, instance_type,
-                  tm_release, ldap_hostname, app_root, ldap_cidr_block,
-                  subnet_name, ipa_admin_password, manifest):
+    def init_ldap(ctx, vpc_id, key, image, subnet_name, count, region,
+                  instance_type, tm_release, ldap_hostname, app_root,
+                  ldap_cidr_block, ipa_admin_password, manifest):
         """Initialize Treadmill LDAP"""
         domain = ctx.obj['DOMAIN']
         proid = ctx.obj['PROID']
@@ -296,6 +304,8 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--image', required=True,
                   help='Image to use for new instances e.g. RHEL-7.4')
+    @click.option('--cell-subnet-name', help='Cell Subnet Name',
+                  required=True)
     @click.option('--count', default='3', type=int,
                   help='Number of Treadmill masters to spin up')
     @click.option('--region', help='Region for the vpc')
@@ -315,11 +325,8 @@ def init():
                   help='CIDR block for the cell')
     @click.option('--ldap-cidr-block', default='172.23.1.0/24',
                   help='CIDR block for LDAP')
-    @click.option('--subnet-name', help='Subnet Name',
-                  default=constants.TREADMILL_CELL_SUBNET_NAME)
     @click.option('--ldap-subnet-name',
-                  help='Subnet Name for LDAP',
-                  default='TreadmillLDAP')
+                  help='Subnet Name for Cell')
     @click.option('--without-ldap', required=False, is_flag=True,
                   default=False, help='Flag for LDAP Server')
     @click.option('--ipa-admin-password', callback=_ipa_password_prompt,
@@ -339,17 +346,16 @@ def init():
                                       'app_root',
                                       'cell_cidr_block'
                                       'ldap_subnet_name',
-                                      'subnet_name',
+                                      'cell_subnet_name',
                                       'ipa_admin_password',
                                       'without_ldap',
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
-    def init_cell(ctx, vpc_id, key, image, count, region, name,
-                  instance_type, tm_release, ldap_hostname, app_root,
-                  cell_cidr_block, ldap_cidr_block, subnet_name,
-                  ldap_subnet_name, without_ldap, ipa_admin_password,
-                  manifest):
+    def init_cell(ctx, vpc_id, key, image, cell_subnet_name, count, region,
+                  name, instance_type, tm_release, ldap_hostname, app_root,
+                  cell_cidr_block, ldap_cidr_block, ldap_subnet_name,
+                  without_ldap, ipa_admin_password, manifest):
         """Initialize Treadmill Cell"""
         domain = ctx.obj['DOMAIN']
         proid = ctx.obj['PROID']
@@ -359,7 +365,9 @@ def init():
 
         connection.Connection.context.domain = domain
 
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
+        subnet_id = subnet.Subnet.get_subnet_id_from_name(
+            vpc_id, cell_subnet_name
+        )
 
         _cell = cell.Cell(
             vpc_id=vpc_id,
@@ -403,7 +411,7 @@ def init():
             ldap_hostname=ldap_hostname,
             ipa_admin_password=ipa_admin_password,
             proid=proid,
-            subnet_name=subnet_name
+            subnet_name=cell_subnet_name
         )
         _cell.setup_master(
             name=name,
@@ -417,7 +425,7 @@ def init():
             subnet_cidr_block=cell_cidr_block,
             ipa_admin_password=ipa_admin_password,
             proid=proid,
-            subnet_name=subnet_name
+            subnet_name=cell_subnet_name
         )
 
         result['Cell'] = _cell.show()
@@ -433,12 +441,12 @@ def init():
     @click.option('--key', required=True, help='SSH key name')
     @click.option('--image', required=True,
                   help='Image to use for new master instance e.g. RHEL-7.4')
+    @click.option('--subnet-name', help='Subnet Name', required=True)
     @click.option('--name', default='TreadmillIPA',
                   help='Name of the instance')
     @click.option('--region', help='Region for the vpc')
     @click.option('--subnet-cidr-block', help='Cidr block of subnet for IPA',
                   default='172.23.2.0/24')
-    @click.option('--subnet-name', help='Subnet Name', default='TreadmillIPA')
     @click.option('--count', help='Count of the instances', default=1)
     @click.option('--ipa-admin-password', callback=_validate_ipa_password,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
@@ -464,8 +472,8 @@ def init():
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
     @click.pass_context
-    def init_domain(ctx, vpc_id, key, image, name, region, subnet_cidr_block,
-                    subnet_name, count, ipa_admin_password, tm_release,
+    def init_domain(ctx, vpc_id, key, image, subnet_name, name, region,
+                    subnet_cidr_block, count, ipa_admin_password, tm_release,
                     instance_type, manifest):
         """Initialize Treadmill Domain (IPA)"""
 
@@ -620,10 +628,12 @@ def init():
     @click.option('--vpc-name', 'vpc_id',
                   callback=_convert_to_vpc_id,
                   required=True, help='VPC Name')
-    @click.option('--subnet-id', required=True, help='Subnet ID of cell')
+    @click.option('--subnet-name', required=True,
+                  help='Subnet Name of cell')
     @click.pass_context
-    def delete_cell(ctx, vpc_id, subnet_id):
+    def delete_cell(ctx, vpc_id, subnet_name):
         """Delete Cell (Subnet)"""
+        subnet_id = _convert_to_subnet_id(vpc_id, subnet_name)
         domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
         subnet.Subnet(id=subnet_id).destroy()
@@ -632,12 +642,14 @@ def init():
     @click.option('--vpc-name', 'vpc_id',
                   callback=_convert_to_vpc_id,
                   required=True, help='VPC Name')
-    @click.option('--subnet-id', required=True, help='Subnet ID of IPA')
+    @click.option('--subnet-name',
+                  required=True, help='Subnet Name of Domain')
     @click.option('--name', help='Name of Instance',
                   default="TreadmillIPA")
     @click.pass_context
-    def delete_domain(ctx, vpc_id, subnet_id, name):
+    def delete_domain(ctx, vpc_id, subnet_name, name):
         """Delete IPA"""
+        subnet_id = _convert_to_subnet_id(vpc_id, subnet_name)
         domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
 
@@ -648,12 +660,14 @@ def init():
     @click.option('--vpc-name', 'vpc_id',
                   callback=_convert_to_vpc_id,
                   required=True, help='VPC Name')
-    @click.option('--subnet-id', required=True, help='Subnet ID of LDAP')
+    @click.option('--subnet-name', required=True,
+                  help='Subnet Name of LDAP')
     @click.option('--name', help='Name of Instance',
                   default="TreadmillLDAP")
     @click.pass_context
-    def delete_ldap(ctx, vpc_id, subnet_id, name):
+    def delete_ldap(ctx, vpc_id, subnet_name, name):
         """Delete LDAP"""
+        subnet_id = _convert_to_subnet_id(vpc_id, subnet_name)
         domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
 
@@ -706,10 +720,12 @@ def init():
     @click.option('--vpc-name', 'vpc_id',
                   callback=_convert_to_vpc_id,
                   help='VPC Name')
-    @click.option('--subnet-id', help='Subnet ID of cell')
+    @click.option('--subnet-name',
+                  help='Subnet Name of cell')
     @click.pass_context
-    def cell_resources(ctx, vpc_id, subnet_id):
+    def cell_resources(ctx, vpc_id, subnet_name):
         """Show Cell"""
+        subnet_id = _convert_to_subnet_id(vpc_id, subnet_name)
         domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
         if subnet_id:
