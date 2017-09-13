@@ -18,6 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 _OPTIONS_FILE = 'manifest'
 
 _IPA_PASSWORD_RE = re.compile('.{8,}')
+_URL_RE = re.compile('https?|www.*')
 
 
 def init():
@@ -65,8 +66,18 @@ def init():
         """IPA admin password prompt"""
         return value or click.prompt('IPA admin password ', hide_input=True)
 
-    def _current_release_version(ctx, param, value):
+    def _create_release_url(ctx, param, value):
         """Treadmill current release version"""
+        if value and _URL_RE.match(value):
+            return value
+
+        _build_url = lambda version: '{}/{}/treadmill'.format(
+            constants.TREADMILL_DEFAULT_URL, version,
+        )
+
+        if value:
+            return _build_url(value)
+
         version = None
 
         try:
@@ -78,7 +89,7 @@ def init():
             pass
 
         if version:
-            return version.decode('utf-8').strip()
+            return _build_url(version.decode('utf-8').strip())
         else:
             raise click.BadParameter('No version specified in VERSION.txt')
 
@@ -210,7 +221,7 @@ def init():
                   help='AWS ec2 instance type')
     # TODO: Pick the current Treadmill release by default.
     @click.option('--tm-release',
-                  callback=_current_release_version,
+                  callback=_create_release_url,
                   help='Treadmill release to use')
     @click.option('--ldap-hostname', default='treadmillldap1',
                   help='LDAP hostname')
@@ -295,7 +306,7 @@ def init():
                   help='AWS ec2 instance type')
     # TODO: Pick the current Treadmill release by default.
     @click.option('--tm-release',
-                  callback=_current_release_version,
+                  callback=_create_release_url,
                   help='Treadmill release to use')
     @click.option('--ldap-hostname', default='treadmillldap1',
                   help='LDAP hostname')
@@ -433,7 +444,7 @@ def init():
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
                   help='Password for IPA admin')
     @click.option('--tm-release',
-                  callback=_current_release_version,
+                  callback=_create_release_url,
                   help='Treadmill Release')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['medium'],
@@ -513,7 +524,7 @@ def init():
                   default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
     @click.option('--tm-release',
-                  callback=_current_release_version,
+                  callback=_create_release_url,
                   help='Treadmill release to use')
     @click.option('--ldap-hostname', default='treadmillldap1',
                   help='LDAP hostname')
