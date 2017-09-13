@@ -1,4 +1,4 @@
-from treadmill.infra import vpc
+from treadmill.infra import vpc, subnet
 import click
 import re
 import pkg_resources
@@ -70,3 +70,12 @@ def current_release_version(ctx, param, value):
         return version.decode('utf-8').strip()
     else:
         raise click.BadParameter('No version specified in VERSION.txt')
+
+
+def convert_to_subnet_id(vpc_id, subnet_name):
+    if not subnet_name:
+        return subnet_name
+    subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
+    if not subnet_id:
+        raise click.BadParameter("Subnet doesn't exist.")
+    return subnet_id

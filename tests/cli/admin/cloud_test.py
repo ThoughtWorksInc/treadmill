@@ -94,7 +94,8 @@ class CloudTest(unittest.TestCase):
                 'cell',
                 '--key=key',
                 '--image=img-123',
-                '--subnet-id=sub-123',
+                '--cell-subnet-name=SomeSubnet',
+                '--ldap-subnet-name=TreadmillLDAP',
                 '--vpc-name=' + self.vpc_name,
                 '--cell-cidr-block=172.24.0.0/24',
                 '--ipa-admin-password=ipa_pass',
@@ -167,7 +168,7 @@ class CloudTest(unittest.TestCase):
                 'cell',
                 '--key=key',
                 '--image=img-123',
-                '--subnet-id=sub-123',
+                '--cell-subnet-name=SomeSubnet',
                 '--vpc-name=' + self.vpc_name,
                 '--cell-cidr-block=172.24.0.0/24',
                 '--without-ldap',
@@ -260,6 +261,7 @@ class CloudTest(unittest.TestCase):
                 '--key=key',
                 '--image=img-123',
                 '--vpc-name=' + self.vpc_name,
+                '--subnet-name=TreadmillIPA'
             ],
             obj={}
         )
@@ -279,13 +281,15 @@ class CloudTest(unittest.TestCase):
             proid='treadmld'
         )
 
-    @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
-    @mock.patch('treadmill.cli.admin.cloud.ipa.IPA')
-    def test_delete_domain(self, ipa_mock, vpc_mock):
+    @mock.patch('treadmill.infra.vpc.VPC')
+    @mock.patch('treadmill.infra.ipa.IPA')
+    @mock.patch('treadmill.infra.subnet.Subnet')
+    def test_delete_domain(self, subnet_mock, ipa_mock, vpc_mock):
         """
         Test cloud delete domain
         """
         vpc_mock.get_id_from_name = mock.Mock(return_value=self.vpc_id_mock)
+        subnet_mock.get_subnet_id_from_name = mock.Mock(return_value='sub-123')
         ipa = ipa_mock()
         result = self.runner.invoke(
             self.configure_cli, [
@@ -293,7 +297,7 @@ class CloudTest(unittest.TestCase):
                 'delete',
                 'domain',
                 '--vpc-name=' + self.vpc_name,
-                '--subnet-id=sub-123',
+                '--subnet-name=SomeSubnet',
             ],
             obj={}
         )
@@ -372,6 +376,7 @@ class CloudTest(unittest.TestCase):
         Test cloud list cell
         """
         _subnet_mock = subnet_mock()
+        subnet_mock.get_subnet_id_from_name = mock.Mock()
         _vpc_mock = vpc_mock()
         vpc_mock.all = mock.Mock(return_value=[vpc_mock(), vpc_mock()])
 
@@ -380,7 +385,7 @@ class CloudTest(unittest.TestCase):
                 '--domain=foo.bar',
                 'list',
                 'cell',
-                '--subnet-id=subnet-123',
+                '--subnet-name=SomeSubnet',
             ],
             obj={}
         )
@@ -416,6 +421,7 @@ class CloudTest(unittest.TestCase):
     def test_delete_cell(self, subnet_mock, vpc_mock):
         _vpc_mock = vpc_mock()
         _subnet_mock = subnet_mock()
+        subnet_mock.get_subnet_id_from_name = mock.Mock()
         _vpc_mock.list_cells = mock.Mock(return_value=['subnet-123'])
 
         result = self.runner.invoke(
@@ -424,7 +430,7 @@ class CloudTest(unittest.TestCase):
                 'delete',
                 'cell',
                 '--vpc-name=' + self.vpc_name,
-                '--subnet-id=subnet-123'
+                '--subnet-name=SomeSubnet'
             ],
             obj={}
         )
