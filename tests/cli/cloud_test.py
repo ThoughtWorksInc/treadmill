@@ -236,6 +236,48 @@ class CloudTest(unittest.TestCase):
             tm_release='0.1.0',
             ipa_admin_password='Tre@admill1',
             with_api=False,
+            spot=False
+        )
+
+    @mock.patch('treadmill.cli.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.cloud.node.Node')
+    def test_add_node_with_spot(self, NodeMock, vpc_mock):
+        """
+        Test add node
+        """
+        vpc_mock.get_id_from_name = mock.Mock(return_value=self.vpc_id_mock)
+        node_mock = NodeMock()
+        result = self.runner.invoke(
+            self.configure_cli, [
+                '--domain=treadmill.org',
+                'init',
+                'node',
+                '--key=key',
+                '--image=img-123',
+                '--vpc-name=' + self.vpc_name,
+                '--subnet-id=sub-123',
+                '--count=2',
+                '--ipa-admin-password=Tre@admill1',
+                '--spot'
+            ],
+            obj={}
+        )
+
+        self.assertEqual(result.exit_code, 0)
+
+        vpc_mock.get_id_from_name.assert_called_once_with(self.vpc_name)
+        node_mock.setup.assert_called_once_with(
+            app_root='/var/tmp/treadmill-node',
+            count=2,
+            image='img-123',
+            instance_type=constants.INSTANCE_TYPES['EC2']['large'],
+            key='key',
+            ldap_hostname='treadmillldap1',
+            subnet_id='sub-123',
+            tm_release='0.1.0',
+            ipa_admin_password='Tre@admill1',
+            with_api=False,
+            spot=True
         )
 
     @mock.patch('treadmill.cli.cloud.vpc.VPC')

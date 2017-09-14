@@ -491,6 +491,8 @@ def init():
                   help='Password for IPA admin')
     @click.option('--with-api', required=False, is_flag=True,
                   default=False, help='Provision node with Treadmill APIs')
+    @click.option('--spot', required=False, is_flag=True, default=False,
+                  help='Spin Up Node with Spot Instances')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -505,12 +507,13 @@ def init():
                                       'app_root',
                                       'subnet_id',
                                       'ipa_admin_password'
-                                      'with_api'],
+                                      'with_api',
+                                      'spot'],
                   help="Options YAML file. ")
     @click.pass_context
     def init_node(ctx, vpc_id, region, name, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
-                  subnet_id, ipa_admin_password, with_api, manifest):
+                  subnet_id, ipa_admin_password, with_api, spot, manifest):
         """Initialize new Node in Cell"""
 
         domain = ctx.obj['DOMAIN']
@@ -537,6 +540,7 @@ def init():
             subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
             with_api=with_api,
+            spot=spot
         )
         click.echo(
             pprint(_node.subnet.show())

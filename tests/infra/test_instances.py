@@ -293,7 +293,7 @@ class InstancesTest(unittest.TestCase):
         conn_mock.describe_images.assert_called_once_with(
             Filters=[
                 {'Name': 'name', 'Values': ['foo-bar*']},
-                {'Name': 'owner-id', 'Values': ['309956199498']},
+                {'Name': 'owner-id', 'Values': ['410186602215']},
                 {'Name': 'image-type', 'Values': ['machine']}
             ]
         )

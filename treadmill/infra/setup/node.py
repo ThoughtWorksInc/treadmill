@@ -15,6 +15,7 @@ class Node(base_provision.BaseProvision):
             subnet_id,
             ipa_admin_password,
             with_api,
+            spot
     ):
         self.configuration = configuration.Node(
             name=self.name,
@@ -31,7 +32,8 @@ class Node(base_provision.BaseProvision):
             count=count,
             subnet_id=subnet_id,
             key=key,
-            instance_type=instance_type
+            instance_type=instance_type,
+            spot=spot
         )
 
     def destroy(self, instance_id=None):

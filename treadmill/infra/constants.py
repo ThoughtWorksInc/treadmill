@@ -28,3 +28,8 @@ ROLES = {
     'ZOOKEEPER': 'ZOOKEEPER',
     'DEFAULT': 'DEFAULT'
 }
+
+DEMAND_PRICE = {
+    'us-east-1': '0.1',
+    'ca-central-1': '0.111'
+}
