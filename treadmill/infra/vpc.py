@@ -267,10 +267,6 @@ class VPC(ec2object.EC2Object):
                 {
                     'Name': 'vpc-id',
                     'Values': [self.id]
-                },
-                {
-                    'Name': 'tag:Name',
-                    'Values': [constants.TREADMILL_CELL_SUBNET_NAME]
                 }
             ]
         )['Subnets']
