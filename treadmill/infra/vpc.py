@@ -87,6 +87,7 @@ class VPC(ec2object.EC2Object):
         _vpc = VPC.create(name=name, cidr_block=cidr_block)
         _vpc.create_internet_gateway()
         _vpc.create_security_group(secgroup_name, secgroup_desc)
+        _vpc.associate_dhcp_options(default=True)
 
         return _vpc
 
@@ -214,6 +215,8 @@ class VPC(ec2object.EC2Object):
             )
 
     def delete_dhcp_options(self):
+        if self.metadata['DhcpOptionsId'] == 'default':
+            return
         self.ec2_conn.delete_dhcp_options(
             DhcpOptionsId=self.metadata['DhcpOptionsId']
         )
@@ -244,7 +247,7 @@ class VPC(ec2object.EC2Object):
             )
         }
 
-    def associate_dhcp_options(self, options=[]):
+    def _create_dhcp_options(self, options=None):
         _default_options = [
             {
                 'Key': 'domain-name',
@@ -252,10 +255,17 @@ class VPC(ec2object.EC2Object):
             }
         ]
         response = self.ec2_conn.create_dhcp_options(
-            DhcpConfigurations=_default_options + options
+            DhcpConfigurations=_default_options + (options or [])
         )
 
-        self.dhcp_options_id = response['DhcpOptions']['DhcpOptionsId']
+        return response['DhcpOptions']['DhcpOptionsId']
+
+    def associate_dhcp_options(self, options=None, default=False):
+        if default:
+            self.dhcp_options_id = 'default'
+        else:
+            self.dhcp_options_id = self._create_dhcp_options(options)
+
         self.ec2_conn.associate_dhcp_options(
             DhcpOptionsId=self.dhcp_options_id,
             VpcId=self.id

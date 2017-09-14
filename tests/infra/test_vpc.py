@@ -450,6 +450,7 @@ class VPCTest(unittest.TestCase):
         )
         create_internet_gateway_mock.assert_called_once()
         create_security_group_mock.assert_called_once()
+        associate_dhcp_options_mock.assert_called_once_with(default=True)
 
     @mock.patch('treadmill.infra.connection.Connection')
     def test_all(
