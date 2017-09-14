@@ -500,10 +500,6 @@ class VPCTest(unittest.TestCase):
                 {
                     'Name': 'vpc-id',
                     'Values': ['vpc-123']
-                },
-                {
-                    'Name': 'tag:Name',
-                    'Values': [constants.TREADMILL_CELL_SUBNET_NAME]
                 }
             ]
         )
