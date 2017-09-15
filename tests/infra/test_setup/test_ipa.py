@@ -68,9 +68,12 @@ class IPATest(unittest.TestCase):
             subnet_name='sub-name'
         )
 
-        _vpc_mock.associate_dhcp_options.assert_called_once_with([{
-            'Key': 'domain-name-servers', 'Values': [_private_ip]
-        }])
+        _vpc_mock.associate_dhcp_options.assert_has_calls([
+            mock.call(default=True),
+            mock.call([{
+                'Key': 'domain-name-servers', 'Values': [_private_ip]
+            }]),
+        ])
 
         self.assertEqual(ipa.subnet.instances, instances_mock)
         InstancesMock.create.assert_called_once_with(

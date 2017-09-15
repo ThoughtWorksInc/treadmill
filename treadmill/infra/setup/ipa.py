@@ -53,6 +53,8 @@ class IPA(base_provision.BaseProvision):
             step=10,
             timeout=300
         )
+        self.vpc.associate_dhcp_options(default=True)
+        self.vpc.delete_dhcp_options()
         self.vpc.associate_dhcp_options([
             {
                 'Key': 'domain-name-servers',
