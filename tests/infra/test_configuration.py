@@ -77,7 +77,7 @@ class LDAPTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_ldap_configuration_script_data(self, open_mock):
-        config = configuration.LDAP('', '', '', '', '', '')
+        config = configuration.LDAP('', '', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'LDAP_HOSTNAME',
@@ -149,7 +149,6 @@ class ZookeeperTest(unittest.TestCase):
             name='zookeeper',
             ldap_hostname='ldap_host',
             ipa_server_hostname='ipa_server_hostname',
-            ipa_admin_password='ipa_admin_password',
             proid='foobar'
         )
         expected_script_data = {

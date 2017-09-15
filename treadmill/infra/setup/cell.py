@@ -40,7 +40,6 @@ class Cell:
             cidr_block=subnet_cidr_block,
             instance_type=instance_type,
             ldap_hostname=ldap_hostname,
-            ipa_admin_password=ipa_admin_password,
             proid=proid,
             subnet_id=self.id,
             subnet_name=subnet_name
