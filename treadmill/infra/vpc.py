@@ -87,8 +87,12 @@ class VPC(ec2object.EC2Object):
         _vpc = VPC.create(name=name, cidr_block=cidr_block)
         _vpc.create_internet_gateway()
         _vpc.create_security_group(secgroup_name, secgroup_desc)
-        _vpc.associate_dhcp_options(default=True)
-
+        _vpc.associate_dhcp_options([
+            {
+                'Key': 'domain-name-servers',
+                'Values': ['AmazonProvidedDNS']
+            }
+        ])
         return _vpc
 
     def create_subnet(self, cidr_block, name, gateway_id):
