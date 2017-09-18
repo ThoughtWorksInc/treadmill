@@ -18,6 +18,7 @@ class IPA(base_provision.BaseProvision):
             tm_release,
             key,
             instance_type,
+            yum_repo_url,
             subnet_id=None
     ):
 
@@ -27,6 +28,7 @@ class IPA(base_provision.BaseProvision):
             vpc=self.vpc,
             ipa_admin_password=ipa_admin_password,
             tm_release=tm_release,
+            yum_repo_url=yum_repo_url,
         )
         super().setup(
             image=image,

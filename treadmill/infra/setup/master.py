@@ -14,6 +14,7 @@ class Master(base_provision.BaseProvision):
             instance_type,
             app_root,
             ipa_admin_password,
+            yum_repo_url,
             subnet_id=None,
     ):
         self.configuration = configuration.Master(
@@ -22,7 +23,8 @@ class Master(base_provision.BaseProvision):
             ldap_hostname=ldap_hostname,
             tm_release=tm_release,
             app_root=app_root,
-            ipa_admin_password=ipa_admin_password
+            ipa_admin_password=ipa_admin_password,
+            yum_repo_url=yum_repo_url,
         )
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         super().setup(

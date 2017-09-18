@@ -1,7 +1,7 @@
 # Install
 
 if [ ! -e /etc/yum.repos.d/treadmill.repo ]; then
-    curl -L https://s3.amazonaws.com/yum_repo_dev/treadmill.repo -o /etc/yum.repos.d/treadmill.repo
+    curl -L "{{ YUM_REPO_URL }}" -o /etc/yum.repos.d/treadmill.repo
 fi
 
 yum -y install java

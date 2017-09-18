@@ -31,7 +31,8 @@ class Cell:
         self.vpc.create_security_group(secgroup_name, secgroup_desc)
 
     def setup_zookeeper(self, name, key, image, instance_type,
-                        subnet_cidr_block, ldap_hostname, ipa_admin_password):
+                        subnet_cidr_block, ldap_hostname, ipa_admin_password,
+                        yum_repo_url):
         self.zookeeper = zookeeper.Zookeeper(name, self.vpc.id)
         self.zookeeper.setup(
             image=image,
@@ -40,6 +41,7 @@ class Cell:
             instance_type=instance_type,
             ldap_hostname=ldap_hostname,
             ipa_admin_password=ipa_admin_password,
+            yum_repo_url=yum_repo_url,
             subnet_id=self.id
         )
         if not self.id:
@@ -47,7 +49,8 @@ class Cell:
 
     def setup_master(self, name, key, count, image, instance_type,
                      tm_release, ldap_hostname,
-                     app_root, ipa_admin_password, subnet_cidr_block=None):
+                     app_root, ipa_admin_password,
+                     yum_repo_url, subnet_cidr_block=None):
         if not self.vpc.id:
             raise('Provide vpc_id in init or setup vpc prior.')
 
@@ -62,7 +65,8 @@ class Cell:
             instance_type=instance_type,
             app_root=app_root,
             subnet_id=self.id,
-            ipa_admin_password=ipa_admin_password
+            ipa_admin_password=ipa_admin_password,
+            yum_repo_url=yum_repo_url,
         )
         self.show()
 

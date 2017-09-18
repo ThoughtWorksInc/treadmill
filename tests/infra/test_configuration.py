@@ -45,13 +45,13 @@ class MasterTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_master_configuration_script_data(self, open_mock):
-        config = configuration.Master('', '', '', '', '', '')
+        config = configuration.Master('', '', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
             ],
             'install-ipa-client.sh': [],
-            'install-treadmill.sh': ['TREADMILL_RELEASE'],
+            'install-treadmill.sh': ['TREADMILL_RELEASE', 'YUM_REPO_URL'],
             'configure-master.sh': [
                 'SUBNET_ID', 'APP_ROOT', 'IPA_ADMIN_PASSWORD'
             ],
@@ -76,13 +76,13 @@ class LDAPTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_ldap_configuration_script_data(self, open_mock):
-        config = configuration.LDAP('', '', '', '', '', '', '')
+        config = configuration.LDAP('', '', '', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'NAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
             ],
             'install-ipa-client.sh': [],
-            'install-treadmill.sh': ['TREADMILL_RELEASE'],
+            'install-treadmill.sh': ['TREADMILL_RELEASE', 'YUM_REPO_URL'],
             'configure-ldap.sh': [
                 'SUBNET_ID', 'APP_ROOT', 'IPA_ADMIN_PASSWORD', 'DOMAIN',
                 'IPA_SERVER_HOSTNAME'
@@ -114,10 +114,11 @@ class IPATest(unittest.TestCase):
             name='ipa',
             cell='subnet-id',
             vpc=mock.Mock(),
+            yum_repo_url='repo-url'
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME'],
-            'install-treadmill.sh': ['TREADMILL_RELEASE'],
+            'install-treadmill.sh': ['TREADMILL_RELEASE', 'YUM_REPO_URL'],
             'install-ipa-server.sh': [
                 'DOMAIN', 'IPA_ADMIN_PASSWORD', 'CELL', 'REVERSE_ZONE',
             ],
@@ -145,12 +146,15 @@ class ZookeeperTest(unittest.TestCase):
         config = configuration.Zookeeper(
             name='zookeeper',
             ldap_hostname='ldap_host',
-            ipa_server_hostname='ipa_server_hostname'
+            ipa_server_hostname='ipa_server_hostname',
+            yum_repo_url='repo-url',
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'LDAP_HOSTNAME'],
             'install-ipa-client.sh': [],
-            'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME'],
+            'provision-zookeeper.sh': [
+                'DOMAIN', 'IPA_SERVER_HOSTNAME', 'YUM_REPO_URL'
+            ],
         }
 
         self.assertCountEqual(
@@ -180,12 +184,13 @@ class NodeTest(unittest.TestCase):
             ldap_hostname='ldap_host',
             ipa_admin_password='Tre@admill1',
             with_api=False,
+            yum_repo_url='repo-url',
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'NAME', 'APP_ROOT', 'SUBNET_ID',
                                   'LDAP_HOSTNAME', 'ROLE'],
             'install-ipa-client.sh': [],
-            'install-treadmill.sh': ['TREADMILL_RELEASE'],
+            'install-treadmill.sh': ['TREADMILL_RELEASE', 'YUM_REPO_URL'],
             'configure-node.sh': [
                 'APP_ROOT', 'SUBNET_ID', 'IPA_ADMIN_PASSWORD'
             ],

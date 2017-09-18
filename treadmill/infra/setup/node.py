@@ -15,6 +15,7 @@ class Node(base_provision.BaseProvision):
             subnet_id,
             ipa_admin_password,
             with_api,
+            yum_repo_url,
     ):
         self.configuration = configuration.Node(
             name=self.name,
@@ -24,6 +25,7 @@ class Node(base_provision.BaseProvision):
             ldap_hostname=ldap_hostname,
             ipa_admin_password=ipa_admin_password,
             with_api=with_api,
+            yum_repo_url=yum_repo_url,
         )
         self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         super().setup(

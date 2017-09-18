@@ -213,6 +213,8 @@ def init():
     @click.option('--ipa-admin-password', callback=_ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
                   help='Password for IPA admin')
+    @click.option('--yum-repo-url', envvar='TREADMILL_YUM_REPO_URL',
+                  default=constants.YUM_REPO_URL, help='Yum repo URL')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -226,14 +228,15 @@ def init():
                                       'app_root',
                                       'ldap_subnet_id',
                                       'cell_subnet_id',
-                                      'ipa_admin_password'
-                                      'ldap_cidr_block'],
+                                      'ipa_admin_password',
+                                      'ldap_cidr_block',
+                                      'yum_repo_url'],
                   help="Options YAML file. ")
     @click.pass_context
     def init_ldap(ctx, vpc_id, region, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
                   ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
-                  ipa_admin_password, manifest):
+                  ipa_admin_password, yum_repo_url, manifest):
         """Initialize Treadmill LDAP"""
         domain = ctx.obj['DOMAIN']
         if region:
@@ -258,6 +261,7 @@ def init():
             cell_subnet_id=cell_subnet_id,
             subnet_id=ldap_subnet_id,
             ipa_admin_password=ipa_admin_password,
+            yum_repo_url=yum_repo_url,
         )
 
         click.echo(
@@ -299,6 +303,8 @@ def init():
     @click.option('--ipa-admin-password', callback=_ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
                   help='Password for IPA admin')
+    @click.option('--yum-repo-url', envvar='TREADMILL_YUM_REPO_URL',
+                  default=constants.YUM_REPO_URL, help='Yum repo URL')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -316,13 +322,14 @@ def init():
                                       'subnet_id',
                                       'ipa_admin_password',
                                       'without_ldap',
-                                      'ldap_cidr_block'],
+                                      'ldap_cidr_block',
+                                      'yum_repo_url'],
                   help="Options YAML file. ")
     @click.pass_context
     def init_cell(ctx, vpc_id, region, name, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
                   cell_cidr_block, ldap_cidr_block, subnet_id, ldap_subnet_id,
-                  without_ldap, ipa_admin_password, manifest):
+                  without_ldap, ipa_admin_password, yum_repo_url, manifest):
         """Initialize Treadmill Cell"""
         domain = ctx.obj['DOMAIN']
 
@@ -355,6 +362,7 @@ def init():
                 cell_subnet_id=_cell.id,
                 subnet_id=ldap_subnet_id,
                 ipa_admin_password=ipa_admin_password,
+                yum_repo_url=yum_repo_url,
             )
 
             result['Ldap'] = _ldap.subnet.show()
@@ -366,7 +374,8 @@ def init():
             instance_type=instance_type,
             subnet_cidr_block=cell_cidr_block,
             ldap_hostname=ldap_hostname,
-            ipa_admin_password=ipa_admin_password
+            ipa_admin_password=ipa_admin_password,
+            yum_repo_url=yum_repo_url,
         )
 
         _cell.setup_master(
@@ -379,7 +388,8 @@ def init():
             ldap_hostname=ldap_hostname,
             app_root=app_root,
             subnet_cidr_block=cell_cidr_block,
-            ipa_admin_password=ipa_admin_password
+            ipa_admin_password=ipa_admin_password,
+            yum_repo_url=yum_repo_url,
         )
 
         result['Cell'] = _cell.show()
@@ -411,6 +421,8 @@ def init():
                   help='Instance type')
     @click.option('--image', required=True,
                   help='Image to use for new master instance e.g. RHEL-7.4')
+    @click.option('--yum-repo-url', envvar='TREADMILL_YUM_REPO_URL',
+                  default=constants.YUM_REPO_URL, help='Yum repo URL')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -421,14 +433,15 @@ def init():
                                       'image',
                                       'instance_type',
                                       'tm_release',
-                                      'subnet_cidr_block'
+                                      'subnet_cidr_block',
                                       'subnet_id',
-                                      'ipa_admin_password'],
+                                      'ipa_admin_password',
+                                      'yum_repo_url'],
                   help="Options YAML file. ")
     @click.pass_context
     def init_domain(ctx, name, region, vpc_id, subnet_cidr_block, subnet_id,
                     count, ipa_admin_password, tm_release, key,
-                    instance_type, image, manifest):
+                    instance_type, image, yum_repo_url, manifest):
         """Initialize Treadmill Domain (IPA)"""
 
         domain = ctx.obj['DOMAIN']
@@ -456,6 +469,7 @@ def init():
             key=key,
             instance_type=instance_type,
             image=image,
+            yum_repo_url=yum_repo_url,
             cidr_block=subnet_cidr_block,
         )
 
@@ -491,6 +505,8 @@ def init():
                   help='Password for IPA admin')
     @click.option('--with-api', required=False, is_flag=True,
                   default=False, help='Provision node with Treadmill APIs')
+    @click.option('--yum-repo-url', envvar='TREADMILL_YUM_REPO_URL',
+                  default=constants.YUM_REPO_URL, help='Yum repo URL')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -504,13 +520,15 @@ def init():
                                       'ldap_hostname',
                                       'app_root',
                                       'subnet_id',
-                                      'ipa_admin_password'
-                                      'with_api'],
+                                      'ipa_admin_password',
+                                      'with_api',
+                                      'yum_repo_url'],
                   help="Options YAML file. ")
     @click.pass_context
     def init_node(ctx, vpc_id, region, name, key, count, image,
                   instance_type, tm_release, ldap_hostname, app_root,
-                  subnet_id, ipa_admin_password, with_api, manifest):
+                  subnet_id, ipa_admin_password, with_api,
+                  yum_repo_url, manifest):
         """Initialize new Node in Cell"""
 
         domain = ctx.obj['DOMAIN']
@@ -537,6 +555,7 @@ def init():
             subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
             with_api=with_api,
+            yum_repo_url=yum_repo_url,
         )
         click.echo(
             pprint(_node.subnet.show())

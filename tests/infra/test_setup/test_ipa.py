@@ -63,7 +63,8 @@ class IPATest(unittest.TestCase):
             key='some-key',
             tm_release='release',
             ipa_admin_password='ipa-admin-password',
-            instance_type='small'
+            instance_type='small',
+            yum_repo_url='repo-url'
         )
 
         _vpc_mock.associate_dhcp_options.assert_called_once_with([{
@@ -80,7 +81,7 @@ class IPATest(unittest.TestCase):
             key_name='some-key',
             secgroup_ids=['secgroup_id'],
             user_data='user-data-script',
-            role='IPA'
+            role='IPA',
         )
         _vpc_mock.load_security_group_ids.assert_called_once()
         _vpc_mock.create_subnet.assert_called_once_with(
@@ -97,6 +98,7 @@ class IPATest(unittest.TestCase):
                 cell=None,
                 name='ipa',
                 vpc=_vpc_mock,
+                yum_repo_url='repo-url',
             )
         )
         _ipa_configuration_mock.get_userdata.assert_called_once()

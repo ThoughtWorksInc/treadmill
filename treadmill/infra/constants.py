@@ -1,5 +1,6 @@
 ROUTE_53 = 'route53'
 EC2 = 'ec2'
+YUM_REPO_URL = 'https://s3.amazonaws.com/yum_repo_dev/treadmill.repo'
 ROUTE_53_RECORD_SET_TTL = 3600
 IPA_ROUTE_53_RECORD_SET_TTL = 86400
 REVERSE_DNS_TLD = 'in-addr.arpa'

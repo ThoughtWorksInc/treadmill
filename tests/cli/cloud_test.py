@@ -98,6 +98,7 @@ class CloudTest(unittest.TestCase):
                 '--vpc-name=' + self.vpc_name,
                 '--cell-cidr-block=172.24.0.0/24',
                 '--ipa-admin-password=ipa_pass',
+                '--yum-repo-url=repo-url',
             ],
             obj={}
         )
@@ -112,6 +113,7 @@ class CloudTest(unittest.TestCase):
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
             subnet_cidr_block='172.24.0.0/24',
             ipa_admin_password='ipa_pass',
+            yum_repo_url='repo-url',
         )
         cell.setup_master.assert_called_once_with(
             name='TreadmillMaster',
@@ -123,7 +125,8 @@ class CloudTest(unittest.TestCase):
             ldap_hostname='treadmillldap1',
             app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
-            ipa_admin_password='ipa_pass'
+            ipa_admin_password='ipa_pass',
+            yum_repo_url='repo-url',
         )
         self.assertEqual(
             ldap_mock.mock_calls[1],
@@ -169,6 +172,7 @@ class CloudTest(unittest.TestCase):
                 '--cell-cidr-block=172.24.0.0/24',
                 '--without-ldap',
                 '--ipa-admin-password=ipa_pass',
+                '--yum-repo-url=repo-url',
             ],
             obj={}
         )
@@ -183,6 +187,7 @@ class CloudTest(unittest.TestCase):
             instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
             subnet_cidr_block='172.24.0.0/24',
             ipa_admin_password='ipa_pass',
+            yum_repo_url='repo-url',
         )
         cell.setup_master.assert_called_once_with(
             name='TreadmillMaster',
@@ -194,7 +199,8 @@ class CloudTest(unittest.TestCase):
             ldap_hostname='treadmillldap1',
             app_root='/var/tmp',
             subnet_cidr_block='172.24.0.0/24',
-            ipa_admin_password='ipa_pass'
+            ipa_admin_password='ipa_pass',
+            yum_repo_url='repo-url',
         )
 
         _ldap_mock.setup.assert_not_called()
@@ -236,6 +242,7 @@ class CloudTest(unittest.TestCase):
             tm_release='0.1.0',
             ipa_admin_password='Tre@admill1',
             with_api=False,
+            yum_repo_url=constants.YUM_REPO_URL,
         )
 
     @mock.patch('treadmill.cli.cloud.vpc.VPC')
@@ -255,6 +262,7 @@ class CloudTest(unittest.TestCase):
                 '--key=key',
                 '--image=img-123',
                 '--vpc-name=' + self.vpc_name,
+                '--yum-repo-url=repo-url'
             ],
             obj={}
         )
@@ -268,7 +276,8 @@ class CloudTest(unittest.TestCase):
             tm_release='0.1.0',
             key='key',
             instance_type=constants.INSTANCE_TYPES['EC2']['medium'],
-            subnet_id=None
+            subnet_id=None,
+            yum_repo_url='repo-url',
         )
 
     @mock.patch('treadmill.cli.cloud.vpc.VPC')
