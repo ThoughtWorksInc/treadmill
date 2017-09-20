@@ -84,7 +84,7 @@ Vagrant.configure("2") do |config|
       v.cpus = 1
     end
     master.vm.network :private_network, ip: "10.10.10.10"
-    master.vm.hostname = 'master'
+    master.vm.hostname = 'master.ms.local'
     master.vm.provision "shell", path: "./scripts/provision_master.sh"
   end
 
@@ -94,7 +94,7 @@ Vagrant.configure("2") do |config|
       v.cpus = 1
     end
     node.vm.network :private_network, ip: "10.10.10.11"
-    node.vm.hostname = 'node'
+    node.vm.hostname = 'node.ms.local'
     node.vm.provision "shell", path: "./scripts/provision_node.sh"
   end
 

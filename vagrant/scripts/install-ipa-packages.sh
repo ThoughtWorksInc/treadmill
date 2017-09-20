@@ -17,4 +17,3 @@ fi
 # Install S6, pid1
 yum install s6 execline treadmill-pid1 --nogpgcheck -y
 
-ifup eth1
