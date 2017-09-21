@@ -4,7 +4,7 @@ set -e
 
 echo Installing master packages.
 
-yum -y install policycoreutils-python
+yum -y install policycoreutils-python ipa-admintools
 
 # Disable SELinux until we figure out services start
 echo -e 'SELINUX=permissive\nSELINUXTYPE=targeted\n' >/etc/sysconfig/selinux

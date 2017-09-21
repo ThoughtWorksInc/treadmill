@@ -3,6 +3,7 @@ Description=OpenLDAP Directory Server
 After=network.target
 
 [Service]
+Environment="KRB5_KTNAME=/etc/ldap.keytab"
 User=treadmld
 Group=treadmld
 SyslogIdentifier=openldap

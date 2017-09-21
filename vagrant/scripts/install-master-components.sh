@@ -22,13 +22,35 @@ echo Installing openldap
 
 del_svc openldap
 
+echo Adding host to service keytab retrieval list
+
+REQ_URL="http://ipa:8000/ipa/service"
+REQ_STATUS=254
+TIMEOUT_RETRY_COUNT=0
+while [ $REQ_STATUS -eq 254 ] && [ $TIMEOUT_RETRY_COUNT -ne 30 ]
+do
+    REQ_OUTPUT=$(curl --connect-timeout 5 -H "Content-Type: application/json" -X POST -d '{"domain": "ms.local", "hostname": "'master.ms.local'", "service": "'ldap/master.ms.local'"}' "${REQ_URL}" 2>&1) && REQ_STATUS=0 || REQ_STATUS=254
+    TIMEOUT_RETRY_COUNT=$((TIMEOUT_RETRY_COUNT+1))
+    sleep 60
+done
+
+kinit -kt /etc/krb5.keytab
+
+echo Retrieving ldap service keytab
+ipa-getkeytab -s "ipa.ms.local" -p "ldap/master.ms.local@MS.LOCAL" -k /etc/ldap.keytab
+
+ipa-getkeytab -r -p treadmld -D "cn=Directory Manager" -w "Tre@dmill1" -k /etc/treadmld.keytab
+chown treadmld:treadmld /etc/ldap.keytab /etc/treadmld.keytab
+
+su -c "kinit -kt /etc/treadmld.keytab treadmld" treadmld
+
 /opt/s6/bin/s6-setuidgid treadmld \
     $TM admin install --install-dir /var/tmp/treadmill-openldap \
         openldap \
         --owner treadmld \
-        --uri ldap://master:22389 \
-        --suffix dc=local \
-        --rootpw $(/usr/sbin/slappasswd -s secret)
+        --uri ldap://master.ms.local:22389 \
+        --suffix dc=ms,dc=local \
+        --gssapi
 
 add_svc openldap
 
