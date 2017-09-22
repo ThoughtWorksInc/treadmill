@@ -3,12 +3,13 @@ Description=Zookeeper distributed coordination server
 After=network.target
 
 [Service]
+Type=forking
 User=treadmld
 Group=treadmld
 SyslogIdentifier=zookeeper
-ExecStart=/var/tmp/treadmill-zookeeper/treadmill/bin/run.sh
-Restart=always
-RestartSec=5
+Environment=ZOO_LOG_DIR=/var/lib/zookeeper
+ExecStart=/usr/lib/zookeeper/bin/zkServer.sh start
+ExecStop=/usr/lib/zookeeper/bin/zkServer.sh stop
 
 [Install]
 WantedBy=multi-user.target

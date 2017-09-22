@@ -24,14 +24,18 @@ del_svc openldap
 
 echo Adding host to service keytab retrieval list
 
-REQ_URL="http://ipa:8000/ipa/service"
-REQ_STATUS=254
-TIMEOUT_RETRY_COUNT=0
-while [ $REQ_STATUS -eq 254 ] && [ $TIMEOUT_RETRY_COUNT -ne 30 ]
+for service in ldap zookeeper
 do
-    REQ_OUTPUT=$(curl --connect-timeout 5 -H "Content-Type: application/json" -X POST -d '{"domain": "ms.local", "hostname": "'master.ms.local'", "service": "'ldap/master.ms.local'"}' "${REQ_URL}" 2>&1) && REQ_STATUS=0 || REQ_STATUS=254
-    TIMEOUT_RETRY_COUNT=$((TIMEOUT_RETRY_COUNT+1))
-    sleep 60
+
+    REQ_URL="http://ipa:8000/ipa/service"
+    REQ_STATUS=254
+    TIMEOUT_RETRY_COUNT=0
+    while [ $REQ_STATUS -eq 254 ] && [ $TIMEOUT_RETRY_COUNT -ne 30 ]
+    do
+        REQ_OUTPUT=$(curl --connect-timeout 5 -H "Content-Type: application/json" -X POST -d '{"domain": "ms.local", "hostname": "'master.ms.local'", "service": "'${service}/master.ms.local'"}' "${REQ_URL}" 2>&1) && REQ_STATUS=0 || REQ_STATUS=254
+        TIMEOUT_RETRY_COUNT=$((TIMEOUT_RETRY_COUNT+1))
+        sleep 60
+    done
 done
 
 kinit -kt /etc/krb5.keytab
@@ -39,8 +43,11 @@ kinit -kt /etc/krb5.keytab
 echo Retrieving ldap service keytab
 ipa-getkeytab -s "ipa.ms.local" -p "ldap/master.ms.local@MS.LOCAL" -k /etc/ldap.keytab
 
+echo Retrieving zookeeper service keytab
+ipa-getkeytab -s "ipa.ms.local" -p "zookeeper/master.ms.local@MS.LOCAL" -k /etc/zk.keytab
+
 ipa-getkeytab -r -p treadmld -D "cn=Directory Manager" -w "Tre@dmill1" -k /etc/treadmld.keytab
-chown treadmld:treadmld /etc/ldap.keytab /etc/treadmld.keytab
+chown treadmld:treadmld /etc/ldap.keytab /etc/treadmld.keytab /etc/zk.keytab
 
 su -c "kinit -kt /etc/treadmld.keytab treadmld" treadmld
 
@@ -102,12 +109,15 @@ echo Installing zookeper
 
 del_svc zookeeper
 
-/opt/s6/bin/s6-setuidgid treadmld \
-    $TM admin install \
-        --install-dir /var/tmp/treadmill-zookeeper \
-        --config /var/tmp/cell_conf.yml \
-        zookeeper \
-        --master-id 1
+envsubst < /etc/zookeeper/conf/treadmill.conf > /etc/zookeeper/conf/temp.conf
+mv /etc/zookeeper/conf/temp.conf /etc/zookeeper/conf/treadmill.conf -f
+sed -i s/REALM/MS.LOCAL/g /etc/zookeeper/conf/treadmill.conf
+sed -i s/PRINCIPAL/'"'zookeeper\\/master.ms.local'"'/g /etc/zookeeper/conf/jaas.conf
+sed -i s/KEYTAB/'"'\\/etc\\/zk.keytab'"'/g /etc/zookeeper/conf/jaas.conf
+
+chown -R treadmld:treadmld /var/lib/zookeeper
+
+su -c "zookeeper-server-initialize" treadmld
 
 add_svc zookeeper
 
