@@ -68,3 +68,5 @@ ${TMP_TREADMLD_PASSWORD}
 ${NEW_TREADMLD_PASSWORD}
 ${NEW_TREADMLD_PASSWORD}
 EOF
+
+su -c 'source /etc/profile.d/treadmill_profile.sh >> ~/.bashrc' tmhostadm

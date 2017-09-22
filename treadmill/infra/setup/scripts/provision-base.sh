@@ -32,4 +32,4 @@ export AWS_DEFAULT_REGION={{ REGION }}
 EOF
 ) >> /etc/profile.d/treadmill_profile.sh
 
-source /etc/profile.d/treadmill_profile.sh
+source /etc/profile.d/treadmill_profile.sh >> ~/.bashrc
