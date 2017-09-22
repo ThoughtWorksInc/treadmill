@@ -73,7 +73,9 @@ class LDAPTest(unittest.TestCase):
             user_data='user-data-script',
             role='LDAP',
         )
-        _vpc_mock.load_security_group_ids.assert_called_once()
+        _vpc_mock.load_security_group_ids.assert_called_once_with(
+            sg_names=['sg_common']
+        )
         _vpc_mock.create_subnet.assert_called_once_with(
             cidr_block='cidr-block',
             name='ldap-subnet-name',

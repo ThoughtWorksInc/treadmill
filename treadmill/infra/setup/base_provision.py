@@ -27,6 +27,7 @@ class BaseProvision:
             count,
             key,
             instance_type,
+            sg_names,
             subnet_id=None,
             cidr_block=None,
     ):
@@ -36,7 +37,7 @@ class BaseProvision:
             )
 
         self.vpc.load_internet_gateway_ids()
-        self.vpc.load_security_group_ids()
+        self.vpc.load_security_group_ids(sg_names=sg_names)
 
         if not getattr(self, 'subnet_name', None):
             self.subnet_name = self.name

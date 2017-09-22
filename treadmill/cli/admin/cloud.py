@@ -34,13 +34,6 @@ def init():
     @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-cidr-block', default='172.23.0.0/16',
                   help='CIDR block for the vpc')
-    @click.option('--secgroup_name', default='sg_common',
-                  help='Security group name')
-    @click.option(
-        '--secgroup_desc',
-        default='Treadmill Security Group',
-        help='Description for the security group'
-    )
     @click.option(
         '--name',
         required=True,
@@ -51,14 +44,10 @@ def init():
                   cls=mutually_exclusive_option.MutuallyExclusiveOption,
                   mutually_exclusive=['region',
                                       'vpc_cidr_block',
-                                      'secgroup_desc',
-                                      'secgroup_name',
                                       'name'],
                   help="Options YAML file. ")
     @click.pass_context
-    def configure_vpc(ctx, region, vpc_cidr_block,
-                      secgroup_name, secgroup_desc,
-                      name, manifest):
+    def configure_vpc(ctx, region, vpc_cidr_block, name, manifest):
         """Configure Treadmill VPC"""
         domain = ctx.obj['DOMAIN']
 
@@ -70,8 +59,6 @@ def init():
         _vpc = vpc.VPC.setup(
             name=name,
             cidr_block=vpc_cidr_block,
-            secgroup_name=secgroup_name,
-            secgroup_desc=secgroup_desc
         )
 
         click.echo(

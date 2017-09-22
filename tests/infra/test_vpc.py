@@ -121,6 +121,20 @@ class VPCTest(unittest.TestCase):
             VpcId=self.vpc_id_mock
         )
 
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_add_secgrp_rules(self, connectionMock):
+        _connMock = connectionMock()
+        _connMock.authorize_security_group_ingress = mock.Mock()
+
+        vpc.VPC.ec2_conn = _connMock
+        _vpc = vpc.VPC(id=self.vpc_id_mock)
+        _vpc.add_secgrp_rules(
+            secgroup_id=self.security_group_id_mock,
+            ip_permissions=[{
+                'IpProtocol': '-1',
+                'UserIdGroupPairs': [{'GroupId': self.security_group_id_mock}]
+            }]
+        )
         _connMock.authorize_security_group_ingress.assert_called_once_with(
             GroupId=self.security_group_id_mock,
             IpPermissions=[{
@@ -209,6 +223,7 @@ class VPCTest(unittest.TestCase):
         vpc.VPC.ec2_conn = vpc.VPC.route53_conn = _connectionMock
         _vpc = vpc.VPC(id=self.vpc_id_mock)
         _vpc.secgroup_ids = ['secgroup-id-0', 'secgroup-id-1']
+        _vpc.load_security_group_ids = mock.Mock()
         _vpc.delete_security_groups()
 
         self.assertCountEqual(
@@ -440,8 +455,6 @@ class VPCTest(unittest.TestCase):
         vpc.VPC.setup(
             name='VpcTest',
             cidr_block='172.23.0.0/24',
-            secgroup_name='secgroup_name',
-            secgroup_desc='secgroup_desc',
         )
 
         vpc.VPC.create.assert_called_once_with(
