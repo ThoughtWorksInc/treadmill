@@ -168,8 +168,6 @@ def init():
     @click.option('--subnet-id', help='Subnet ID')
     @click.option('--ldap-subnet-id',
                   help='Subnet ID for LDAP')
-    @click.option('--without-ldap', required=False, is_flag=True,
-                  default=False, help='Flag for LDAP Server')
     @click.option('--ipa-admin-password',
                   callback=cli_callbacks.ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
@@ -189,15 +187,13 @@ def init():
                                       'ldap_subnet_id',
                                       'subnet_id',
                                       'ipa_admin_password',
-                                      'without_ldap',
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
     def configure_cell(ctx, vpc_id, region, name, key, count, image,
                        instance_type, tm_release, app_root,
-                       cell_cidr_block, ldap_cidr_block,
-                       subnet_id, ldap_subnet_id,
-                       without_ldap, ipa_admin_password, manifest):
+                       cell_cidr_block, ldap_cidr_block, subnet_id,
+                       ldap_subnet_id, ipa_admin_password, manifest):
         """Configure Treadmill Cell"""
         domain = ctx.obj['DOMAIN']
 
@@ -212,26 +208,6 @@ def init():
         )
 
         result = {}
-        if not without_ldap:
-            _ldap = ldap.LDAP(
-                name='TreadmillLDAP',
-                vpc_id=vpc_id,
-            )
-
-            _ldap.setup(
-                key=key,
-                count=1,
-                image=image,
-                instance_type=instance_type,
-                tm_release=tm_release,
-                app_root=app_root,
-                cidr_block=ldap_cidr_block,
-                cell_subnet_id=_cell.id,
-                subnet_id=ldap_subnet_id,
-                ipa_admin_password=ipa_admin_password,
-            )
-
-            result['Ldap'] = _ldap.subnet.show()
 
         _cell.setup_zookeeper(
             name='TreadmillZookeeper',
