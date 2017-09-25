@@ -69,4 +69,6 @@ ${NEW_TREADMLD_PASSWORD}
 ${NEW_TREADMLD_PASSWORD}
 EOF
 
-su -c 'source /etc/profile.d/treadmill_profile.sh >> ~/.bashrc' tmhostadm
+mkdir -m 700 -p /home/tmhostadm
+chown tmhostadm:tmhostadm /home/tmhostadm
+su -c 'echo source /etc/profile.d/treadmill_profile.sh >> ~/.bashrc' tmhostadm
