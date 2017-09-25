@@ -95,7 +95,6 @@ class CloudTest(unittest.TestCase):
                 '--subnet-id=sub-123',
                 '--vpc-name=' + self.vpc_name,
                 '--cell-cidr-block=172.24.0.0/24',
-                '--without-ldap',
                 '--ipa-admin-password=ipa_pass',
             ],
             obj={}
