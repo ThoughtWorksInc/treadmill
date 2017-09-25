@@ -94,12 +94,12 @@ echo Configuring local cell
 # This is single node Zookeeper install, no need to specify additional
 # ports.
 /opt/s6/bin/s6-setuidgid treadmld \
-    $TM admin ldap cell insert local --idx 1 --hostname master \
+    $TM admin ldap cell insert local --idx 1 --hostname master.ms.local \
         --client-port 2181
 
 # Add server to the cell.
 /opt/s6/bin/s6-setuidgid treadmld \
-    $TM admin ldap server configure node --cell local
+    $TM admin ldap server configure node.ms.local --cell local
 
 echo Extracting cell config
 
@@ -125,12 +125,22 @@ echo Installing Treadmill Master
 
 del_svc treadmill-master
 
+(
+cat <<EOF
+mkdir -p /var/spool/tickets
+kinit -k -t /etc/krb5.keytab -c /var/spool/tickets/treadmld
+chown treadmld:treadmld /var/spool/tickets/treadmld
+EOF
+) > /etc/cron.hourly/hostkey-treadmld-kinit
+
+chmod 755 /etc/cron.hourly/hostkey-treadmld-kinit
+/etc/cron.hourly/hostkey-treadmld-kinit
+
 $TM admin install \
     --install-dir /var/tmp/treadmill-master \
     --config /var/tmp/cell_conf.yml \
     master \
     --master-id 1 \
-    --ldap-pwd secret
 
 add_svc treadmill-master
 

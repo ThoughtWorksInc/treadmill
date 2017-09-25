@@ -16,6 +16,8 @@ source $SCRIPTDIR/env_vars.sh
 
 TM=/opt/treadmill/bin/treadmill
 
+kinit -kt /etc/krb5.keytab
+
 echo Extracting cell config
 
 $TM --outfmt yaml admin ldap cell configure local >/var/tmp/cell_conf.yml
