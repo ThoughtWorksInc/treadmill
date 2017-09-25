@@ -142,6 +142,8 @@ $TM admin install \
     master \
     --master-id 1 \
 
+: > /var/tmp/treadmill-master/treadmill/env/TREADMILL_PROFILE
+
 add_svc treadmill-master
 
 touch /home/vagrant/.ssh/config

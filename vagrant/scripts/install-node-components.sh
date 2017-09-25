@@ -22,6 +22,19 @@ echo Extracting cell config
 
 $TM --outfmt yaml admin ldap cell configure local >/var/tmp/cell_conf.yml
 
+(
+cat <<EOF
+mkdir -p /var/spool/tickets
+kinit -k -t /etc/krb5.keytab -c /var/spool/tickets/treadmld
+chown treadmld:treadmld /var/spool/tickets/treadmld
+EOF
+) > /etc/cron.hourly/hostkey-treadmld-kinit
+
+chmod 755 /etc/cron.hourly/hostkey-treadmld-kinit
+/etc/cron.hourly/hostkey-treadmld-kinit
+
+ln -s /var/spool/tickets/treadmld /var/tmp/treadmill/spool/krb5cc_host
+
 echo Installing Treadmill Node
 
 del_svc treadmill-node
