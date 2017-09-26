@@ -1,7 +1,6 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, connection, constants, instances
+from treadmill.infra import configuration, constants
 from treadmill.api import ipa
-import time
 
 
 class LDAP(base_provision.BaseProvision):
@@ -14,37 +13,37 @@ class LDAP(base_provision.BaseProvision):
             tm_release,
             instance_type,
             app_root,
-            cell_subnet_id,
             ipa_admin_password,
-            subnet_id=None
+            proid,
+            subnet_name,
     ):
-        # TODO: remove count as parameter
-        count = 1
-        self.name = self.name + '-' + str(time.time())
-        hostname = self.name + '.' + connection.Connection.context.domain
-        otp = ipa.API().add_host(hostname=hostname)
+        _ipa = ipa.API()
+        _ldap_hostnames = self._hostname_cluster(count=count)
 
-        ipa_server_hostname = instances.Instances.get_hostnames_by_roles(
-            vpc_id=self.vpc.id,
-            roles=[
-                constants.ROLES['IPA']
-            ]
-        )[constants.ROLES['IPA']]
+        ipa_server_hostname, = self.hostnames_for(
+            roles=[constants.ROLES['IPA']]
+        )
 
-        self.configuration = configuration.LDAP(
-            cell_subnet_id=cell_subnet_id,
-            tm_release=tm_release,
-            app_root=app_root,
-            hostname=hostname,
-            ipa_admin_password=ipa_admin_password,
-            ipa_server_hostname=ipa_server_hostname,
-            otp=otp
-        )
-        super().setup(
-            image=image,
-            count=count,
-            cidr_block=cidr_block,
-            subnet_id=subnet_id,
-            key=key,
-            instance_type=instance_type
-        )
+        for _idx in _ldap_hostnames.keys():
+            _ldap_h = _ldap_hostnames[_idx]
+            otp = _ipa.add_host(hostname=_ldap_h)
+            self.name = _ldap_h
+
+            self.configuration = configuration.LDAP(
+                tm_release=tm_release,
+                app_root=app_root,
+                hostname=_ldap_h,
+                ipa_admin_password=ipa_admin_password,
+                ipa_server_hostname=ipa_server_hostname,
+                otp=otp,
+                proid=proid
+            )
+            super().setup(
+                image=image,
+                count=count,
+                cidr_block=cidr_block,
+                key=key,
+                instance_type=instance_type,
+                subnet_name=subnet_name,
+                sg_names=[constants.COMMON_SEC_GRP],
+            )

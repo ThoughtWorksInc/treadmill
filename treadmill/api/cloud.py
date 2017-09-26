@@ -69,16 +69,10 @@ class API(object):
 
             _mandatory_params = []
 
-            if role == 'node':
+            if role in ['node', 'ldap']:
                 _mandatory_params = [
-                    'subnet_id',
+                    'subnet_name',
                 ]
-            elif role == 'ldap':
-                _mandatory_params = [
-                    'cell_subnet_id',
-                ]
-            elif role == 'cell':
-                _params['without_ldap'] = True
 
             _instantiate(_mandatory_params)
 
@@ -123,7 +117,7 @@ class API(object):
         def delete_cell(
                 vpc_name,
                 domain,
-                cell_id
+                cell_name
         ):
             return subprocess.check_output([
                 'treadmill',
@@ -135,11 +129,11 @@ class API(object):
                 'cell',
                 '--vpc-name',
                 vpc_name,
-                '--subnet-id',
-                cell_id
+                '--subnet-name',
+                cell_name
             ])
 
-        def cells(domain, vpc_name, cell_id):
+        def cells(domain, vpc_name, cell_name):
             _default_command = [
                 'treadmill',
                 'admin',
@@ -150,10 +144,10 @@ class API(object):
                 'cell',
             ]
 
-            if cell_id:
+            if cell_name:
                 _default_command += [
-                    '--subnet-id',
-                    cell_id
+                    '--subnet-name',
+                    cell_name
                 ]
             if vpc_name:
                 _default_command += [

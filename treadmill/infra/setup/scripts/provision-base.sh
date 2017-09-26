@@ -12,7 +12,7 @@ hostnamectl set-hostname "{{ NAME }}.{{ DOMAIN }}"
 
 LDAP_DC=$(echo "{{ DOMAIN }}" | sed -E 's/([a-z]*)\.([a-z]*)/dc=\1,dc=\2/g')
 LDAP_URL=ldap://{{ LDAP_HOSTNAME|lower }}:22389
-ZK_URL=zookeeper://foo@TreadmillZookeeper1.{{ DOMAIN }}:2181,TreadmillZookeeper2.{{ DOMAIN }}:2181,TreadmillZookeeper3.{{ DOMAIN }}:2181
+ZK_URL={{ ZK_URL }}
 
 grep -q -F 'preserve_hostname: true' /etc/cloud/cloud.cfg || echo 'preserve_hostname: true' >> /etc/cloud/cloud.cfg
 
@@ -29,7 +29,8 @@ export TREADMILL=/opt/treadmill
 export PEX_ROOT=/tmp/pex
 export PATH=$PATH:/opt/s6/bin:/opt/treadmill/bin
 export AWS_DEFAULT_REGION={{ REGION }}
+export PROID={{ PROID }}
 EOF
 ) >> /etc/profile.d/treadmill_profile.sh
 
-source /etc/profile.d/treadmill_profile.sh
+source /etc/profile.d/treadmill_profile.sh >> ~/.bashrc
