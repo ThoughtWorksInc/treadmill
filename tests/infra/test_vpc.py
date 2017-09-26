@@ -578,8 +578,7 @@ class VPCTest(unittest.TestCase):
 
         vpc.VPC.ec2_conn = vpc.VPC.route53_conn = _connectionMock
 
-        with self.assertRaises(ValueError):
-            vpc.VPC.get_id_from_name('vpc-name')
+        self.assertIsNone(vpc.VPC.get_id_from_name('vpc-name'))
 
         _connectionMock.describe_vpcs.assert_called_once_with(
             Filters=[{
