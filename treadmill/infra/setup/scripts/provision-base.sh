@@ -29,7 +29,8 @@ export TREADMILL=/opt/treadmill
 export PEX_ROOT=/tmp/pex
 export PATH=$PATH:/opt/s6/bin:/opt/treadmill/bin
 export AWS_DEFAULT_REGION={{ REGION }}
+export PROID={{ PROID }}
 EOF
 ) >> /etc/profile.d/treadmill_profile.sh
 
-source /etc/profile.d/treadmill_profile.sh
+source /etc/profile.d/treadmill_profile.sh >> ~/.bashrc
