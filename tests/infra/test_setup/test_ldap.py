@@ -86,15 +86,10 @@ class LDAPTest(unittest.TestCase):
                 hostname='ldap-1000.domain',
                 otp='otp',
                 tm_release='release',
-<<<<<<< HEAD
-                cell_subnet_id='sub-123',
-=======
-                name='ldap',
->>>>>>> 27ed767... + @pooja-dhupar | Remove cell-subnet-id from ldap setup not used in configuration
                 app_root='app-root',
                 ipa_admin_password='ipa_pass',
-                ipa_server_hostname='ipa-hostname'
-                proid='foobar'
+                ipa_server_hostname='ipa-hostname',
+                proid='foobar',
             )
         )
         _ldap_configuration_mock.get_userdata.assert_called_once()

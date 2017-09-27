@@ -43,6 +43,7 @@ class Master(Configuration):
                     'SUBNET_ID': subnet_id,
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
+                    'HOSTNAME': hostname,
                     'PROID': 'foobar'
                 },
             }, {
@@ -75,7 +76,8 @@ class LDAP(Configuration):
                 'vars': {
                     'DOMAIN': connection.Connection.context.domain,
                     'APP_ROOT': app_root,
-                    'LDAP_HOSTNAME': ldap_hostname,
+                    'LDAP_HOSTNAME': hostname,
+                    'HOSTNAME': hostname,
                     'PROID': proid
                 },
             }, {

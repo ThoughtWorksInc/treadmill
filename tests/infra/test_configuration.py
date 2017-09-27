@@ -45,7 +45,7 @@ class MasterTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_master_configuration_script_data(self, open_mock):
-        config = configuration.Master('', '', '', '', '', '', '', '')
+        config = configuration.Master('', '', '', '', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'HOSTNAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
@@ -79,7 +79,7 @@ class LDAPTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_ldap_configuration_script_data(self, open_mock):
-        config = configuration.LDAP('', '', '', '', '', '')
+        config = configuration.LDAP('', '', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'HOSTNAME', 'LDAP_HOSTNAME', 'APP_ROOT',
@@ -155,7 +155,6 @@ class ZookeeperTest(unittest.TestCase):
             ipa_server_hostname='ipa_server_hostname',
             otp='otp',
             idx='idx',
-            ipa_admin_password='ipa_admin_password',
             proid='foobar'
         )
         expected_script_data = {
