@@ -54,8 +54,6 @@ EOF
 chmod 755 /etc/cron.hourly/tmhostadm-kinit
 /etc/cron.hourly/tmhostadm-kinit
 
-export TREADMILL_CELL="{{ CELL }}"
-
 nohup su -c "{{ TREADMILL }} sproc restapi -p 5108 --title 'Treadmill_API' \
     -m ipa,cloud --cors-origin='.*'" tmhostadm > /var/log/ipa_api.out 2>&1 &
 

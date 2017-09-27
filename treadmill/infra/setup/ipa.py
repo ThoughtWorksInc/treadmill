@@ -30,7 +30,7 @@ class IPA(base_provision.BaseProvision):
 
         self.configuration = configuration.IPA(
             name=self.name,
-            cell=subnet_id,
+            subnet_id=subnet_id,
             vpc=self.vpc,
             ipa_admin_password=ipa_admin_password,
             tm_release=tm_release,

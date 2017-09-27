@@ -97,7 +97,7 @@ def init():
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
     @click.option('--tm-release',
-                  callback=cli_callbacks.current_release_version,
+                  callback=cli_callbacks.create_release_url,
                   help='Treadmill release to use')
     @click.option('--app-root', default='/var/tmp',
                   help='Treadmill app root')
@@ -178,7 +178,7 @@ def init():
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
     @click.option('--tm-release',
-                  callback=cli_callbacks.current_release_version,
+                  callback=cli_callbacks.create_release_url,
                   help='Treadmill release to use')
     @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
     @click.option('--cell-cidr-block', default='172.23.0.0/24',
@@ -312,7 +312,7 @@ def init():
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
                   help='Password for IPA admin')
     @click.option('--tm-release',
-                  callback=cli_callbacks.current_release_version,
+                  callback=cli_callbacks.create_release_url,
                   help='Treadmill Release')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['medium'],
@@ -354,8 +354,6 @@ def init():
                 )
             )
 
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
-
         _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
 
         subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
@@ -392,7 +390,7 @@ def init():
                   default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
     @click.option('--tm-release',
-                  callback=cli_callbacks.current_release_version,
+                  callback=cli_callbacks.create_release_url,
                   help='Treadmill release to use')
     @click.option('--app-root', default='/var/tmp/treadmill-node',
                   help='Treadmill app root')

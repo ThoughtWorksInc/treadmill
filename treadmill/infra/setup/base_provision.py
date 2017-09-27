@@ -55,7 +55,7 @@ class BaseProvision:
 
         user_data = ''
         if getattr(self, 'configuration', None):
-            self.configuration.cell = self.subnet.id
+            self.configuration.subnet_id = self.subnet.id
             user_data = self.configuration.get_userdata()
 
         self.subnet.instances = instances.Instances.create(

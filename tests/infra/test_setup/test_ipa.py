@@ -107,7 +107,7 @@ class IPATest(unittest.TestCase):
             mock.mock.call(
                 ipa_admin_password='ipa-admin-password',
                 tm_release='release',
-                cell=None,
+                subnet_id=None,
                 name='ipa',
                 vpc=_vpc_mock,
                 proid='foobar'
