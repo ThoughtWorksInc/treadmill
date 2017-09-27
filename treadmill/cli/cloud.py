@@ -1,12 +1,9 @@
-import os
 import click
-from pprint import pprint
 import logging
 
-from treadmill.infra import constants, connection, vpc, subnet
-from treadmill.infra.setup import ipa, ldap, node, cell
+from treadmill.infra import constants
 from treadmill.infra.utils import mutually_exclusive_option, cli_callbacks
-from treadmill.infra.utils import security_group
+from treadmill import cli, restclient
 
 _LOGGER = logging.getLogger(__name__)
 _OPTIONS_FILE = 'manifest'
@@ -20,79 +17,125 @@ def init():
                   envvar='TREADMILL_DNS_DOMAIN',
                   callback=cli_callbacks.validate_domain,
                   help='Domain for hosted zone')
+    @click.option('--api',
+                  required=True,
+                  help='API URL',
+                  envvar='TREADMILL_CLOUD_RESTAPI')
     @click.pass_context
-    def cloud(ctx, domain):
+    def cloud(ctx, domain, api):
         """Manage Treadmill on cloud"""
         ctx.obj['DOMAIN'] = domain
+        ctx.obj['API'] = api
+
+    @cloud.group(name='ipa')
+    def ipa_grp():
+        """Create & Delete IPA Users, Hosts and Services"""
+
+    @ipa_grp.group(name='user')
+    def user_grp():
+        """Create and Delete IPA Users"""
+        pass
+
+    @user_grp.command('create')
+    @click.argument('username')
+    @cli.ON_REST_EXCEPTIONS
+    @click.pass_context
+    def create_user(ctx, username):
+        """Creates an IPA User"""
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url='/ipa/user/' + username,
+                headers={'Content-Type': 'application/json'}
+            ).content
+        )
+
+    @user_grp.command('delete')
+    @click.argument('username')
+    @cli.ON_REST_EXCEPTIONS
+    @click.pass_context
+    def delete_user(ctx, username):
+        """Deletes an IPA User"""
+        response = restclient.delete(
+            api=ctx.obj.get('API'),
+            url='/ipa/user/' + username,
+            headers={'Content-Type': 'application/json'}
+        )
+        cli.out(
+            response.content
+        )
+
+    @ipa_grp.group(name='host')
+    def host_grp():
+        """Create and Delete IPA Hosts"""
+        pass
+
+    @host_grp.command('create')
+    @click.argument('hostname')
+    @cli.ON_REST_EXCEPTIONS
+    @click.pass_context
+    def create_host(ctx, hostname):
+        """Creates an IPA Host"""
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url='/ipa/host/' + hostname,
+                headers={'Content-Type': 'application/json'}
+            ).content
+        )
+
+    @host_grp.command('delete')
+    @click.argument('hostname')
+    @cli.ON_REST_EXCEPTIONS
+    @click.pass_context
+    def delete_host(ctx, hostname):
+        """Deletes an IPA Host"""
+        cli.out(
+            restclient.delete(
+                api=ctx.obj.get('API'),
+                url='/ipa/host/' + hostname,
+                headers={'Content-Type': 'application/json'}
+            ).content
+        )
+
+    @ipa_grp.group(name='service')
+    def service_grp():
+        """Add and Delete IPA Service"""
+        pass
+
+    @service_grp.command('add')
+    @click.argument('hostname')
+    @click.argument('service')
+    @cli.ON_REST_EXCEPTIONS
+    @click.pass_context
+    def service_add(ctx, service, hostname):
+        """Adds an IPA Service"""
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url='/ipa/service/' + service,
+                payload={
+                    'domain': ctx.obj.get('DOMAIN'),
+                    'hostname': hostname
+                },
+                headers={'Content-Type': 'application/json'}
+            ).content
+        )
 
     @cloud.group()
-    @click.option('--proid', default='treadmld',
-                  help='Proid user for treadmill')
-    @click.pass_context
-    def configure(ctx, proid):
+    def configure():
         """Configure Treadmill EC2 Objects"""
-        ctx.obj['PROID'] = proid
-
-    @configure.command(name='vpc')
-    @click.option(
-        '--name',
-        required=True,
-        help='VPC name',
-        callback=cli_callbacks.validate_vpc_name
-    )
-    @click.option('--region', help='Region for the vpc')
-    @click.option('--vpc-cidr-block', default='172.23.0.0/16',
-                  help='CIDR block for the vpc')
-    @click.option('--secgroup_name', default='sg_common',
-                  help='Security group name')
-    @click.option(
-        '--secgroup_desc',
-        default='Treadmill Security Group',
-        help='Description for the security group'
-    )
-    @click.option('-m', '--' + _OPTIONS_FILE,
-                  cls=mutually_exclusive_option.MutuallyExclusiveOption,
-                  mutually_exclusive=['region',
-                                      'vpc_cidr_block',
-                                      'secgroup_desc',
-                                      'secgroup_name',
-                                      'name'],
-                  help="Options YAML file. ")
-    @click.pass_context
-    def configure_vpc(ctx, name, region, vpc_cidr_block,
-                      secgroup_name, secgroup_desc,
-                      manifest):
-        """Configure Treadmill VPC"""
-        domain = ctx.obj['DOMAIN']
-
-        if region:
-            connection.Connection.context.region_name = region
-
-        connection.Connection.context.domain = domain
-
-        _vpc = vpc.VPC.setup(
-            name=name,
-            cidr_block=vpc_cidr_block,
-            secgroup_name=secgroup_name,
-            secgroup_desc=secgroup_desc
-        )
-
-        click.echo(
-            pprint(_vpc.show())
-        )
+        pass
 
     @configure.command(name='ldap')
-    @click.option('--vpc-name', 'vpc_id',
+    @click.option('--vpc-name',
                   required=True,
-                  callback=cli_callbacks.convert_to_vpc_id,
                   help='VPC name')
+    @click.option('--region', help='Region for the vpc')
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--name', required=True, help='LDAP Instance Name')
     @click.option('--image', required=True,
                   help='Image to use for instances e.g. RHEL-7.4')
-    @click.option('--subnet-name', help='Subnet Name for LDAP',
-                  required=True)
-    @click.option('--region', help='Region for the vpc')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -103,6 +146,9 @@ def init():
                   help='Treadmill app root')
     @click.option('--ldap-cidr-block', default='172.23.1.0/24',
                   help='CIDR block for LDAP')
+    @click.option('--ldap-subnet-id', help='Subnet ID for LDAP')
+    @click.option('--cell-subnet-id', help='Subnet ID of Cell',
+                  required=True)
     @click.option('--ipa-admin-password',
                   callback=cli_callbacks.ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
@@ -117,63 +163,54 @@ def init():
                                       'instance_type',
                                       'tm_release',
                                       'app_root',
-                                      'subnet_name',
+                                      'ldap_subnet_id',
+                                      'cell_subnet_id',
                                       'ipa_admin_password'
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
+    @cli.ON_REST_EXCEPTIONS
     @click.pass_context
-    def configure_ldap(ctx, vpc_id, key, name, image, subnet_name, region,
+    def configure_ldap(ctx, vpc_name, region, key, name, image,
                        instance_type, tm_release, app_root,
-                       ldap_cidr_block, ipa_admin_password, manifest):
+                       ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
+                       ipa_admin_password, manifest):
         """Configure Treadmill LDAP"""
         domain = ctx.obj['DOMAIN']
-        proid = ctx.obj['PROID']
-
-        if region:
-            connection.Connection.context.region_name = region
-
-        connection.Connection.context.domain = domain
-
-        _ldap = ldap.LDAP(
-            name=name,
-            vpc_id=vpc_id,
-        )
-
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
-
-        _ldap.setup(
-            key=key,
-            count=1,
-            image=image,
-            instance_type=instance_type,
-            tm_release=tm_release,
-            app_root=app_root,
-            cidr_block=ldap_cidr_block,
-            subnet_id=subnet_id,
-            ipa_admin_password=ipa_admin_password,
-            proid=proid,
-            subnet_name=subnet_name
-        )
-
-        click.echo(
-            pprint(_ldap.subnet.show())
+        _url = '/cloud/vpc/' + vpc_name + '/domain/' + domain \
+               + '/ldap/' + name
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url=_url,
+                payload={
+                    "role": "ldap",
+                    "key": key,
+                    "cell_subnet_id": cell_subnet_id,
+                    "region": region,
+                    "app_root": app_root,
+                    "tm_release": tm_release,
+                    "ldap_cidr_block": ldap_cidr_block,
+                    "instance_type": instance_type,
+                    "image": image,
+                    "ldap_subnet_id": ldap_subnet_id,
+                    "ipa_admin_password": ipa_admin_password
+                },
+                headers={'Content-Type': 'application/json'}
+            ).content
         )
 
     @configure.command(name='cell')
-    @click.option('--vpc-name', 'vpc_id',
+    @click.option('--vpc-name',
                   required=True,
-                  callback=cli_callbacks.convert_to_vpc_id,
                   help='VPC Name')
-    @click.option('--key', required=True, help='SSH Key Name')
-    @click.option('--image', required=True,
-                  help='Image to use for new instances e.g. RHEL-7.4')
-    @click.option('--cell-subnet-name', help='Cell Subnet Name',
-                  required=True)
-    @click.option('--count', default='3', type=int,
-                  help='Number of Treadmill masters to spin up')
     @click.option('--region', help='Region for the vpc')
     @click.option('--name', default='TreadmillMaster',
                   help='Treadmill master name')
+    @click.option('--key', required=True, help='SSH Key Name')
+    @click.option('--count', default='3', type=int,
+                  help='Number of Treadmill masters to spin up')
+    @click.option('--image', required=True,
+                  help='Image to use for new instances e.g. RHEL-7.4')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
                   help='AWS ec2 instance type')
@@ -183,13 +220,7 @@ def init():
     @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
     @click.option('--cell-cidr-block', default='172.23.0.0/24',
                   help='CIDR block for the cell')
-    @click.option('--ldap-cidr-block', default='172.23.1.0/24',
-                  help='CIDR block for LDAP')
-    @click.option('--ldap-subnet-name',
-                  help='Subnet Name for LDAP',
-                  default='TreadmillLDAP')
-    @click.option('--without-ldap', required=False, is_flag=True,
-                  default=False, help='Flag for LDAP Server')
+    @click.option('--subnet-id', help='Subnet ID')
     @click.option('--ipa-admin-password',
                   callback=cli_callbacks.ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
@@ -206,188 +237,47 @@ def init():
                                       'tm_release',
                                       'app_root',
                                       'cell_cidr_block'
-                                      'ldap_subnet_name',
-                                      'ipa_admin_password',
-                                      'without_ldap',
-                                      'ldap_cidr_block'],
-                  help="Options YAML file. ")
-    @click.pass_context
-    def configure_cell(ctx, vpc_id, key, image, cell_subnet_name,
-                       count, region, name, instance_type, tm_release,
-                       app_root, cell_cidr_block, ldap_cidr_block,
-                       ldap_subnet_name, without_ldap, ipa_admin_password,
-                       manifest):
-        """Configure Treadmill Cell"""
-        domain = ctx.obj['DOMAIN']
-        proid = ctx.obj['PROID']
-
-        if region:
-            connection.Connection.context.region_name = region
-
-        connection.Connection.context.domain = domain
-
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(
-            vpc_id, cell_subnet_name
-        )
-
-        _cell = cell.Cell(
-            vpc_id=vpc_id,
-            subnet_id=subnet_id,
-        )
-
-        result = {}
-        if not without_ldap:
-            _ldap = ldap.LDAP(
-                name='TreadmillLDAP',
-                vpc_id=vpc_id,
-            )
-
-            ldap_subnet_id = subnet.Subnet.get_subnet_id_from_name(
-                vpc_id, ldap_subnet_name
-            )
-
-            _ldap.setup(
-                key=key,
-                count=1,
-                image=image,
-                instance_type=instance_type,
-                tm_release=tm_release,
-                app_root=app_root,
-                cidr_block=ldap_cidr_block,
-                subnet_id=ldap_subnet_id,
-                ipa_admin_password=ipa_admin_password,
-                proid=proid,
-                subnet_name=ldap_subnet_name
-            )
-
-            result['Ldap'] = _ldap.subnet.show()
-
-        _cell.setup_zookeeper(
-            name='TreadmillZookeeper',
-            key=key,
-            count=count,
-            image=image,
-            instance_type=instance_type,
-            subnet_cidr_block=cell_cidr_block,
-            ipa_admin_password=ipa_admin_password,
-            proid=proid,
-            subnet_name=cell_subnet_name
-        )
-        _cell.setup_master(
-            name=name,
-            key=key,
-            count=count,
-            image=image,
-            instance_type=instance_type,
-            tm_release=tm_release,
-            app_root=app_root,
-            subnet_cidr_block=cell_cidr_block,
-            ipa_admin_password=ipa_admin_password,
-            proid=proid,
-            subnet_name=cell_subnet_name
-        )
-
-        result['Cell'] = _cell.show()
-
-        click.echo(
-            pprint(result)
-        )
-
-    @configure.command(name='domain')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
-                  required=True, help='VPC Name')
-    @click.option('--key', required=True, help='SSH key name')
-    @click.option('--image', required=True,
-                  help='Image to use for new master instance e.g. RHEL-7.4')
-    @click.option('--subnet-name', help='Subnet Name', required=True)
-    @click.option('--name', default='TreadmillIPA',
-                  help='Name of the instance')
-    @click.option('--region', help='Region for the vpc')
-    @click.option('--subnet-cidr-block', help='Cidr block of subnet for IPA',
-                  default='172.23.2.0/24')
-    @click.option('--count', help='Count of the instances', default=1)
-    @click.option('--ipa-admin-password',
-                  callback=cli_callbacks.validate_ipa_password,
-                  envvar='TREADMILL_IPA_ADMIN_PASSWORD',
-                  help='Password for IPA admin')
-    @click.option('--tm-release',
-                  callback=cli_callbacks.current_release_version,
-                  help='Treadmill Release')
-    @click.option('--instance-type',
-                  default=constants.INSTANCE_TYPES['EC2']['medium'],
-                  help='Instance type')
-    @click.option('-m', '--' + _OPTIONS_FILE,
-                  cls=mutually_exclusive_option.MutuallyExclusiveOption,
-                  mutually_exclusive=['region',
-                                      'vpc_id',
-                                      'name',
-                                      'key',
-                                      'count',
-                                      'image',
-                                      'instance_type',
-                                      'tm_release',
-                                      'subnet_cidr_block'
-                                      'subnet_name',
+                                      'subnet_id',
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
+    @cli.ON_REST_EXCEPTIONS
     @click.pass_context
-    def configure_domain(ctx, vpc_id, key, image, subnet_name, name, region,
-                         subnet_cidr_block, count, ipa_admin_password,
-                         tm_release, instance_type, manifest):
-        """Configure Treadmill Domain (IPA)"""
-
+    def configure_cell(ctx, vpc_name, region, name, key, count, image,
+                       instance_type, tm_release, app_root,
+                       cell_cidr_block, subnet_id,
+                       ipa_admin_password, manifest):
+        """Configure Treadmill Cell"""
         domain = ctx.obj['DOMAIN']
-        proid = ctx.obj['PROID']
-
-        connection.Connection.context.domain = domain
-        if region:
-            connection.Connection.context.region_name = region
-
-        if not ipa_admin_password:
-            ipa_admin_password = os.environ.get(
-                'TREADMILL_IPA_ADMIN_PASSWORD',
-                click.prompt(
-                    'Create IPA admin password ',
-                    hide_input=True,
-                    confirmation_prompt=True
-                )
-            )
-
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
-
-        _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
-
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
-
-        _ipa.setup(
-            subnet_id=subnet_id,
-            count=count,
-            ipa_admin_password=ipa_admin_password,
-            tm_release=tm_release,
-            key=key,
-            instance_type=instance_type,
-            image=image,
-            cidr_block=subnet_cidr_block,
-            proid=proid,
-            subnet_name=subnet_name
-        )
-
-        click.echo(
-            pprint(_ipa.show())
+        _url = '/cloud/vpc/' + vpc_name + '/domain/' + domain + '/cell'
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url=_url,
+                payload={
+                    "role": "cell",
+                    "key": key,
+                    "tm_release": tm_release,
+                    "region": region,
+                    "app_root": app_root,
+                    "cell_cidr_block": cell_cidr_block,
+                    "instance_type": instance_type,
+                    "image": image,
+                    "ipa_admin_password": ipa_admin_password,
+                    "subnet_id": subnet_id
+                },
+                headers={'Content-Type': 'application/json'}
+            ).content
         )
 
     @configure.command(name='node')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
+    @click.option('--vpc-name',
                   required=True, help='VPC Name')
-    @click.option('--key', required=True, help='SSH Key Name')
-    @click.option('--image', required=True,
-                  help='Image to use for new node instance e.g. RHEL-7.4')
-    @click.option('--subnet-name', required=True, help='Subnet Name')
     @click.option('--region', help='Region for the vpc')
     @click.option('--name', default='TreadmillNode',
                   help='Node name')
+    @click.option('--key', required=True, help='SSH Key Name')
+    @click.option('--image', required=True,
+                  help='Image to use for new node instance e.g. RHEL-7.4')
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['large'],
                   help='AWS ec2 instance type')
@@ -396,6 +286,7 @@ def init():
                   help='Treadmill release to use')
     @click.option('--app-root', default='/var/tmp/treadmill-node',
                   help='Treadmill app root')
+    @click.option('--subnet-id', required=True, help='Subnet ID')
     @click.option('--ipa-admin-password',
                   callback=cli_callbacks.ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
@@ -412,53 +303,38 @@ def init():
                                       'instance_type',
                                       'tm_release',
                                       'app_root',
-                                      'subnet_name',
+                                      'subnet_id',
                                       'ipa_admin_password'
                                       'with_api'],
                   help="Options YAML file. ")
+    @cli.ON_REST_EXCEPTIONS
     @click.pass_context
-    def configure_node(ctx, vpc_id, key, image, subnet_name, region, name,
+    def configure_node(ctx, vpc_name, region, name, key, image,
                        instance_type, tm_release, app_root,
-                       ipa_admin_password, with_api, manifest):
+                       subnet_id, ipa_admin_password, with_api, manifest):
         """Configure new Node in Cell"""
 
         domain = ctx.obj['DOMAIN']
-        proid = ctx.obj['PROID']
-
-        connection.Connection.context.domain = domain
-        if region:
-            connection.Connection.context.region_name = region
-
-        if not ipa_admin_password:
-            ipa_admin_password = os.environ.get(
-                'TREADMILL_IPA_ADMIN_PASSWORD',
-                click.prompt('IPA admin password ', hide_input=True)
-            )
-
-        _node = node.Node(name, vpc_id)
-
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
-
-        if not subnet_id:
-            raise click.BadParameter(
-                "Subnet doesn't exist with name %s",
-                subnet_name
-            )
-
-        _node.setup(
-            key=key,
-            image=image,
-            instance_type=instance_type,
-            tm_release=tm_release,
-            app_root=app_root,
-            subnet_id=subnet_id,
-            ipa_admin_password=ipa_admin_password,
-            with_api=with_api,
-            proid=proid,
-            subnet_name=subnet_name
-        )
-        click.echo(
-            pprint(_node.subnet.show())
+        _url = '/cloud/vpc/' + vpc_name + '/domain/' + domain \
+               + '/server/' + name
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url=_url,
+                payload={
+                    "role": "node",
+                    "key": key,
+                    "tm_release": tm_release,
+                    "region": region,
+                    "app_root": app_root,
+                    "with_api": with_api,
+                    "instance_type": instance_type,
+                    "image": image,
+                    "ipa_admin_password": ipa_admin_password,
+                    "subnet_id": subnet_id
+                },
+                headers={'Content-Type': 'application/json'}
+            ).content
         )
 
     @cloud.group()
@@ -466,87 +342,63 @@ def init():
         """Delete Treadmill EC2 Objects"""
         pass
 
-    @delete.command(name='vpc')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
-                  required=True, help='VPC Name')
-    @click.pass_context
-    def delete_vpc(ctx, vpc_id):
-        """Delete VPC"""
-
-        domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
-
-        vpc.VPC(id=vpc_id).delete()
-
-    @delete.command(name='cell')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
-                  required=True, help='VPC Name')
-    @click.option('--subnet-name', required=True,
-                  help='Subnet Name of cell')
-    @click.pass_context
-    def delete_cell(ctx, vpc_id, subnet_name):
-        """Delete Cell (Subnet)"""
-        subnet_id = cli_callbacks.convert_to_subnet_id(vpc_id, subnet_name)
-        domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
-        subnet.Subnet(id=subnet_id).destroy()
-
-    @delete.command(name='domain')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
-                  required=True, help='VPC Name')
-    @click.option('--subnet-name',
-                  required=True, help='Subnet Name of Domain')
-    @click.option('--name', help='Name of Instance',
-                  default="TreadmillIPA")
-    @click.pass_context
-    def delete_domain(ctx, vpc_id, subnet_name, name):
-        """Delete IPA"""
-        subnet_id = cli_callbacks.convert_to_subnet_id(vpc_id, subnet_name)
-        domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
-
-        _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
-        _ipa.destroy(subnet_id=subnet_id)
-
     @delete.command(name='ldap')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
+    @click.option('--vpc-name',
                   required=True, help='VPC Name')
-    @click.option('--subnet-name', required=True,
-                  help='Subnet Name of LDAP')
-    @click.option('--name', help='Name of Instance',
+    @click.option('--name', help='LDAP Name',
+                  required=True,
                   default="TreadmillLDAP")
     @click.pass_context
-    def delete_ldap(ctx, vpc_id, subnet_name, name):
+    def delete_ldap(ctx, vpc_name, name):
         """Delete LDAP"""
-        subnet_id = cli_callbacks.convert_to_subnet_id(vpc_id, subnet_name)
         domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
 
-        _ldap = ldap.LDAP(name=name, vpc_id=vpc_id)
-        _ldap.destroy(subnet_id=subnet_id)
+        _url = '/cloud/vpc/' + vpc_name + '/domain/' + domain \
+               + '/ldap/' + name
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url=_url,
+            ).content
+        )
+
+    @delete.command(name='cell')
+    @click.option('--vpc-name',
+                  required=True, help='VPC Name')
+    @click.option('--subnet-id', help='Cell(Subnet) ID',
+                  required=True)
+    @click.pass_context
+    def delete_cell(ctx, vpc_name, subnet_id):
+        """Delete Cell"""
+        domain = ctx.obj['DOMAIN']
+
+        _url = '/cloud/vpc/' + vpc_name + '/domain/' + domain \
+               + '/cell/' + subnet_id
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url=_url,
+            ).content
+        )
 
     @delete.command(name='node')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
+    @click.option('--vpc-name',
                   required=True, help='VPC Name')
-    @click.option('--name', help='Instance Name', required=False)
-    @click.option('--instance-id', help='Instance ID', required=False)
+    @click.option('--name', help='Node Name',
+                  required=True)
     @click.pass_context
-    def delete_node(ctx, vpc_id, name, instance_id):
+    def delete_node(ctx, vpc_name, name):
         """Delete Node"""
         domain = ctx.obj['DOMAIN']
-        if not name and not instance_id:
-            _LOGGER.error('Provide either --name or --instance-id of'
-                          'Node Instance and try again.')
-            return
 
-        connection.Connection.context.domain = domain
-        _node = node.Node(name=name, vpc_id=vpc_id)
-        _node.destroy(instance_id=instance_id)
+        _url = '/cloud/vpc/' + vpc_name + '/domain/' + domain \
+               + '/server/' + name
+        cli.out(
+            restclient.post(
+                api=ctx.obj.get('API'),
+                url=_url,
+            ).content
+        )
 
     @cloud.group('list')
     def _list():
@@ -554,91 +406,41 @@ def init():
         pass
 
     @_list.command(name='vpc')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
+    @click.option('--vpc-name',
                   help='VPC Name')
     @click.pass_context
-    def vpc_resources(ctx, vpc_id):
+    def vpc_resources(ctx, vpc_name):
         """Show VPC(s)"""
         domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
-        if vpc_id:
-            result = pprint(vpc.VPC(id=vpc_id).show())
-            click.echo(result)
-        else:
-            _vpcs = vpc.VPC.all()
-            result = list(map(lambda v: {'id': v.id, 'name': v.name}, _vpcs))
-            click.echo({'Vpcs': result})
+        _url = '/cloud/vpc?domain=' + domain
+        if vpc_name:
+            _url += '&vpc_name=' + vpc_name
+        cli.out(
+            restclient.get(
+                api=ctx.obj.get('API'),
+                url=_url,
+            ).content
+        )
 
     @_list.command(name='cell')
-    @click.option('--vpc-name', 'vpc_id',
-                  callback=cli_callbacks.convert_to_vpc_id,
+    @click.option('--vpc-name',
+                  required=True,
                   help='VPC Name')
-    @click.option('--subnet-name',
-                  help='Subnet Name of cell')
+    @click.option('--cell-id',
+                  required=False,
+                  help='Cell(Subnet) ID')
     @click.pass_context
-    def cell_resources(ctx, vpc_id, subnet_name):
-        """Show Cell"""
-        subnet_id = cli_callbacks.convert_to_subnet_id(vpc_id, subnet_name)
+    def cell_resources(ctx, vpc_name, cell_id):
+        """Show Cell(s)"""
         domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
-        if subnet_id:
-            click.echo(
-                pprint(
-                    subnet.Subnet(id=subnet_id).show()
-                )
-            )
-            return
-
-        if vpc_id:
-            vpcs = [vpc_id]
-        else:
-            vpcs = [_vpc.id for _vpc in vpc.VPC.all()]
-
-        result = []
-
-        for v in vpcs:
-            subnets = vpc.VPC(id=v).list_cells()
-            if subnets:
-                result.append({
-                    'VpcId': v,
-                    'Subnets': subnets
-                })
-
-        click.echo(pprint(result))
-
-    @cloud.group()
-    def port():
-        """enable/disable EC2 instance port"""
-        pass
-
-    @port.command(name='enable')
-    @click.option(
-        '-a', '--anywhere', is_flag=True,
-        default=True,
-        help='From Anywhere?'
-    )
-    @click.option('--protocol', help='Protocol', default='tcp')
-    @click.option('-p', '--port', required=True, help='Port')
-    @click.option('-s', '--security-group-id', required=True,
-                  help='Security Group ID')
-    def enable_port(security_group_id, port, protocol, anywhere):
-        """Enable Port from my ip"""
-        security_group.enable(port, security_group_id, protocol, anywhere)
-
-    @port.command(name='disable')
-    @click.option(
-        '-a', '--anywhere',
-        is_flag=True,
-        default=True,
-        help='From Anywhere?'
-    )
-    @click.option('--protocol', help='Protocol', default='tcp')
-    @click.option('-p', '--port', required=True, help='Port')
-    @click.option('-s', '--security-group-id', required=True,
-                  help='Security Group ID')
-    def disable_port(security_group_id, port, protocol, anywhere):
-        """Disable Port from my ip"""
-        security_group.disable(port, security_group_id, protocol, anywhere)
+        _url = '/cloud/vpc/' + vpc_name + '/domain/' + domain + '/cell'
+        if cell_id:
+            _url += '?cell_id=' + cell_id
+        cli.out(
+            restclient.get(
+                api=ctx.obj.get('API'),
+                url=_url,
+            ).content
+        )
 
     return cloud
