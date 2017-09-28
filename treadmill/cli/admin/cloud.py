@@ -114,10 +114,10 @@ def init():
                                       'key',
                                       'name',
                                       'image',
+                                      'subnet_name',
                                       'instance_type',
                                       'tm_release',
                                       'app_root',
-                                      'subnet_name',
                                       'ipa_admin_password'
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
@@ -167,7 +167,7 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--image', required=True,
                   help='Image to use for new instances e.g. RHEL-7.4')
-    @click.option('--cell-subnet-name', help='Cell Subnet Name',
+    @click.option('--cell-subnet-name', help='Cell(Subnet) Name',
                   required=True)
     @click.option('--count', default='3', type=int,
                   help='Number of Treadmill masters to spin up')
@@ -382,7 +382,7 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--image', required=True,
                   help='Image to use for new node instance e.g. RHEL-7.4')
-    @click.option('--subnet-name', required=True, help='Subnet Name')
+    @click.option('--subnet-name', required=True, help='Cell(Subnet) Name')
     @click.option('--region', help='Region for the vpc')
     @click.option('--name', default='TreadmillNode',
                   help='Node name')
@@ -513,10 +513,9 @@ def init():
     @click.option('--vpc-name', 'vpc_id',
                   callback=cli_callbacks.convert_to_vpc_id,
                   required=True, help='VPC Name')
-    @click.option('--subnet-name', required=True,
+    @click.option('--subnet-name',
                   help='Subnet Name of LDAP')
-    @click.option('--name', help='Name of Instance',
-                  default="TreadmillLDAP")
+    @click.option('--name', help='Name of Instance',)
     @click.pass_context
     def delete_ldap(ctx, vpc_id, subnet_name, name):
         """Delete LDAP"""
