@@ -32,7 +32,6 @@ from six.moves import configparser
 from treadmill import context
 from treadmill import plugin_manager
 from treadmill import restclient
-import botocore
 
 __path__ = pkgutil.extend_path(__path__, __name__)
 
