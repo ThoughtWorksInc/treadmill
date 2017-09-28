@@ -11,7 +11,6 @@ class Configuration:
 
     def __init__(self, setup_scripts=None):
         self.setup_scripts = setup_scripts or []
-        self.cell = None
 
     def get_userdata(self):
         if not self.setup_scripts:
@@ -26,8 +25,6 @@ class Configuration:
         for script in self.setup_scripts:
             script['vars'] = script.get('vars', {})
             script['vars']['TREADMILL'] = TREADMILL_BIN
-            if 'CELL' in script['vars'].keys() and self.cell:
-                script['vars']['CELL'] = self.cell
             with open(SCRIPT_DIR + script['name'], 'r') as data:
                 template = environment.from_string(data.read())
                 userdata += template.render(script['vars']) + '\n'
