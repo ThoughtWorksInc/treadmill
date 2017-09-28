@@ -7,6 +7,7 @@ from treadmill.infra import constants, connection, vpc, subnet
 from treadmill.infra.setup import ipa, ldap, node, cell
 from treadmill.infra.utils import security_group, hosted_zones
 from treadmill.infra.utils import mutually_exclusive_option, cli_callbacks
+from treadmill import cli
 
 _LOGGER = logging.getLogger(__name__)
 _OPTIONS_FILE = 'manifest'
@@ -56,6 +57,7 @@ def init():
                                       'name'],
                   help="Options YAML file. ")
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def configure_vpc(ctx, region, vpc_cidr_block,
                       secgroup_name, secgroup_desc,
                       name, manifest):
@@ -121,6 +123,7 @@ def init():
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def configure_ldap(ctx, vpc_id, region, key, name, image,
                        instance_type, tm_release, app_root,
                        ldap_cidr_block, ldap_subnet_id, cell_subnet_id,
@@ -206,6 +209,7 @@ def init():
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def configure_cell(ctx, vpc_id, region, name, key, count, image,
                        instance_type, tm_release, app_root,
                        cell_cidr_block, ldap_cidr_block,
@@ -391,6 +395,7 @@ def init():
                                       'with_api'],
                   help="Options YAML file. ")
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def configure_node(ctx, vpc_id, region, name, key, image,
                        instance_type, tm_release, app_root,
                        subnet_id, ipa_admin_password, with_api, manifest):
@@ -433,6 +438,7 @@ def init():
                   callback=cli_callbacks.convert_to_vpc_id,
                   required=True, help='VPC Name')
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def delete_vpc(ctx, vpc_id):
         """Delete VPC"""
 
@@ -447,6 +453,7 @@ def init():
                   required=True, help='VPC Name')
     @click.option('--subnet-id', required=True, help='Subnet ID of cell')
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def delete_cell(ctx, vpc_id, subnet_id):
         """Delete Cell (Subnet)"""
         domain = ctx.obj['DOMAIN']
@@ -461,6 +468,7 @@ def init():
     @click.option('--name', help='Name of Instance',
                   default="TreadmillIPA")
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def delete_domain(ctx, vpc_id, subnet_id, name):
         """Delete IPA"""
         domain = ctx.obj['DOMAIN']
@@ -477,6 +485,7 @@ def init():
     @click.option('--name', help='Name of Instance',
                   default="TreadmillLDAP")
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def delete_ldap(ctx, vpc_id, subnet_id, name):
         """Delete LDAP"""
         domain = ctx.obj['DOMAIN']
@@ -492,6 +501,7 @@ def init():
     @click.option('--name', help='Instance Name', required=False)
     @click.option('--instance-id', help='Instance ID', required=False)
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def delete_node(ctx, vpc_id, name, instance_id):
         """Delete Node"""
         domain = ctx.obj['DOMAIN']
@@ -514,6 +524,7 @@ def init():
                   callback=cli_callbacks.convert_to_vpc_id,
                   help='VPC Name')
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def vpc_resources(ctx, vpc_id):
         """Show VPC(s)"""
         domain = ctx.obj['DOMAIN']
@@ -532,6 +543,7 @@ def init():
                   help='VPC Name')
     @click.option('--subnet-id', help='Subnet ID of cell')
     @click.pass_context
+    @cli.ON_CLI_EXCEPTIONS
     def cell_resources(ctx, vpc_id, subnet_id):
         """Show Cell"""
         domain = ctx.obj['DOMAIN']
