@@ -24,7 +24,6 @@ from six.moves import configparser
 from treadmill import context
 from treadmill import utils
 from treadmill import restclient
-from botocore.exceptions import ClientError
 import collections
 import botocore
 
