@@ -123,7 +123,8 @@ class IPATest(unittest.TestCase):
             proid='foobar'
         )
         expected_script_data = {
-            'provision-base.sh': ['DOMAIN', 'NAME', 'REGION', 'PROID', 'SUBNET_ID'],
+            'provision-base.sh': ['DOMAIN', 'NAME', 'REGION',
+                                  'PROID', 'SUBNET_ID'],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'install-ipa-server.sh': [
                 'DOMAIN', 'IPA_ADMIN_PASSWORD', 'REVERSE_ZONE',
