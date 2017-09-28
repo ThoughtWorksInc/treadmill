@@ -80,11 +80,16 @@ class BaseProvision:
                 roles=[self.role]
             )
 
+            _subnet_ids = set(_i.subnet_id for _i in _instances.instances)
+
             _instances.terminate()
 
-            lambda _i: subnet.Subnet(
-                id=_i.subnet_id, role=self.role
-            ).destroy(), _instances.instances
+            [
+                subnet.Subnet(
+                    id=_id,
+                    role=self.role
+                ).destroy() for _id in _subnet_ids
+            ]
 
     def show(self):
         return self.subnet.show()
