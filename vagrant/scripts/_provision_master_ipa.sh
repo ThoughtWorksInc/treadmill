@@ -6,7 +6,6 @@ mkdir -p ~/.provision
 
 function run {
     checksum=~/.provision/$(basename $1)
-    md5sum -c $checksum
     if $(md5sum -c --status $checksum); then
         echo $1 is up to date.
     else
@@ -20,11 +19,13 @@ function run {
 }
 
 run $SCRIPTDIR/install-base.sh
-run $SCRIPTDIR/create-users.sh
-run $SCRIPTDIR/install-node-packages.sh
-run $SCRIPTDIR/venv.sh
 run $SCRIPTDIR/configure-etc-hosts.sh
-run $SCRIPTDIR/configure-profile.sh
-run $SCRIPTDIR/install-node-components.sh
+run $SCRIPTDIR/install-ipa-client.sh
+run $SCRIPTDIR/install-master-packages_ipa.sh
+run $SCRIPTDIR/install-ldap.sh
+run $SCRIPTDIR/create-users.sh
+run $SCRIPTDIR/venv.sh
+run $SCRIPTDIR/configure-profile_ipa.sh
+run $SCRIPTDIR/install-master-components_ipa.sh
 
-echo 'treadmill node provisioned!'
+echo 'master provisioned!'

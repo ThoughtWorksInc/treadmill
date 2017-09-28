@@ -22,7 +22,7 @@ run $SCRIPTDIR/install-base.sh
 run $SCRIPTDIR/install-ipa-packages.sh
 run $SCRIPTDIR/venv.sh
 run $SCRIPTDIR/configure-etc-hosts.sh
-run $SCRIPTDIR/configure-profile.sh
+run $SCRIPTDIR/configure-profile_ipa.sh
 run $SCRIPTDIR/install-ipa-server.sh
 
 echo 'IPA provisioned!'

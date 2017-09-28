@@ -19,12 +19,11 @@ function run {
 }
 
 run $SCRIPTDIR/install-base.sh
-run $SCRIPTDIR/configure-etc-hosts.sh
-run $SCRIPTDIR/install-ipa-client.sh
 run $SCRIPTDIR/install-master-packages.sh
 run $SCRIPTDIR/install-ldap.sh
 run $SCRIPTDIR/create-users.sh
 run $SCRIPTDIR/venv.sh
+run $SCRIPTDIR/configure-etc-hosts.sh
 run $SCRIPTDIR/configure-profile.sh
 run $SCRIPTDIR/install-master-components.sh
 
