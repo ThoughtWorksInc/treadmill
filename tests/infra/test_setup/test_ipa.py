@@ -85,10 +85,16 @@ class IPATest(unittest.TestCase):
 
         _vpc_mock.create_security_group.assert_called_once()
         _vpc_mock.add_secgrp_rules.assert_called_once()
-        _vpc_mock.associate_dhcp_options.assert_called_once_with([{
-            'Key': 'domain-name-servers', 'Values': [_private_ip]
-        }])
-
+        _vpc_mock.delete_dhcp_options.assert_called_once()
+        self.assertCountEqual(
+            _vpc_mock.associate_dhcp_options.mock_calls,
+            [
+                mock.mock.call(default=True),
+                mock.mock.call([{
+                    'Key': 'domain-name-servers', 'Values': [_private_ip]
+                }])
+            ]
+        )
         self.assertEqual(ipa.subnet.instances, instances_mock)
         InstancesMock.create.assert_called_once_with(
             image='foo-123',

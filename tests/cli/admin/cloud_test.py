@@ -38,8 +38,6 @@ class CloudTest(unittest.TestCase):
                 'configure',
                 'vpc',
                 '--vpc-cidr-block=172.24.0.0/16',
-                '--secgroup_name=sg_common',
-                '--secgroup_desc=Test',
                 '--name=' + self.vpc_name,
             ],
             obj={}
@@ -49,8 +47,6 @@ class CloudTest(unittest.TestCase):
         vpc_mock.setup.assert_called_once_with(
             name=self.vpc_name,
             cidr_block='172.24.0.0/16',
-            secgroup_name='sg_common',
-            secgroup_desc='Test',
         )
 
     @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
@@ -66,8 +62,6 @@ class CloudTest(unittest.TestCase):
                 'configure',
                 'vpc',
                 '--vpc-cidr-block=172.24.0.0/16',
-                '--secgroup_name=sg_common',
-                '--secgroup_desc=Test',
                 '--name=' + self.vpc_name
             ],
             obj={}
@@ -78,12 +72,10 @@ class CloudTest(unittest.TestCase):
 
     @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
     @mock.patch('treadmill.cli.admin.cloud.cell.Cell')
-    @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
-    @mock.patch('treadmill.cli.admin.cloud.cell.Cell')
     @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
     def test_configure_cell(self, subnet_mock, cell_mock, vpc_mock):
         """
-        Test cloud configure cell without ldap
+        Test cloud configure cell
         """
         vpc_mock.get_id_from_name = mock.Mock(return_value=self.vpc_id_mock)
         subnet_mock.get_subnet_id_from_name = mock.Mock(return_value=None)

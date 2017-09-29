@@ -43,12 +43,6 @@ def init():
     @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-cidr-block', default='172.23.0.0/16',
                   help='CIDR block for the vpc')
-    @click.option(
-        '--name',
-        required=True,
-        help='VPC name',
-        callback=cli_callbacks.validate_vpc_name
-    )
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=mutually_exclusive_option.MutuallyExclusiveOption,
                   mutually_exclusive=['region',

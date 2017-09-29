@@ -84,7 +84,7 @@ class VPC(ec2object.EC2Object):
     ):
         _vpc = VPC.create(name=name, cidr_block=cidr_block)
         _vpc.create_internet_gateway()
-        secgroup_id = _vpc. create_security_group(
+        secgroup_id = _vpc.create_security_group(
             constants.COMMON_SEC_GRP, 'Treadmill Security Group'
         )
         ip_permissions = [{

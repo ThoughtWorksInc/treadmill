@@ -447,6 +447,7 @@ class VPCTest(unittest.TestCase):
             create_security_group_mock,
             associate_dhcp_options_mock
     ):
+        create_security_group_mock.return_value = 'sg-group'
         _connectionMock = connectionMock()
         _vpc_mock = vpc.VPC()
         vpc.VPC.create = mock.Mock(return_value=_vpc_mock)
@@ -462,11 +463,16 @@ class VPCTest(unittest.TestCase):
             cidr_block='172.23.0.0/24'
         )
         create_internet_gateway_mock.assert_called_once()
-        create_security_group_mock.assert_called_once()
-        associate_dhcp_options_mock.assert_called_once_with([{
-            'Key': 'domain-name-servers',
-            'Values': ['AmazonProvidedDNS']
-        }])
+        create_security_group_mock.assert_called_once_with(
+            'sg_common', 'Treadmill Security Group'
+        )
+        _connectionMock.authorize_security_group_ingress.assert_called_once_with(  # noqa
+            GroupId='sg-group',
+            IpPermissions=[{
+                'IpProtocol': '-1',
+                'UserIdGroupPairs': [{'GroupId': 'sg-group'}]
+            }]
+        )
 
     @mock.patch('treadmill.infra.connection.Connection')
     def test_all(
