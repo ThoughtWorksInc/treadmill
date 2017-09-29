@@ -50,17 +50,21 @@ class API(object):
                     with open(_file_path, 'w') as f:
                         yaml.dump(_content, f, default_flow_style=False)
 
-                    subprocess.check_output([
-                        'treadmill',
-                        'admin',
-                        'cloud',
-                        '--domain',
-                        domain,
-                        'configure',
-                        role,
-                        '-m',
-                        _file_path
-                    ])
+                    try:
+                        subprocess.check_output([
+                            'treadmill',
+                            'admin',
+                            'cloud',
+                            '--domain',
+                            domain,
+                            'configure',
+                            role,
+                            '-m',
+                            _file_path
+                        ], stderr=subprocess.STDOUT)
+                    except subprocess.CalledProcessError as e:
+                        e.message = e.output.decode().replace('\n', '')
+                        raise
                 else:
                     raise ValueError(
                         ', '.join(default_mandatory_params) +
@@ -100,38 +104,46 @@ class API(object):
                 domain,
                 name
         ):
-            return subprocess.check_output([
-                'treadmill',
-                'admin',
-                'cloud',
-                '--domain',
-                domain,
-                'delete',
-                'ldap',
-                '--vpc-name',
-                vpc_name,
-                '--name',
-                name
-            ])
+            try:
+                return subprocess.check_output([
+                    'treadmill',
+                    'admin',
+                    'cloud',
+                    '--domain',
+                    domain,
+                    'delete',
+                    'ldap',
+                    '--vpc-name',
+                    vpc_name,
+                    '--name',
+                    name
+                ], stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError as e:
+                e.message = e.output.decode().replace('\n', '')
+                raise
 
         def delete_cell(
                 vpc_name,
                 domain,
                 cell_name
         ):
-            return subprocess.check_output([
-                'treadmill',
-                'admin',
-                'cloud',
-                '--domain',
-                domain,
-                'delete',
-                'cell',
-                '--vpc-name',
-                vpc_name,
-                '--subnet-name',
-                cell_name
-            ])
+            try:
+                return subprocess.check_output([
+                    'treadmill',
+                    'admin',
+                    'cloud',
+                    '--domain',
+                    domain,
+                    'delete',
+                    'cell',
+                    '--vpc-name',
+                    vpc_name,
+                    '--subnet-id',
+                    cell_id
+                ], stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError as e:
+                e.message = e.output.decode().replace('\n', '')
+                raise
 
         def cells(domain, vpc_name, cell_name):
             _default_command = [
