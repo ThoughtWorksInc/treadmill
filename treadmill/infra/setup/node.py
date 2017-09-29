@@ -12,7 +12,6 @@ class Node(base_provision.BaseProvision):
             tm_release,
             instance_type,
             app_root,
-            subnet_id,
             with_api,
             ipa_admin_password,
             proid,
@@ -31,7 +30,6 @@ class Node(base_provision.BaseProvision):
         self.configuration = configuration.Node(
             tm_release=tm_release,
             app_root=app_root,
-            subnet_id=subnet_id,
             ldap_hostname=ldap_hostname,
             otp=otp,
             with_api=with_api,
@@ -42,7 +40,6 @@ class Node(base_provision.BaseProvision):
         super().setup(
             image=image,
             count=1,
-            subnet_id=subnet_id,
             key=key,
             instance_type=instance_type,
             subnet_name=subnet_name

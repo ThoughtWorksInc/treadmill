@@ -150,7 +150,6 @@ class InstanceTest(unittest.TestCase):
         )
 
 
-
 class InstancesTest(unittest.TestCase):
     """Tests instances collection"""
 

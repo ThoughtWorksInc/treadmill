@@ -16,7 +16,6 @@ class Master(base_provision.BaseProvision):
             ipa_admin_password,
             proid,
             subnet_name,
-            subnet_id=None,
     ):
         _hostnames = instances.Instances.get_hostnames_by_roles(
             vpc_id=self.vpc.id,
@@ -25,15 +24,8 @@ class Master(base_provision.BaseProvision):
             ]
         )
 
-        self.subnet_name = constants.TREADMILL_CELL_SUBNET_NAME
         _ipa = ipa.API()
         _master_hostnames = self._hostname_cluster(count)
-
-        def _subnet_id(subnet_id):
-            if getattr(self, 'subnet', None) and self.subnet.id:
-                return self.subnet.id
-            else:
-                return subnet_id
 
         _name = self.name
         for _master_h in _master_hostnames.keys():
@@ -42,7 +34,6 @@ class Master(base_provision.BaseProvision):
             self.configuration = configuration.Master(
                 hostname=_master_h,
                 otp=_otp,
-                subnet_id=subnet_id,
                 ldap_hostname=_hostnames[constants.ROLES['LDAP']],
                 tm_release=tm_release,
                 app_root=app_root,
@@ -55,7 +46,6 @@ class Master(base_provision.BaseProvision):
                 image=image,
                 count=1,
                 cidr_block=cidr_block,
-                subnet_id=_subnet_id(subnet_id),
                 key=key,
                 instance_type=instance_type,
                 subnet_name=subnet_name,

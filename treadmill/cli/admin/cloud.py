@@ -139,8 +139,6 @@ def init():
             vpc_id=vpc_id,
         )
 
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
-
         _ldap.setup(
             key=key,
             count=1,
@@ -149,7 +147,6 @@ def init():
             tm_release=tm_release,
             app_root=app_root,
             cidr_block=ldap_cidr_block,
-            subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
             proid=proid,
             subnet_name=subnet_name
@@ -226,13 +223,9 @@ def init():
 
         connection.Connection.context.domain = domain
 
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(
-            vpc_id, cell_subnet_name
-        )
-
         _cell = cell.Cell(
             vpc_id=vpc_id,
-            subnet_id=subnet_id,
+            subnet_name=cell_subnet_name
         )
 
         result = {}
@@ -240,10 +233,6 @@ def init():
             _ldap = ldap.LDAP(
                 name='TreadmillLDAP',
                 vpc_id=vpc_id,
-            )
-
-            ldap_subnet_id = subnet.Subnet.get_subnet_id_from_name(
-                vpc_id, ldap_subnet_name
             )
 
             _ldap.setup(
@@ -254,7 +243,6 @@ def init():
                 tm_release=tm_release,
                 app_root=app_root,
                 cidr_block=ldap_cidr_block,
-                subnet_id=ldap_subnet_id,
                 ipa_admin_password=ipa_admin_password,
                 proid=proid,
                 subnet_name=ldap_subnet_name
@@ -263,7 +251,7 @@ def init():
             result['Ldap'] = _ldap.subnet.show()
 
         _cell.setup_zookeeper(
-            name='TreadmillZookeeper',
+            name=constants.TREADMILL_ZOOKEEPER,
             key=key,
             count=count,
             image=image,
@@ -271,7 +259,6 @@ def init():
             subnet_cidr_block=cell_cidr_block,
             ipa_admin_password=ipa_admin_password,
             proid=proid,
-            subnet_name=cell_subnet_name
         )
         _cell.setup_master(
             name=name,
@@ -284,7 +271,6 @@ def init():
             subnet_cidr_block=cell_cidr_block,
             ipa_admin_password=ipa_admin_password,
             proid=proid,
-            subnet_name=cell_subnet_name
         )
 
         result['Cell'] = _cell.show()
@@ -356,10 +342,7 @@ def init():
 
         _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
 
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
-
         _ipa.setup(
-            subnet_id=subnet_id,
             count=count,
             ipa_admin_password=ipa_admin_password,
             tm_release=tm_release,
@@ -435,21 +418,12 @@ def init():
 
         _node = node.Node(name, vpc_id)
 
-        subnet_id = subnet.Subnet.get_subnet_id_from_name(vpc_id, subnet_name)
-
-        if not subnet_id:
-            raise click.BadParameter(
-                "Subnet doesn't exist with name %s",
-                subnet_name
-            )
-
         _node.setup(
             key=key,
             image=image,
             instance_type=instance_type,
             tm_release=tm_release,
             app_root=app_root,
-            subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
             with_api=with_api,
             proid=proid,
@@ -486,10 +460,9 @@ def init():
     @click.pass_context
     def delete_cell(ctx, vpc_id, subnet_name):
         """Delete Cell (Subnet)"""
-        subnet_id = cli_callbacks.convert_to_subnet_id(vpc_id, subnet_name)
-        domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
-        subnet.Subnet(id=subnet_id).destroy()
+        connection.Connection.context.domain = ctx.obj['DOMAIN']
+
+        subnet.Subnet(vpc_id=vpc_id, name=subnet_name).destroy()
 
     @delete.command(name='domain')
     @click.option('--vpc-name', 'vpc_id',
@@ -502,12 +475,10 @@ def init():
     @click.pass_context
     def delete_domain(ctx, vpc_id, subnet_name, name):
         """Delete IPA"""
-        subnet_id = cli_callbacks.convert_to_subnet_id(vpc_id, subnet_name)
-        domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
+        connection.Connection.context.domain = ctx.obj['DOMAIN']
 
         _ipa = ipa.IPA(name=name, vpc_id=vpc_id)
-        _ipa.destroy(subnet_id=subnet_id)
+        _ipa.destroy(subnet_name=subnet_name)
 
     @delete.command(name='ldap')
     @click.option('--vpc-name', 'vpc_id',
@@ -519,12 +490,10 @@ def init():
     @click.pass_context
     def delete_ldap(ctx, vpc_id, subnet_name, name):
         """Delete LDAP"""
-        subnet_id = cli_callbacks.convert_to_subnet_id(vpc_id, subnet_name)
-        domain = ctx.obj['DOMAIN']
-        connection.Connection.context.domain = domain
+        connection.Connection.context.domain = ctx.obj['DOMAIN']
 
         _ldap = ldap.LDAP(name=name, vpc_id=vpc_id)
-        _ldap.destroy(subnet_id=subnet_id)
+        _ldap.destroy(subnet_name=subnet_name)
 
     @delete.command(name='node')
     @click.option('--vpc-name', 'vpc_id',
@@ -576,13 +545,12 @@ def init():
     @click.pass_context
     def cell_resources(ctx, vpc_id, subnet_name):
         """Show Cell"""
-        subnet_id = cli_callbacks.convert_to_subnet_id(vpc_id, subnet_name)
         domain = ctx.obj['DOMAIN']
         connection.Connection.context.domain = domain
-        if subnet_id:
+        if subnet_name:
             click.echo(
                 pprint(
-                    subnet.Subnet(id=subnet_id).show()
+                    subnet.Subnet(name=subnet_name, vpc_id=vpc_id).show()
                 )
             )
             return

@@ -32,7 +32,6 @@ class IPA(base_provision.BaseProvision):
             instance_type,
             proid,
             subnet_name,
-            subnet_id=None,
     ):
         treadmill.infra.get_iam_role(
             name=constants.IPA_EC2_IAM_ROLE,
@@ -41,7 +40,6 @@ class IPA(base_provision.BaseProvision):
 
         self.configuration = configuration.IPA(
             name=self.name,
-            subnet_id=subnet_id,
             vpc=self.vpc,
             ipa_admin_password=ipa_admin_password,
             tm_release=tm_release,
@@ -51,7 +49,6 @@ class IPA(base_provision.BaseProvision):
             image=image,
             count=count,
             cidr_block=cidr_block,
-            subnet_id=subnet_id,
             key=key,
             instance_type=instance_type,
             subnet_name=subnet_name
@@ -82,7 +79,7 @@ class IPA(base_provision.BaseProvision):
             }
         ])
 
-    def destroy(self, subnet_id):
+    def destroy(self, subnet_name):
         super().destroy(
-            subnet_id=subnet_id
+            subnet_name=subnet_name
         )

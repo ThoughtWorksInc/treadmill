@@ -19,6 +19,7 @@ class BaseProvision:
             'DEFAULT'
         )
         self.role = _role
+        self.subnet = None
 
     def setup(
             self,
@@ -27,35 +28,33 @@ class BaseProvision:
             key,
             instance_type,
             subnet_name,
-            subnet_id=None,
             cidr_block=None,
     ):
-        if not subnet_id and not cidr_block:
+        if not self.subnet:
+            self.subnet = subnet.Subnet.get(
+                name=subnet_name,
+                vpc_id=self.vpc.id
+            )
+
+        if not self.subnet.persisted and not cidr_block:
             raise Exception(
                 'Subnet CIDR block required for creating new subnet'
             )
 
-        self.vpc.load_internet_gateway_ids()
-        self.vpc.load_security_group_ids()
-
-        self.subnet_name = subnet_name
-        if not subnet_id:
-            self.vpc.create_subnet(
-                cidr_block=cidr_block,
-                name=self.subnet_name,
-                gateway_id=self.vpc.gateway_ids[0]
-            )
-            self.subnet = self.vpc.subnets[-1]
-        else:
-            self.subnet = subnet.Subnet(
-                id=subnet_id,
-                vpc_id=self.vpc.id
-            )
+        if not self.subnet.persisted:
+            self.vpc.load_internet_gateway_ids()
+            if not self.subnet.persisted:
+                self.subnet.persist(
+                    cidr_block=cidr_block,
+                    gateway_id=self.vpc.gateway_ids[0]
+                )
 
         user_data = ''
         if getattr(self, 'configuration', None):
             self.configuration.subnet_id = self.subnet.id
             user_data = self.configuration.get_userdata()
+
+        self.vpc.load_security_group_ids()
 
         self.subnet.instances = instances.Instances.create(
             name=self.name,
@@ -69,13 +68,13 @@ class BaseProvision:
             role=self.role
         )
 
-    def destroy(self, subnet_id=None):
-        if subnet_id:
-            self.subnet = subnet.Subnet(id=subnet_id)
+    def destroy(self, subnet_name=None):
+        if subnet_name:
+            self.subnet = subnet.Subnet(name=subnet_name)
             self.subnet.destroy(role=self.role)
         else:
             _instances = instances.Instances.get_by_roles(
-                vpc_id=self.id,
+                vpc_id=self.vpc.id,
                 roles=[self.role]
             )
 

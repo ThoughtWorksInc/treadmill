@@ -11,7 +11,7 @@ class CloudTest(unittest.TestCase):
 
     def setUp(self):
         self.patched = mock.patch(
-            'treadmill.cli.admin.cloud.pkg_resources.resource_string',
+            'treadmill.infra.utils.cli_callbacks.pkg_resources.resource_string',  # noqa
             mock.Mock(return_value=b'0.1.0')
         )
         self.patched.start()
@@ -76,11 +76,11 @@ class CloudTest(unittest.TestCase):
         vpc_mock.get_id_from_name.assert_called_once_with(self.vpc_name)
         vpc_mock.setup.assert_not_called()
 
-    @mock.patch('treadmill.infra.vpc.VPC')
-    @mock.patch('treadmill.infra.ldap.LDAP')
-    @mock.patch('treadmill.infra.cell.Cell')
-    @mock.patch('treadmill.infra.subnet.Subnet')
-    def test_init_cell(self, subnet_mock, cell_mock, ldap_mock, vpc_mock):
+    @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.admin.cloud.ldap.LDAP')
+    @mock.patch('treadmill.cli.admin.cloud.cell.Cell')
+    @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
+    def test_configure_cell(self, subnet_mock, cell_mock, ldap_mock, vpc_mock):
         """
         Test cloud configure cell
         """
@@ -109,7 +109,15 @@ class CloudTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         vpc_mock.get_id_from_name.assert_called_once_with(self.vpc_name)
+        self.assertCountEqual(
+            cell_mock.mock_calls[1],
+            mock.mock.call(
+                vpc_id=self.vpc_id_mock,
+                subnet_name='SomeSubnet'
+            )
+        )
         cell.setup_zookeeper.assert_called_once_with(
+            count=3,
             name='TreadmillZookeeper',
             key='key',
             image='img-123',
@@ -117,7 +125,6 @@ class CloudTest(unittest.TestCase):
             subnet_cidr_block='172.24.0.0/24',
             ipa_admin_password='ipa_pass',
             proid='treadmld',
-            subnet_name='SomeSubnet'
         )
         cell.setup_master.assert_called_once_with(
             name='TreadmillMaster',
@@ -132,7 +139,6 @@ class CloudTest(unittest.TestCase):
             subnet_cidr_block='172.24.0.0/24',
             ipa_admin_password='ipa_pass',
             proid='treadmld',
-            subnet_name='SomeSubnet'
         )
         self.assertEqual(
             ldap_mock.mock_calls[1],
@@ -154,15 +160,14 @@ class CloudTest(unittest.TestCase):
             ipa_admin_password='ipa_pass',
             proid='treadmld',
             subnet_name='TreadmillLDAP',
-            subnet_id='sub-456'
         )
 
-    @mock.patch('treadmill.infra.vpc.VPC')
-    @mock.patch('treadmill.infra.ldap.LDAP')
-    @mock.patch('treadmill.infra.cell.Cell')
-    @mock.patch('treadmill.infra.subnet.Subnet')
-    def test_init_cell_without_ldap(self, subnet_mock, cell_mock,
-                                    ldap_mock, vpc_mock):
+    @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.admin.cloud.ldap.LDAP')
+    @mock.patch('treadmill.cli.admin.cloud.cell.Cell')
+    @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
+    def test_configure_cell_without_ldap(self, subnet_mock, cell_mock,
+                                         ldap_mock, vpc_mock):
         """
         Test cloud configure cell without ldap
         """
@@ -189,7 +194,15 @@ class CloudTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         vpc_mock.get_id_from_name.assert_called_once_with(self.vpc_name)
+        self.assertCountEqual(
+            cell_mock.mock_calls[1],
+            mock.mock.call(
+                vpc_id=self.vpc_id_mock,
+                subnet_name='SomeSubnet'
+            )
+        )
         cell.setup_zookeeper.assert_called_once_with(
+            count=3,
             name='TreadmillZookeeper',
             key='key',
             image='img-123',
@@ -197,7 +210,6 @@ class CloudTest(unittest.TestCase):
             subnet_cidr_block='172.24.0.0/24',
             ipa_admin_password='ipa_pass',
             proid='treadmld',
-            subnet_name='SomeSubnet'
         )
         cell.setup_master.assert_called_once_with(
             name='TreadmillMaster',
@@ -212,20 +224,18 @@ class CloudTest(unittest.TestCase):
             subnet_cidr_block='172.24.0.0/24',
             ipa_admin_password='ipa_pass',
             proid='treadmld',
-            subnet_name='SomeSubnet'
         )
 
         _ldap_mock.setup.assert_not_called()
 
-    @mock.patch('treadmill.infra.vpc.VPC')
-    @mock.patch('treadmill.infra.node.Node')
-    @mock.patch('treadmill.infra.subnet.Subnet')
+    @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.admin.cloud.node.Node')
+    @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
     def test_add_node(self, subnet_mock, NodeMock, vpc_mock):
         """
         Test add node
         """
         vpc_mock.get_id_from_name = mock.Mock(return_value=self.vpc_id_mock)
-        subnet_mock.get_subnet_id_from_name = mock.Mock(return_value='sub-123')
         node_mock = NodeMock()
         result = self.runner.invoke(
             self.configure_cli, [
@@ -236,7 +246,6 @@ class CloudTest(unittest.TestCase):
                 '--image=img-123',
                 '--vpc-name=' + self.vpc_name,
                 '--subnet-name=SomeSubnet',
-                '--count=2',
                 '--ipa-admin-password=Tre@admill1',
             ],
             obj={}
@@ -250,20 +259,19 @@ class CloudTest(unittest.TestCase):
             image='img-123',
             instance_type=constants.INSTANCE_TYPES['EC2']['large'],
             key='key',
-            subnet_id='sub-123',
+            subnet_name='SomeSubnet',
             tm_release='{}/{}/treadmill'.format(
                 constants.TREADMILL_DEFAULT_URL, '0.1.0',
             ),
             ipa_admin_password='Tre@admill1',
             with_api=False,
             proid='treadmld',
-            subnet_name='SomeSubnet'
         )
 
-    @mock.patch('treadmill.infra.vpc.VPC')
-    @mock.patch('treadmill.infra.ipa.IPA')
-    @mock.patch('treadmill.infra.subnet.Subnet')
-    def test_init_domain(self, subnet_mock, ipa_mock, vpc_mock):
+    @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.admin.cloud.ipa.IPA')
+    @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
+    def test_configure_domain(self, subnet_mock, ipa_mock, vpc_mock):
         """
         Test cloud configure domain
         """
@@ -295,14 +303,13 @@ class CloudTest(unittest.TestCase):
             ),
             key='key',
             instance_type=constants.INSTANCE_TYPES['EC2']['medium'],
-            subnet_id=None,
             proid='treadmld',
             subnet_name='TreadmillIPA'
         )
 
-    @mock.patch('treadmill.infra.vpc.VPC')
-    @mock.patch('treadmill.infra.ipa.IPA')
-    @mock.patch('treadmill.infra.subnet.Subnet')
+    @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.admin.cloud.ipa.IPA')
+    @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
     def test_delete_domain(self, subnet_mock, ipa_mock, vpc_mock):
         """
         Test cloud delete domain
@@ -323,7 +330,7 @@ class CloudTest(unittest.TestCase):
 
         self.assertEqual(result.exit_code, 0)
         ipa.destroy.assert_called_once_with(
-            subnet_id='sub-123'
+            subnet_name='SomeSubnet'
         )
 
     @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
@@ -435,13 +442,13 @@ class CloudTest(unittest.TestCase):
         self.assertEquals(result.exit_code, 0)
         self.assertEquals(_vpc_mock.list_cells.call_count, 3)
 
-    @mock.patch('treadmill.cli.cloud.vpc.VPC')
-    @mock.patch('treadmill.cli.cloud.subnet.Subnet')
+    @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
+    @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
     def test_delete_cell(self, subnet_mock, vpc_mock):
         _vpc_mock = vpc_mock()
         _subnet_mock = subnet_mock()
-        subnet_mock.get_subnet_id_from_name = mock.Mock()
         _vpc_mock.list_cells = mock.Mock(return_value=['subnet-123'])
+        vpc_mock.get_id_from_name = mock.Mock(return_value='vpc-id')
 
         result = self.runner.invoke(
             self.configure_cli, [
@@ -455,20 +462,11 @@ class CloudTest(unittest.TestCase):
         )
 
         self.assertEquals(result.exit_code, 0)
-        _subnet_mock.destroy.assert_called_once_with()
-
-    @mock.patch('treadmill.infra.connection.Connection')
-    def test_boto_credentials(self, conn_mock):
-        """Test AWS credentials"""
-        conn_mock.get_credentials = mock.Mock(return_value=None)
-        result = self.runner.invoke(
-            self.configure_cli, [
-                '--domain=foo.bar',
-                'init',
-                'vpc',
-                '--name',
-                'test-vpc',
-            ]
+        self.assertCountEqual(
+            subnet_mock.mock_calls[1],
+            mock.mock.call(
+                vpc_id='vpc-id',
+                name='SomeSubnet'
+            )
         )
-        self.assertNotEquals(result.exit_code, 0)
-        self.assertIn('AWS credentials not specified.', result.output)
+        _subnet_mock.destroy.assert_called_once()
