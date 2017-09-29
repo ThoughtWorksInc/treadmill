@@ -20,9 +20,9 @@ class Subnet(ec2object.EC2Object):
         self.instances = instances
 
     @classmethod
-    def get_subnet_id_from_name(cls, vpc_id, subnet_name):
+    def _load_json(cls, vpc_id, name, restrict_one=True):
         _ec2_conn = connection.Connection()
-        subnets = _ec2_conn.describe_subnets(
+        _json = _ec2_conn.describe_subnets(
             Filters=[
                 {
                     'Name': 'vpc-id',
@@ -30,24 +30,35 @@ class Subnet(ec2object.EC2Object):
                 },
                 {
                     'Name': 'tag:Name',
-                    'Values': [subnet_name]
+                    'Values': [name]
                 }
             ]
         )['Subnets']
 
-        if len(subnets) > 1:
-            raise ValueError("Multiple Subnets with name: " + subnet_name)
-        elif subnets:
-            return subnets[0]['SubnetId']
+        if restrict_one:
+            if len(_json) > 1:
+                raise ValueError("Multiple Subnets with name: " + name)
+            elif _json:
+                return _json[0]
+        else:
+            return _json
+
+    @classmethod
+    def get(cls, vpc_id, name, restrict_one=True):
+        _metadata = cls._load_json(
+            vpc_id=vpc_id,
+            name=name,
+            restrict_one=restrict_one
+        )
+
+        return Subnet(
+            metadata=_metadata,
+            vpc_id=vpc_id,
+        )
 
     @classmethod
     def create(cls, cidr_block, vpc_id, name, gateway_id):
-        _ec2_conn = connection.Connection()
-        metadata = _ec2_conn.create_subnet(
-            VpcId=vpc_id,
-            CidrBlock=cidr_block,
-            AvailabilityZone=Subnet._availability_zone()
-        )['Subnet']
+        metadata = cls._create(cidr_block, vpc_id, name, gateway_id)
         _subnet = Subnet(
             name=name,
             metadata=metadata,
@@ -56,6 +67,27 @@ class Subnet(ec2object.EC2Object):
         _subnet.create_tags()
         _subnet._create_route_table(gateway_id)
         return _subnet
+
+    @classmethod
+    def _create(cls, cidr_block, vpc_id, name, gateway_id):
+        _ec2_conn = connection.Connection()
+        return _ec2_conn.create_subnet(
+            VpcId=vpc_id,
+            CidrBlock=cidr_block,
+            AvailabilityZone=Subnet._availability_zone()
+        )['Subnet']
+
+    @property
+    def persisted(self):
+        return True if self.metadata.get('SubnetId') else False
+
+    def persist(self, cidr_block, gateway_id):
+        self.metadata = Subnet._create(
+            cidr_block=cidr_block,
+            gateway_id=gateway_id,
+            name=self.name,
+            vpc_id=self.vpc_id
+        )
 
     def load_route_related_ids(self):
         response = self.ec2_conn.describe_route_tables(
@@ -71,6 +103,7 @@ class Subnet(ec2object.EC2Object):
         )[0]
 
     def destroy(self, role=None):
+        self.refresh()
         self.terminate_instances(role)
 
         remaining_instances = self._get_instances_by_filters(
@@ -124,10 +157,16 @@ class Subnet(ec2object.EC2Object):
         self.instances.terminate()
 
     def refresh(self):
-        self.metadata = self.ec2_conn.describe_subnets(
-            SubnetIds=[self.id]
-        )['Subnets'][0]
-        self.vpc_id = self.metadata.get('VpcId', None)
+        if self.id:
+            self.metadata = self.ec2_conn.describe_subnets(
+                SubnetIds=[self.id]
+            )['Subnets'][0]
+            self.vpc_id = self.metadata.get('VpcId', None)
+        else:
+            self.metadata = Subnet._load_json(
+                name=self.name,
+                vpc_id=self.vpc_id
+            )
 
     def show(self, role=None):
         self.refresh()
