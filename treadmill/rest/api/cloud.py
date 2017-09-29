@@ -11,11 +11,13 @@ from treadmill import webutils  # pylint: disable=E0611
 
 
 def handle_api_error(func):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         try:
-            return func(*args)
+            return func(*args, **kwargs)
         except Exception as e:
-            return flask.abort(400, {'message': e.message})
+            return flask.abort(flask.make_response(
+                flask.jsonify(message=e.message), 400)
+            )
     return wrapper
 
 
@@ -107,6 +109,7 @@ def init(api, cors, impl):
             cors,
             req_model=server_model
         )
+        @handle_api_error
         def post(self, vpc_name, domain, name):
             "Configure Worker Node"""
             return impl.configure(
@@ -117,6 +120,7 @@ def init(api, cors, impl):
             api,
             cors,
         )
+        @handle_api_error
         def delete(self, vpc_name, domain, name):
             "Delete Worker Node"""
             return impl.delete_server(
@@ -138,6 +142,7 @@ def init(api, cors, impl):
             cors,
             req_model=ldap_model
         )
+        @handle_api_error
         def post(self, vpc_name, domain, name):
             """Configure LDAP Server"""
             return impl.configure(
@@ -148,6 +153,7 @@ def init(api, cors, impl):
             api,
             cors,
         )
+        @handle_api_error
         def delete(self, vpc_name, domain, name):
             """Delete LDAP Server"""
             return impl.delete_ldap(
@@ -185,6 +191,7 @@ def init(api, cors, impl):
             cors,
             req_model=cell_model
         )
+        @handle_api_error
         def post(self, vpc_name, domain):
             """Configure Treadmill CELL"""
             return impl.configure(
@@ -204,6 +211,7 @@ def init(api, cors, impl):
     })
     class _CellCleaner(restplus.Resource):
         """Treadmill CELL Delete"""
+        @handle_api_error
         @webutils.delete_api(
             api,
             cors,
