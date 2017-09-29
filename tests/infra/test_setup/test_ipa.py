@@ -21,8 +21,9 @@ class IPATest(unittest.TestCase):
                        VPCMock, ConnectionMock, IPAConfigurationMock,
                        get_iam_role_mock):
         ConnectionMock.context.domain = 'foo.bar'
-        instance_mock = mock.Mock(private_ip='1.1.1.1')
+        instance_mock = mock.Mock(metadata={'PrivateIpAddress': '1.1.1.1'})
         instance_mock.name = 'ipa'
+        instance_mock.running_status = mock.Mock(return_value='passed')
         instances_mock = mock.Mock(instances=[instance_mock])
         InstancesMock.create = mock.Mock(return_value=instances_mock)
         conn_mock = ConnectionMock('route53')
@@ -40,7 +41,7 @@ class IPATest(unittest.TestCase):
         )
 
         _private_ip = '1.1.1.1'
-        _vpc_mock.subnets = [mock.Mock(
+        _subnet_mock = mock.Mock(
             id='subnet-id',
             show=mock.Mock(return_value={
                 'Instances': [{
@@ -48,8 +49,10 @@ class IPATest(unittest.TestCase):
                     'InstanceState': 'running',
                     'PrivateIpAddress': _private_ip
                 }]
-            })
-        )]
+            }),
+            get_instances=mock.Mock(return_value=instances_mock)
+        )
+        _vpc_mock.subnets = [_subnet_mock]
 
         _ipa_configuration_mock = IPAConfigurationMock()
         _ipa_configuration_mock.get_userdata = mock.Mock(
@@ -74,6 +77,13 @@ class IPATest(unittest.TestCase):
         get_iam_role_mock.assert_called_once_with(
             name=constants.IPA_EC2_IAM_ROLE,
             create=True
+        )
+
+        instance_mock.running_status.assert_called_once_with(refresh=True)
+        _subnet_mock.refresh.assert_called()
+        _subnet_mock.get_instances.assert_called_once_with(
+            refresh=True,
+            role='IPA'
         )
 
         _vpc_mock.associate_dhcp_options.assert_has_calls([

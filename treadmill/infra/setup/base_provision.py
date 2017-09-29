@@ -14,7 +14,6 @@ class BaseProvision:
         self.name = name
         self.vpc = vpc.VPC(id=vpc_id)
         self.ec2_conn = connection.Connection()
-        self.instances = None
         _role = constants.ROLES.get(
             self.__class__.__name__.upper(),
             'DEFAULT'

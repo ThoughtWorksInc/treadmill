@@ -2,13 +2,24 @@ import treadmill
 from treadmill.infra.setup import base_provision
 from treadmill.infra import configuration, constants
 import polling
-import time
 
 
 class IPA(base_provision.BaseProvision):
+    def __init__(self, *args, **kwargs):
+        self._instances = None
+
+        super().__init__(*args, **kwargs)
+
     @property
-    def metadata(self):
-        return self.subnet.show(constants.ROLES['IPA'])['Instances'][0]
+    def instances(self):
+        if not self._instances:
+            self.subnet.refresh()
+            self._instances = self.subnet.get_instances(
+                refresh=True,
+                role=constants.ROLES['IPA']
+            )
+
+        return self._instances
 
     def setup(
             self,
@@ -46,15 +57,16 @@ class IPA(base_provision.BaseProvision):
             subnet_name=subnet_name
         )
 
-        def get_ipa_status():
-            while self.metadata['InstanceState'] != 'running':
-                time.sleep(2)
-            return self.ec2_conn.describe_instance_status(
-                InstanceIds=[self.metadata['InstanceId']]
-            )['InstanceStatuses'][0]['InstanceStatus']['Details'][0]['Status']
+        def check_passed_status():
+            return all(
+                map(
+                    lambda i: i.running_status(refresh=True) == 'passed',
+                    self.instances.instances
+                )
+            )
 
         polling.poll(
-            lambda: get_ipa_status() == 'passed',
+            check_passed_status,
             step=10,
             timeout=600
         )
@@ -63,7 +75,10 @@ class IPA(base_provision.BaseProvision):
         self.vpc.associate_dhcp_options([
             {
                 'Key': 'domain-name-servers',
-                'Values': [self.metadata['PrivateIpAddress']]
+                'Values': [
+                    i.metadata['PrivateIpAddress']
+                    for i in self.instances.instances
+                ]
             }
         ])
 

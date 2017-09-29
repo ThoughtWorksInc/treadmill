@@ -76,6 +76,80 @@ class InstanceTest(unittest.TestCase):
             }]
         )
 
+    @mock.patch('treadmill.infra.instances.connection.Connection')
+    def test_running_instance(self, ConnectionMock):
+        conn_mock = ConnectionMock()
+        conn_mock.describe_instance_status = mock.Mock(
+            return_value={
+                'InstanceStatuses': [{
+                    'InstanceStatus': {
+                        'Details': [{
+                            'Status': 'goo'
+                        }]
+                    }
+                }]
+            }
+        )
+        _instance = Instance(
+            name='foo',
+            metadata={'InstanceId': 'instance-id'}
+        )
+        _instance.ec2_conn = conn_mock
+        self.assertEqual(
+            _instance.running_status(),
+            'goo'
+        )
+        conn_mock.describe_instance_status.assert_called_once_with(
+            InstanceIds=['instance-id']
+        )
+
+    @mock.patch('treadmill.infra.instances.connection.Connection')
+    def test_running_instance_without_refresh(self, ConnectionMock):
+        conn_mock = ConnectionMock()
+        _instance = Instance(
+            name='foo'
+        )
+        _instance.ec2_conn = conn_mock
+        _instance._running_status = 'goo'
+        self.assertEqual(
+            _instance.running_status(),
+            'goo'
+        )
+        conn_mock.describe_instance_status.assert_not_called()
+
+    @mock.patch('treadmill.infra.instances.connection.Connection')
+    def test_running_instance_with_refresh(self, ConnectionMock):
+        conn_mock = ConnectionMock()
+        conn_mock.describe_instance_status = mock.Mock(
+            return_value={
+                'InstanceStatuses': [{
+                    'InstanceStatus': {
+                        'Details': [{
+                            'Status': 'new-goo'
+                        }]
+                    }
+                }]
+            }
+        )
+        _instance = Instance(
+            name='foo',
+            metadata={'InstanceId': 'instance-id'}
+        )
+        _instance.ec2_conn = conn_mock
+        _instance._running_status = 'goo'
+        self.assertEqual(
+            _instance.running_status(),
+            'goo'
+        )
+        self.assertEqual(
+            _instance.running_status(refresh=True),
+            'new-goo'
+        )
+        conn_mock.describe_instance_status.assert_called_once_with(
+            InstanceIds=['instance-id']
+        )
+
+
 
 class InstancesTest(unittest.TestCase):
     """Tests instances collection"""
