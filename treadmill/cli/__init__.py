@@ -25,7 +25,7 @@ from treadmill import context
 from treadmill import utils
 from treadmill import restclient
 import collections
-import botocore
+from botocore import exceptions
 
 __path__ = pkgutil.extend_path(__path__, __name__)
 
@@ -990,9 +990,9 @@ REST_EXCEPTIONS = [
 ]
 
 CLI_EXCEPTIONS = [
-    (botocore.exceptions.ClientError, None),
-    (botocore.exceptions.PartialCredentialsError, 'Partial Crendentials'),
-    (botocore.exceptions.NoCredentialsError, 'No Creds'),
+    (exceptions.ClientError, None),
+    (exceptions.PartialCredentialsError, 'Partial Crendentials'),
+    (exceptions.NoCredentialsError, 'No Creds'),
 ]
 
 ON_REST_EXCEPTIONS = handle_exceptions(REST_EXCEPTIONS)
