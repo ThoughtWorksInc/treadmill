@@ -46,5 +46,6 @@ class LDAP(base_provision.BaseProvision):
             cidr_block=cidr_block,
             key=key,
             instance_type=instance_type,
-            subnet_name=subnet_name
+            subnet_name=subnet_name,
+            sg_names=[constants.COMMON_SEC_GRP],
         )

@@ -73,8 +73,6 @@ class API(object):
                 _mandatory_params = [
                     'subnet_name',
                 ]
-            elif role == 'cell':
-                _params['without_ldap'] = True
 
             _instantiate(_mandatory_params)
 

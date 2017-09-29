@@ -83,12 +83,11 @@ class IPATest(unittest.TestCase):
             role='IPA'
         )
 
-        _vpc_mock.associate_dhcp_options.assert_has_calls([
-            mock.call(default=True),
-            mock.call([{
-                'Key': 'domain-name-servers', 'Values': [_private_ip]
-            }]),
-        ])
+        _vpc_mock.create_security_group.assert_called_once()
+        _vpc_mock.add_secgrp_rules.assert_called_once()
+        _vpc_mock.associate_dhcp_options.assert_called_once_with([{
+            'Key': 'domain-name-servers', 'Values': [_private_ip]
+        }])
 
         self.assertEqual(ipa.subnet.instances, instances_mock)
         InstancesMock.create.assert_called_once_with(
@@ -102,7 +101,9 @@ class IPATest(unittest.TestCase):
             user_data='user-data-script',
             role='IPA'
         )
-        _vpc_mock.load_security_group_ids.assert_called_once()
+        _vpc_mock.load_security_group_ids.assert_called_once_with(
+            sg_names=['sg_common', 'ipa_secgrp']
+        )
         _subnet_mock.persist.assert_called_once_with(
             cidr_block='cidr-block',
             gateway_id=123
@@ -128,6 +129,9 @@ class IPATest(unittest.TestCase):
         _subnet_mock = SubnetMock(
             subnet_name='subnet-name'
         )
+        _vpc_id_mock = 'vpc-id'
+        _vpc_mock = VPCMock(id=_vpc_id_mock)
+        _vpc_mock.secgroup_ids = ['secgroup_id']
         _instance = mock.Mock(private_ip='1.1.1.1')
         _instance.name = 'ipa'
         _subnet_mock.instances = mock.Mock(instances=[
@@ -142,5 +146,7 @@ class IPATest(unittest.TestCase):
         ipa.destroy(
             subnet_name='subnet-name'
         )
-
         _subnet_mock.destroy.assert_called_once_with(role='IPA')
+        _vpc_mock.delete_security_groups.assert_called_once_with(
+            sg_names=['ipa_secgrp']
+        )

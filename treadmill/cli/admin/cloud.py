@@ -43,24 +43,20 @@ def init():
     @click.option('--region', help='Region for the vpc')
     @click.option('--vpc-cidr-block', default='172.23.0.0/16',
                   help='CIDR block for the vpc')
-    @click.option('--secgroup_name', default='sg_common',
-                  help='Security group name')
     @click.option(
-        '--secgroup_desc',
-        default='Treadmill Security Group',
-        help='Description for the security group'
+        '--name',
+        required=True,
+        help='VPC name',
+        callback=cli_callbacks.validate_vpc_name
     )
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=mutually_exclusive_option.MutuallyExclusiveOption,
                   mutually_exclusive=['region',
                                       'vpc_cidr_block',
-                                      'secgroup_desc',
-                                      'secgroup_name',
                                       'name'],
                   help="Options YAML file. ")
     @click.pass_context
     def configure_vpc(ctx, name, region, vpc_cidr_block,
-                      secgroup_name, secgroup_desc,
                       manifest):
         """Configure Treadmill VPC"""
         domain = ctx.obj['DOMAIN']
@@ -73,8 +69,6 @@ def init():
         _vpc = vpc.VPC.setup(
             name=name,
             cidr_block=vpc_cidr_block,
-            secgroup_name=secgroup_name,
-            secgroup_desc=secgroup_desc
         )
 
         click.echo(
@@ -180,13 +174,6 @@ def init():
     @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
     @click.option('--cell-cidr-block', default='172.23.0.0/24',
                   help='CIDR block for the cell')
-    @click.option('--ldap-cidr-block', default='172.23.1.0/24',
-                  help='CIDR block for LDAP')
-    @click.option('--ldap-subnet-name',
-                  help='Subnet Name for LDAP',
-                  default='TreadmillLDAP')
-    @click.option('--without-ldap', required=False, is_flag=True,
-                  default=False, help='Flag for LDAP Server')
     @click.option('--ipa-admin-password',
                   callback=cli_callbacks.ipa_password_prompt,
                   envvar='TREADMILL_IPA_ADMIN_PASSWORD',
@@ -203,17 +190,13 @@ def init():
                                       'tm_release',
                                       'app_root',
                                       'cell_cidr_block'
-                                      'ldap_subnet_name',
-                                      'ipa_admin_password',
-                                      'without_ldap',
-                                      'ldap_cidr_block'],
+                                      'ipa_admin_password'],
                   help="Options YAML file. ")
     @click.pass_context
     def configure_cell(ctx, vpc_id, key, image, cell_subnet_name,
                        count, region, name, instance_type, tm_release,
-                       app_root, cell_cidr_block, ldap_cidr_block,
-                       ldap_subnet_name, without_ldap, ipa_admin_password,
-                       manifest):
+                       app_root, cell_cidr_block,
+                       ipa_admin_password, manifest):
         """Configure Treadmill Cell"""
         domain = ctx.obj['DOMAIN']
         proid = ctx.obj['PROID']
@@ -229,27 +212,6 @@ def init():
         )
 
         result = {}
-        if not without_ldap:
-            _ldap = ldap.LDAP(
-                name='TreadmillLDAP',
-                vpc_id=vpc_id,
-            )
-
-            _ldap.setup(
-                key=key,
-                count=1,
-                image=image,
-                instance_type=instance_type,
-                tm_release=tm_release,
-                app_root=app_root,
-                cidr_block=ldap_cidr_block,
-                ipa_admin_password=ipa_admin_password,
-                proid=proid,
-                subnet_name=ldap_subnet_name
-            )
-
-            result['Ldap'] = _ldap.subnet.show()
-
         _cell.setup_zookeeper(
             name=constants.TREADMILL_ZOOKEEPER,
             key=key,

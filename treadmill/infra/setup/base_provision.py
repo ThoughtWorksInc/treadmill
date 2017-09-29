@@ -28,6 +28,7 @@ class BaseProvision:
             key,
             instance_type,
             subnet_name,
+            sg_names,
             cidr_block=None,
     ):
         if not self.subnet:
@@ -54,7 +55,7 @@ class BaseProvision:
             self.configuration.subnet_id = self.subnet.id
             user_data = self.configuration.get_userdata()
 
-        self.vpc.load_security_group_ids()
+        self.vpc.load_security_group_ids(sg_names=sg_names)
 
         self.subnet.instances = instances.Instances.create(
             name=self.name,

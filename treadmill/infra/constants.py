@@ -30,3 +30,6 @@ ROLES = {
     'ZOOKEEPER': 'ZOOKEEPER',
     'DEFAULT': 'DEFAULT'
 }
+COMMON_SEC_GRP = 'sg_common'
+IPA_SEC_GRP = 'ipa_secgrp'
+IPA_API_PORT = 5108

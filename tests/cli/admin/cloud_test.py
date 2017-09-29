@@ -77,104 +77,17 @@ class CloudTest(unittest.TestCase):
         vpc_mock.setup.assert_not_called()
 
     @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
-    @mock.patch('treadmill.cli.admin.cloud.ldap.LDAP')
     @mock.patch('treadmill.cli.admin.cloud.cell.Cell')
-    @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
-    def test_configure_cell(self, subnet_mock, cell_mock, ldap_mock, vpc_mock):
-        """
-        Test cloud configure cell
-        """
-        vpc_mock.get_id_from_name = mock.Mock(return_value=self.vpc_id_mock)
-        subnet_mock.get_subnet_id_from_name = mock.Mock(
-            side_effect=['sub-123', 'sub-456']
-        )
-        cell = cell_mock()
-        cell.id = 'sub-123'
-        _ldap_mock = ldap_mock()
-        result = self.runner.invoke(
-            self.configure_cli, [
-                '--domain=treadmill.org',
-                'configure',
-                'cell',
-                '--key=key',
-                '--image=img-123',
-                '--cell-subnet-name=SomeSubnet',
-                '--ldap-subnet-name=TreadmillLDAP',
-                '--vpc-name=' + self.vpc_name,
-                '--cell-cidr-block=172.24.0.0/24',
-                '--ipa-admin-password=ipa_pass',
-            ],
-            obj={}
-        )
-
-        self.assertEqual(result.exit_code, 0)
-        vpc_mock.get_id_from_name.assert_called_once_with(self.vpc_name)
-        self.assertCountEqual(
-            cell_mock.mock_calls[1],
-            mock.mock.call(
-                vpc_id=self.vpc_id_mock,
-                subnet_name='SomeSubnet'
-            )
-        )
-        cell.setup_zookeeper.assert_called_once_with(
-            count=3,
-            name='TreadmillZookeeper',
-            key='key',
-            image='img-123',
-            instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
-            subnet_cidr_block='172.24.0.0/24',
-            ipa_admin_password='ipa_pass',
-            proid='treadmld',
-        )
-        cell.setup_master.assert_called_once_with(
-            name='TreadmillMaster',
-            key='key',
-            count=3,
-            image='img-123',
-            instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
-            tm_release='{}/{}/treadmill'.format(
-                constants.TREADMILL_DEFAULT_URL, '0.1.0',
-            ),
-            app_root='/var/tmp',
-            subnet_cidr_block='172.24.0.0/24',
-            ipa_admin_password='ipa_pass',
-            proid='treadmld',
-        )
-        self.assertEqual(
-            ldap_mock.mock_calls[1],
-            mock.mock.call(
-                name='TreadmillLDAP',
-                vpc_id='vpc-123',
-            )
-        )
-        _ldap_mock.setup.assert_called_once_with(
-            key='key',
-            count=1,
-            image='img-123',
-            instance_type=constants.INSTANCE_TYPES['EC2']['micro'],
-            tm_release='{}/{}/treadmill'.format(
-                constants.TREADMILL_DEFAULT_URL, '0.1.0',
-            ),
-            app_root='/var/tmp',
-            cidr_block='172.23.1.0/24',
-            ipa_admin_password='ipa_pass',
-            proid='treadmld',
-            subnet_name='TreadmillLDAP',
-        )
-
     @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
-    @mock.patch('treadmill.cli.admin.cloud.ldap.LDAP')
     @mock.patch('treadmill.cli.admin.cloud.cell.Cell')
     @mock.patch('treadmill.cli.admin.cloud.subnet.Subnet')
-    def test_configure_cell_without_ldap(self, subnet_mock, cell_mock,
-                                         ldap_mock, vpc_mock):
+    def test_configure_cell(self, subnet_mock, cell_mock, vpc_mock):
         """
         Test cloud configure cell without ldap
         """
         vpc_mock.get_id_from_name = mock.Mock(return_value=self.vpc_id_mock)
         subnet_mock.get_subnet_id_from_name = mock.Mock(return_value=None)
         cell = cell_mock()
-        _ldap_mock = ldap_mock()
 
         result = self.runner.invoke(
             self.configure_cli, [
@@ -186,7 +99,6 @@ class CloudTest(unittest.TestCase):
                 '--cell-subnet-name=SomeSubnet',
                 '--vpc-name=' + self.vpc_name,
                 '--cell-cidr-block=172.24.0.0/24',
-                '--without-ldap',
                 '--ipa-admin-password=ipa_pass',
             ],
             obj={}
@@ -225,8 +137,6 @@ class CloudTest(unittest.TestCase):
             ipa_admin_password='ipa_pass',
             proid='treadmld',
         )
-
-        _ldap_mock.setup.assert_not_called()
 
     @mock.patch('treadmill.cli.admin.cloud.vpc.VPC')
     @mock.patch('treadmill.cli.admin.cloud.node.Node')

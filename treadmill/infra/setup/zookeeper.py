@@ -39,4 +39,5 @@ class Zookeeper(base_provision.BaseProvision):
                 key=key,
                 instance_type=instance_type,
                 subnet_name=subnet_name,
+                sg_names=[constants.COMMON_SEC_GRP],
             )

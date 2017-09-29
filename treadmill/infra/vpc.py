@@ -80,19 +80,19 @@ class VPC(ec2object.EC2Object):
     def setup(
             cls,
             cidr_block,
-            secgroup_name,
-            secgroup_desc,
             name=None
     ):
         _vpc = VPC.create(name=name, cidr_block=cidr_block)
         _vpc.create_internet_gateway()
-        _vpc.create_security_group(secgroup_name, secgroup_desc)
-        _vpc.associate_dhcp_options([
-            {
-                'Key': 'domain-name-servers',
-                'Values': ['AmazonProvidedDNS']
-            }
-        ])
+        secgroup_id = _vpc. create_security_group(
+            constants.COMMON_SEC_GRP, 'Treadmill Security Group'
+        )
+        ip_permissions = [{
+            'IpProtocol': '-1',
+            'UserIdGroupPairs': [{'GroupId': secgroup_id}]
+        }]
+
+        _vpc.add_secgrp_rules(ip_permissions, secgroup_id)
         return _vpc
 
     def create_subnet(self, cidr_block, name, gateway_id):
@@ -116,21 +116,18 @@ class VPC(ec2object.EC2Object):
         return gateway_id
 
     def create_security_group(self, group_name, description):
-        _ALL = '-1'
         secgroup_id = self.ec2_conn.create_security_group(
             VpcId=self.id,
             GroupName=group_name,
             Description=description
         )['GroupId']
         self.secgroup_ids.append(secgroup_id)
+        return secgroup_id
 
+    def add_secgrp_rules(self, ip_permissions, secgroup_id):
         self.ec2_conn.authorize_security_group_ingress(
             GroupId=secgroup_id,
-            IpPermissions=[{
-                'IpProtocol': _ALL,
-                'UserIdGroupPairs': [{'GroupId': secgroup_id}]
-            }]
-        )
+            IpPermissions=ip_permissions)
 
     def get_instances(self, refresh=False):
         if refresh or not self.instances:
@@ -144,16 +141,22 @@ class VPC(ec2object.EC2Object):
 
         self.instances.terminate()
 
-    def load_security_group_ids(self):
-        if not self.secgroup_ids:
-            res = self.ec2_conn.describe_security_groups(
-                Filters=self._filters()
-            )
-            self.secgroup_ids = [sg['GroupId'] for sg in res['SecurityGroups']
-                                 if sg['GroupName'] != 'default']
+    def load_security_group_ids(self, sg_names=None):
+        res = self.ec2_conn.describe_security_groups(Filters=self._filters())
+        sec_groups = [sg for sg in res['SecurityGroups']]
+        if sg_names:
+            self.secgroup_ids = [
+                sg['GroupId'] for sg in sec_groups
+                if sg['GroupName'] in sg_names
+            ]
+        else:
+            self.secgroup_ids = [
+                sg['GroupId'] for sg in sec_groups
+                if sg['GroupName'] != 'default'
+            ]
 
-    def delete_security_groups(self):
-        self.load_security_group_ids()
+    def delete_security_groups(self, sg_names=None):
+        self.load_security_group_ids(sg_names=sg_names)
 
         for secgroup_id in self.secgroup_ids:
             self.ec2_conn.delete_security_group(GroupId=secgroup_id)

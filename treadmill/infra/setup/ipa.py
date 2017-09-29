@@ -38,6 +38,16 @@ class IPA(base_provision.BaseProvision):
             create=True
         )
 
+        secgroup_id = self.vpc.create_security_group(
+            constants.IPA_SEC_GRP, 'IPA Security Group'
+        )
+        ip_permissions = [{
+            'IpProtocol': 'tcp',
+            'FromPort': constants.IPA_API_PORT,
+            'ToPort': constants.IPA_API_PORT,
+            'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+        }]
+        self.vpc.add_secgrp_rules(ip_permissions, secgroup_id)
         self.configuration = configuration.IPA(
             name=self.name,
             vpc=self.vpc,
@@ -51,7 +61,8 @@ class IPA(base_provision.BaseProvision):
             cidr_block=cidr_block,
             key=key,
             instance_type=instance_type,
-            subnet_name=subnet_name
+            subnet_name=subnet_name,
+            sg_names=[constants.COMMON_SEC_GRP, constants.IPA_SEC_GRP],
         )
 
         def check_passed_status():
@@ -83,3 +94,4 @@ class IPA(base_provision.BaseProvision):
         super().destroy(
             subnet_name=subnet_name
         )
+        self.vpc.delete_security_groups(sg_names=[constants.IPA_SEC_GRP])
