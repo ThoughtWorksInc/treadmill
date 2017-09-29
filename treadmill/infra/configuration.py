@@ -9,8 +9,9 @@ from treadmill import TREADMILL_BIN
 class Configuration:
     """Configure instances"""
 
-    def __init__(self, setup_scripts=None):
-        self.setup_scripts = setup_scripts or []
+    def __init__(self):
+        self.setup_scripts = None
+        self.subnet_id = None
 
     def get_userdata(self):
         if not self.setup_scripts:
@@ -32,11 +33,12 @@ class Configuration:
 
 
 class Master(Configuration):
-    def __init__(self, hostname, otp, subnet_id,
-                 app_root, ldap_hostname, tm_release, ipa_admin_password, idx,
+    def __init__(self, hostname, otp, app_root, ldap_hostname,
+                 tm_release, ipa_admin_password, idx,
                  proid):
-        self.subnet_id = subnet_id
-        setup_scripts = [
+        super().__init__()
+
+        self.setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
@@ -65,13 +67,14 @@ class Master(Configuration):
                 },
             },
         ]
-        super().__init__(setup_scripts)
 
 
 class LDAP(Configuration):
     def __init__(self, tm_release, app_root, otp, ipa_admin_password,
                  ipa_server_hostname, hostname, proid):
-        setup_scripts = [
+        super().__init__()
+
+        self.setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
@@ -99,14 +102,14 @@ class LDAP(Configuration):
                 },
             },
         ]
-        super().__init__(setup_scripts)
 
 
 class IPA(Configuration):
-    def __init__(self, name, vpc, subnet_id,
-                 ipa_admin_password, tm_release, proid):
-        self.subnet_id = subnet_id
-        setup_scripts = [
+    def __init__(self, name, vpc, ipa_admin_password,
+                 tm_release, proid):
+        super().__init__()
+
+        self.setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
@@ -128,13 +131,14 @@ class IPA(Configuration):
                 },
             },
         ]
-        super().__init__(setup_scripts)
 
 
 class Zookeeper(Configuration):
     def __init__(self, hostname, ldap_hostname, ipa_server_hostname, otp, idx,
                  proid):
-        setup_scripts = [
+        super().__init__()
+
+        self.setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
@@ -157,15 +161,15 @@ class Zookeeper(Configuration):
                 },
             },
         ]
-        super().__init__(setup_scripts)
 
 
 class Node(Configuration):
-    def __init__(self, tm_release, app_root, subnet_id,
+    def __init__(self, tm_release, app_root,
                  ldap_hostname, otp, with_api, hostname,
                  ipa_admin_password, proid):
-        self.subnet_id = subnet_id
-        setup_scripts = [
+        super().__init__()
+
+        self.setup_scripts = [
             {
                 'name': 'provision-base.sh',
                 'vars': {
@@ -196,7 +200,6 @@ class Node(Configuration):
             }
         ]
         if with_api:
-            setup_scripts.append({
+            self.setup_scripts.append({
                 'name': 'start-api.sh',
             })
-        super().__init__(setup_scripts)

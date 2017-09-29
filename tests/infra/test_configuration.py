@@ -24,14 +24,14 @@ class ConfigurationTest(unittest.TestCase):
             io.StringIO('{{ CELL }}'),
         ]
 
-        config = configuration.Configuration([])
-        userdata = config.get_userdata()
-        self.assertEquals(userdata, '')
+        config = configuration.Configuration()
+        self.assertEquals(config.get_userdata(), '')
 
-        config = configuration.Configuration([
+        config = configuration.Configuration()
+        config.setup_scripts = [
             {'name': 'script1.sh', 'vars': {'DOMAIN': 'test.treadmill'}},
             {'name': 'script2.sh', 'vars': {'CELL': 'mycell'}},
-        ])
+        ]
         userdata = config.get_userdata()
 
         self.assertEquals(
@@ -45,7 +45,7 @@ class MasterTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_master_configuration_script_data(self, open_mock):
-        config = configuration.Master('', '', '', '', '', '', '', '', '')
+        config = configuration.Master('', '', '', '', '', '', '', '',)
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'HOSTNAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
@@ -118,7 +118,6 @@ class IPATest(unittest.TestCase):
             ipa_admin_password='admin-password',
             tm_release='some-release',
             name='ipa',
-            subnet_id='subnet-id',
             vpc=mock.Mock(),
             proid='foobar'
         )
@@ -189,7 +188,6 @@ class NodeTest(unittest.TestCase):
             hostname='node',
             tm_release='tm_release',
             app_root='/var/tmp',
-            subnet_id='sub-123',
             ldap_hostname='ldap_host',
             ipa_admin_password='Tre@admill1',
             with_api=False,
