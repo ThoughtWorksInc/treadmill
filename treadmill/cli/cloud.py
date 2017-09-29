@@ -205,7 +205,7 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--image', required=True,
                   help='Image to use for new instances e.g. RHEL-7.4')
-    @click.option('--cell-subnet-name', help='Cell(Subnet) Name',
+    @click.option('--subnet-name', help='Cell(Subnet) Name',
                   required=True)
     @click.option('--instance-type',
                   default=constants.INSTANCE_TYPES['EC2']['micro'],
@@ -214,7 +214,7 @@ def init():
                   callback=cli_callbacks.create_release_url,
                   help='Treadmill release to use')
     @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
-    @click.option('--cell-cidr-block', default='172.23.0.0/24',
+    @click.option('--cidr-block', default='172.23.0.0/24',
                   help='CIDR block for the cell')
     @click.option('--ipa-admin-password',
                   callback=cli_callbacks.ipa_password_prompt,
@@ -230,15 +230,15 @@ def init():
                                       'instance_type',
                                       'tm_release',
                                       'app_root',
-                                      'cell_cidr_block'
-                                      'cell_subnet_name',
+                                      'cidr_block'
+                                      'subnet_name',
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
     @cli.ON_REST_EXCEPTIONS
     @click.pass_context
     def configure_cell(ctx, vpc_name, region, name, key, image,
-                       cell_subnet_name, instance_type, tm_release,
-                       app_root, cell_cidr_block, ipa_admin_password,
+                       subnet_name, instance_type, tm_release,
+                       app_root, cidr_block, ipa_admin_password,
                        manifest):
         """Configure Treadmill Cell"""
         domain = ctx.obj['DOMAIN']
@@ -253,11 +253,11 @@ def init():
                     "tm_release": tm_release,
                     "region": region,
                     "app_root": app_root,
-                    "cell_cidr_block": cell_cidr_block,
+                    "cidr_block": cidr_block,
                     "instance_type": instance_type,
                     "image": image,
                     "ipa_admin_password": ipa_admin_password,
-                    "cell_subnet_name": cell_subnet_name
+                    "subnet_name": subnet_name
                 },
                 headers={'Content-Type': 'application/json'}
             ).content

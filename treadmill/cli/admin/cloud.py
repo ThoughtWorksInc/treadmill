@@ -152,7 +152,7 @@ def init():
     @click.option('--key', required=True, help='SSH Key Name')
     @click.option('--image', required=True,
                   help='Image to use for new instances e.g. RHEL-7.4')
-    @click.option('--cell-subnet-name', help='Cell(Subnet) Name',
+    @click.option('--subnet-name', help='Cell(Subnet) Name',
                   required=True)
     @click.option('--count', default='3', type=int,
                   help='Number of Treadmill masters to spin up')
@@ -166,7 +166,7 @@ def init():
                   callback=cli_callbacks.create_release_url,
                   help='Treadmill release to use')
     @click.option('--app-root', default='/var/tmp', help='Treadmill app root')
-    @click.option('--cell-cidr-block', default='172.23.0.0/24',
+    @click.option('--cidr-block', default='172.23.0.0/24',
                   help='CIDR block for the cell')
     @click.option('--ipa-admin-password',
                   callback=cli_callbacks.ipa_password_prompt,
@@ -183,13 +183,14 @@ def init():
                                       'instance_type',
                                       'tm_release',
                                       'app_root',
-                                      'cell_cidr_block'
+                                      'cidr_block',
+                                      'cell_subnet_name',
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
     @click.pass_context
-    def configure_cell(ctx, vpc_id, key, image, cell_subnet_name,
+    def configure_cell(ctx, vpc_id, key, image, subnet_name,
                        count, region, name, instance_type, tm_release,
-                       app_root, cell_cidr_block,
+                       app_root, cidr_block,
                        ipa_admin_password, manifest):
         """Configure Treadmill Cell"""
         domain = ctx.obj['DOMAIN']
@@ -202,7 +203,7 @@ def init():
 
         _cell = cell.Cell(
             vpc_id=vpc_id,
-            subnet_name=cell_subnet_name
+            subnet_name=subnet_name
         )
 
         result = {}
@@ -212,7 +213,7 @@ def init():
             count=count,
             image=image,
             instance_type=instance_type,
-            subnet_cidr_block=cell_cidr_block,
+            subnet_cidr_block=cidr_block,
             ipa_admin_password=ipa_admin_password,
             proid=proid,
         )
@@ -224,7 +225,7 @@ def init():
             instance_type=instance_type,
             tm_release=tm_release,
             app_root=app_root,
-            subnet_cidr_block=cell_cidr_block,
+            subnet_cidr_block=cidr_block,
             ipa_admin_password=ipa_admin_password,
             proid=proid,
         )

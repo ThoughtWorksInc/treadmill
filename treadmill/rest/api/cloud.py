@@ -75,8 +75,8 @@ def init(api, cors, impl):
         'role': fields.String(description='Role', required=True),
         'key': fields.String(description='Key', required=True),
         'image': fields.String(description='Image', required=True),
-        'cell_subnet_name': fields.String(description='Cell(Subnet) Name',
-                                          required=True),
+        'subnet_name': fields.String(description='Cell(Subnet) Name',
+                                     required=True),
         'ipa_admin_password': fields.String(description='IPA Admin Password',
                                             required=True),
         'region': fields.String(description='Region'),
@@ -85,7 +85,7 @@ def init(api, cors, impl):
             description='Treadmill Release URL/Version'
         ),
         'app_root': fields.String(description='Server APP Root'),
-        'cell_cidr_block': fields.String(description='Cell CIDR Block'),
+        'cidr_block': fields.String(description='Cell CIDR Block'),
     }
 
     cell_model = api.model(

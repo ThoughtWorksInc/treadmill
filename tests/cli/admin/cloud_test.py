@@ -88,9 +88,9 @@ class CloudTest(unittest.TestCase):
                 'cell',
                 '--key=key',
                 '--image=img-123',
-                '--cell-subnet-name=SomeSubnet',
+                '--subnet-name=SomeSubnet',
                 '--vpc-name=' + self.vpc_name,
-                '--cell-cidr-block=172.24.0.0/24',
+                '--cidr-block=172.24.0.0/24',
                 '--ipa-admin-password=ipa_pass',
             ],
             obj={}
