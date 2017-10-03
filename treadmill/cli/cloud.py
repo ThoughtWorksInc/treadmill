@@ -38,7 +38,7 @@ def init():
 
     @user_grp.command('create')
     @click.argument('username')
-    @cli.ON_REST_EXCEPTIONS
+    @cli.handle_exceptions(restclient.CLI_REST_EXCEPTIONS)
     @click.pass_context
     def create_user(ctx, username):
         """Creates an IPA User"""
@@ -52,7 +52,7 @@ def init():
 
     @user_grp.command('delete')
     @click.argument('username')
-    @cli.ON_REST_EXCEPTIONS
+    @cli.handle_exceptions(restclient.CLI_REST_EXCEPTIONS)
     @click.pass_context
     def delete_user(ctx, username):
         """Deletes an IPA User"""
@@ -72,7 +72,7 @@ def init():
 
     @host_grp.command('create')
     @click.argument('hostname')
-    @cli.ON_REST_EXCEPTIONS
+    @cli.handle_exceptions(restclient.CLI_REST_EXCEPTIONS)
     @click.pass_context
     def create_host(ctx, hostname):
         """Creates an IPA Host"""
@@ -86,7 +86,7 @@ def init():
 
     @host_grp.command('delete')
     @click.argument('hostname')
-    @cli.ON_REST_EXCEPTIONS
+    @cli.handle_exceptions(restclient.CLI_REST_EXCEPTIONS)
     @click.pass_context
     def delete_host(ctx, hostname):
         """Deletes an IPA Host"""
@@ -106,7 +106,7 @@ def init():
     @service_grp.command('add')
     @click.argument('hostname')
     @click.argument('service')
-    @cli.ON_REST_EXCEPTIONS
+    @cli.handle_exceptions(restclient.CLI_REST_EXCEPTIONS)
     @click.pass_context
     def service_add(ctx, service, hostname):
         """Adds an IPA Service"""
@@ -171,7 +171,7 @@ def init():
                                       'ipa_admin_password'
                                       'ldap_cidr_block'],
                   help="Options YAML file. ")
-    @cli.ON_REST_EXCEPTIONS
+    @cli.handle_exceptions(restclient.CLI_REST_EXCEPTIONS)
     @click.pass_context
     def configure_ldap(ctx, vpc_name, region, key, name, image,
                        instance_type, tm_release, app_root,
@@ -249,7 +249,7 @@ def init():
                                       'subnet_id',
                                       'ipa_admin_password'],
                   help="Options YAML file. ")
-    @cli.ON_REST_EXCEPTIONS
+    @cli.handle_exceptions(restclient.CLI_REST_EXCEPTIONS)
     @click.pass_context
     def configure_cell(ctx, vpc_name, region, name, key, count, image,
                        instance_type, tm_release, app_root,
@@ -320,7 +320,7 @@ def init():
                                       'ipa_admin_password'
                                       'with_api'],
                   help="Options YAML file. ")
-    @cli.ON_REST_EXCEPTIONS
+    @cli.handle_exceptions(restclient.CLI_REST_EXCEPTIONS)
     @click.pass_context
     def configure_node(ctx, vpc_name, region, name, key, image,
                        instance_type, tm_release, app_root,
