@@ -88,6 +88,8 @@ class Subnet(ec2object.EC2Object):
             name=self.name,
             vpc_id=self.vpc_id
         )
+        self.create_tags()
+        self._create_route_table(gateway_id)
 
     def load_route_related_ids(self):
         response = self.ec2_conn.describe_route_tables(
