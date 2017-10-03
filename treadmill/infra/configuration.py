@@ -26,6 +26,7 @@ class Configuration:
         for script in self.setup_scripts:
             script['vars'] = script.get('vars', {})
             script['vars']['TREADMILL'] = TREADMILL_BIN
+            script['vars']['SUBNET_ID'] = self.subnet_id
             with open(SCRIPT_DIR + script['name'], 'r') as data:
                 template = environment.from_string(data.read())
                 userdata += template.render(script['vars']) + '\n'
