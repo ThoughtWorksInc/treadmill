@@ -25,12 +25,12 @@ export TREADMILL_CELL=$subnet_id
 
 echo Adding host to service keytab retrieval list
 
-REQ_URL="http://ipa-ca:5108/ipa/service"
+REQ_URL="http://ipa-ca:5108/ipa/protocol/zookeeper/service/${HOST_FQDN}"
 REQ_STATUS=254
 TIMEOUT_RETRY_COUNT=0
 while [ $REQ_STATUS -eq 254 ] && [ $TIMEOUT_RETRY_COUNT -ne 30 ]
 do
-    REQ_OUTPUT=$(curl --connect-timeout 5 -H "Content-Type: application/json" -X POST -d '{"domain": "{{ DOMAIN }}", "hostname": "'${HOST_FQDN}'", "service": "'zookeeper/$HOST_FQDN'"}' "${REQ_URL}" 2>&1) && REQ_STATUS=0 || REQ_STATUS=254
+    REQ_OUTPUT=$(curl --connect-timeout 5 -H "Content-Type: application/json" -X POST -d '{"domain": "{{ DOMAIN }}", "hostname": "'${HOST_FQDN}'"}' "${REQ_URL}" 2>&1) && REQ_STATUS=0 || REQ_STATUS=254
     TIMEOUT_RETRY_COUNT=$((TIMEOUT_RETRY_COUNT+1))
     sleep 60
 done

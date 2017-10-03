@@ -3,13 +3,13 @@ echo Installing openldap
 yum -y install openldap openldap-clients openldap-servers ipa-admintools
 
 echo Adding host to service keytab retrieval list
-REQ_URL="http://ipa-ca:5108/ipa/service"
+REQ_URL="http://ipa-ca:5108/ipa/protocol/ldap/service/${HOST_FQDN}"
 REQ_STATUS=254
 TIMEOUT_RETRY_COUNT=0
 HOST_FQDN=$(hostname -f)
 while [ $REQ_STATUS -eq 254 ] && [ $TIMEOUT_RETRY_COUNT -ne 30 ]
 do
-    REQ_OUTPUT=$(curl --connect-timeout 5 -H "Content-Type: application/json" -X POST -d '{"domain": "{{ DOMAIN }}", "hostname": "'${HOST_FQDN}'", "service": "'ldap/$HOST_FQDN'"}' "${REQ_URL}" 2>&1) && REQ_STATUS=0 || REQ_STATUS=254
+    REQ_OUTPUT=$(curl --connect-timeout 5 -H "Content-Type: application/json" -X POST -d '{"domain": "{{ DOMAIN }}", "hostname": "'${HOST_FQDN}'"}' "${REQ_URL}" 2>&1) && REQ_STATUS=0 || REQ_STATUS=254
     TIMEOUT_RETRY_COUNT=$((TIMEOUT_RETRY_COUNT+1))
     sleep 60
 done
@@ -18,7 +18,6 @@ kinit -kt /etc/krb5.keytab
 
 echo Retrieving LDAP service keytab
 ipa-getkeytab -s "{{ IPA_SERVER_HOSTNAME }}" -p "ldap/$HOST_FQDN@{{ DOMAIN|upper }}" -k /etc/ldap.keytab
-ipa-getkeytab -p "ldap/treadmillldap1.{{ DOMAIN }}" -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/ldap.keytab
 ipa-getkeytab -r -p "${PROID}" -D "cn=Directory Manager" -w "{{ IPA_ADMIN_PASSWORD }}" -k /etc/"${PROID}".keytab
 chown "${PROID}":"${PROID}" /etc/ldap.keytab /etc/"${PROID}".keytab
 
