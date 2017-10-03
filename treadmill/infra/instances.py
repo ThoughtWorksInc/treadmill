@@ -23,9 +23,13 @@ class Instance(ec2object.EC2Object):
 
     def running_status(self, refresh=False):
         if refresh or not self._running_status:
-            self._running_status = self.ec2_conn.describe_instance_status(
+            _status = self.ec2_conn.describe_instance_status(
                 InstanceIds=[self.metadata['InstanceId']]
-            )['InstanceStatuses'][0]['InstanceStatus']['Details'][0]['Status']
+            )['InstanceStatuses']
+            if _status:
+                self._running_status = _status[0]['InstanceStatus']['Details'][0]['Status']
+            else:
+                self._running_status = self.metadata['State']['Name']
 
         return self._running_status
 

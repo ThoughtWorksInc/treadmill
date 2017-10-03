@@ -79,7 +79,7 @@ class Subnet(ec2object.EC2Object):
 
     @property
     def persisted(self):
-        return True if self.metadata.get('SubnetId') else False
+        return True if (self.metadata and self.metadata.get('SubnetId')) else False
 
     def persist(self, cidr_block, gateway_id):
         self.metadata = Subnet._create(
