@@ -2,6 +2,9 @@ import treadmill
 from treadmill.infra.setup import base_provision
 from treadmill.infra import configuration, constants
 import polling
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class IPA(base_provision.BaseProvision):
@@ -67,6 +70,7 @@ class IPA(base_provision.BaseProvision):
         )
 
         def check_passed_status():
+            _LOGGER.info('Checking IPA server running status...')
             return all(
                 map(
                     lambda i: i.running_status(refresh=True) == 'passed',
@@ -80,7 +84,12 @@ class IPA(base_provision.BaseProvision):
             timeout=600
         )
         self.vpc.associate_dhcp_options(default=True)
-        self.vpc.delete_dhcp_options()
+
+        try:
+            self.vpc.delete_dhcp_options()
+        except:
+            pass
+
         self.vpc.associate_dhcp_options([
             {
                 'Key': 'domain-name-servers',
