@@ -14,10 +14,11 @@ class IPA(base_provision.BaseProvision):
     def instances(self):
         if not self._instances:
             self.subnet.refresh()
-            self._instances = self.subnet.get_instances(
+            self.subnet.get_instances(
                 refresh=True,
                 role=constants.ROLES['IPA']
             )
+            self._instances = self.subnet.instances
 
         return self._instances
 
