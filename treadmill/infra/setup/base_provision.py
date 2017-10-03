@@ -36,8 +36,8 @@ class BaseProvision:
                 name=subnet_name,
                 vpc_id=self.vpc.id
             )
-        else:
-            self.subnet._name = subnet_name
+
+        self.subnet._name = subnet_name
 
         if not self.subnet.persisted and not cidr_block:
             raise Exception(
@@ -46,11 +46,10 @@ class BaseProvision:
 
         if not self.subnet.persisted:
             self.vpc.load_internet_gateway_ids()
-            if not self.subnet.persisted:
-                self.subnet.persist(
-                    cidr_block=cidr_block,
-                    gateway_id=self.vpc.gateway_ids[0]
-                )
+            self.subnet.persist(
+                cidr_block=cidr_block,
+                gateway_id=self.vpc.gateway_ids[0]
+            )
 
         user_data = ''
         if getattr(self, 'configuration', None):
