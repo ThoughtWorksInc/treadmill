@@ -48,7 +48,7 @@ class Master(Configuration):
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                     'HOSTNAME': hostname,
-                    'PROID': 'foobar'
+                    'PROID': proid
                 },
             }, {
                 'name': 'install-ipa-client-with-otp.sh',
