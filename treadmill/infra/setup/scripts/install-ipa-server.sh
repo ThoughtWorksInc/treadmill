@@ -19,7 +19,7 @@ ipa-server-install --unattended \
 
 echo "{{ IPA_ADMIN_PASSWORD }}" | kinit admin
 
-ipa dnszone-mod "{{ DOMAIN }}" --allow-sync-ptr=TRUE
+ipa dnszone-mod "{{ DOMAIN }}" --allow-sync-ptr=TRUE || echo "Skipping dnszon-mod"
 
 ipa dnsrecord-add "{{ DOMAIN }}" ipa-ca --a-rec ${PRIVATE_IP}
 
