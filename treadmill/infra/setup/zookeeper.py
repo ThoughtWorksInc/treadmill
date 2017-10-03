@@ -6,7 +6,7 @@ from treadmill.api import ipa
 
 class Zookeeper(base_provision.BaseProvision):
     def setup(self, image, key, cidr_block, instance_type,
-              ipa_admin_password, proid, subnet_name):
+              ipa_admin_password, proid, subnet_name, count=3):
         _hostnames = instances.Instances.get_hostnames_by_roles(
             vpc_id=self.vpc.id,
             roles=[
@@ -16,7 +16,7 @@ class Zookeeper(base_provision.BaseProvision):
         )
 
         _ipa = ipa.API()
-        _zk_hostnames = self._hostname_cluster(count=3)
+        _zk_hostnames = self._hostname_cluster(count=count)
 
         _name = self.name
         for _zk_h in _zk_hostnames.keys():

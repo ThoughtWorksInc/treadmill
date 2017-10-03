@@ -27,7 +27,9 @@ class Instance(ec2object.EC2Object):
                 InstanceIds=[self.metadata['InstanceId']]
             )['InstanceStatuses']
             if _status:
-                self._running_status = _status[0]['InstanceStatus']['Details'][0]['Status']
+                self._running_status = _status[0]['InstanceStatus'][
+                    'Details'
+                ][0]['Status']
             else:
                 self._running_status = self.metadata['State']['Name']
 

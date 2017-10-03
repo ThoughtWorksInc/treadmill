@@ -36,6 +36,8 @@ class BaseProvision:
                 name=subnet_name,
                 vpc_id=self.vpc.id
             )
+        else:
+            self.subnet._name = subnet_name
 
         if not self.subnet.persisted and not cidr_block:
             raise Exception(
