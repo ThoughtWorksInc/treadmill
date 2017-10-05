@@ -13,6 +13,55 @@ class NodeTest(unittest.TestCase):
 
     @mock.patch('treadmill.infra.instances.Instances')
     @mock.patch('treadmill.infra.connection.Connection')
+    def test_hostnames_for_multiple(self, ConnectionMock, InstancesMock):
+        InstancesMock.get_hostnames_by_roles = mock.Mock(return_value={
+            'IPA': 'ipa-hostname',
+            'LDAP': 'ldap-hostname',
+        })
+
+        node = Node(
+            vpc_id='vpc-id',
+            name='node'
+        )
+        _ldap_hostname, _ipa_hostname = node.hostnames_for(
+            roles=['LDAP', 'IPA']
+        )
+
+        self.assertEqual(_ldap_hostname, 'ldap-hostname')
+        self.assertEqual(_ipa_hostname, 'ipa-hostname')
+
+    @mock.patch('treadmill.infra.instances.Instances')
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_hostnames_for_single(self, ConnectionMock, InstancesMock):
+        InstancesMock.get_hostnames_by_roles = mock.Mock(return_value={
+            'IPA': 'ipa-hostname',
+        })
+
+        node = Node(
+            vpc_id='vpc-id',
+            name='node'
+        )
+        _ipa_hostname, = node.hostnames_for(
+            roles=['IPA']
+        )
+
+        self.assertEqual(_ipa_hostname, 'ipa-hostname')
+
+    @mock.patch('treadmill.infra.instances.Instances')
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_hostnames_for_none(self, ConnectionMock, InstancesMock):
+        InstancesMock.get_hostnames_by_roles = mock.Mock(return_value={})
+
+        node = Node(
+            vpc_id='vpc-id',
+            name='node'
+        )
+
+        self.assertIsNone(node.hostnames_for(roles=['IPA']))
+        self.assertIsNone(node.hostnames_for(roles=[]))
+
+    @mock.patch('treadmill.infra.instances.Instances')
+    @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
     def test_node_destroy_by_instance_id(self, VPCMock,
                                          ConnectionMock, InstancesMock):

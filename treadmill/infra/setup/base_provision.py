@@ -4,6 +4,8 @@ from treadmill.infra import vpc
 from treadmill.infra import subnet
 from treadmill.infra import constants
 
+import time
+
 
 class BaseProvision:
     def __init__(
@@ -20,6 +22,15 @@ class BaseProvision:
         )
         self.role = _role
         self.subnet = None
+
+    def hostnames_for(self, roles):
+        _result = instances.Instances.get_hostnames_by_roles(
+            vpc_id=self.vpc.id,
+            roles=roles
+        )
+
+        if _result:
+            return [_result.get(_r) for _r in roles]
 
     def setup(
             self,
@@ -96,11 +107,12 @@ class BaseProvision:
 
     def _hostname_cluster(self, count):
         _hostnames = {}
-
         for _idx in range(0, count):
             _idx_s = str(_idx + 1)
             _hostnames[
-                self.name + _idx_s + '.' + connection.Connection.context.domain
+                self.name + _idx_s + '-' + str(
+                    time.time()
+                ) + '.' + connection.Connection.context.domain
             ] = _idx_s
 
         return _hostnames
