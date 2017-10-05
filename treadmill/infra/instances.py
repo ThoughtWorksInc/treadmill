@@ -18,7 +18,22 @@ class Instance(ec2object.EC2Object):
             metadata=metadata,
             role=role
         )
+        self._running_status = None
         self.private_ip = self._get_private_ip()
+
+    def running_status(self, refresh=False):
+        if refresh or not self._running_status:
+            _status = self.ec2_conn.describe_instance_status(
+                InstanceIds=[self.metadata['InstanceId']]
+            )['InstanceStatuses']
+            if _status:
+                self._running_status = _status[0]['InstanceStatus'][
+                    'Details'
+                ][0]['Status']
+            else:
+                self._running_status = self.metadata['State']['Name']
+
+        return self._running_status
 
     @property
     def hostname(self):

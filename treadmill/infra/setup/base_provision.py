@@ -14,12 +14,12 @@ class BaseProvision:
         self.name = name
         self.vpc = vpc.VPC(id=vpc_id)
         self.ec2_conn = connection.Connection()
-        self.instances = None
         _role = constants.ROLES.get(
             self.__class__.__name__.upper(),
             'DEFAULT'
         )
         self.role = _role
+        self.subnet = None
 
     def setup(
             self,
@@ -27,36 +27,36 @@ class BaseProvision:
             count,
             key,
             instance_type,
-            subnet_id=None,
+            subnet_name,
+            sg_names,
             cidr_block=None,
     ):
-        if not subnet_id and not cidr_block:
+        if not self.subnet:
+            self.subnet = subnet.Subnet.get(
+                name=subnet_name,
+                vpc_id=self.vpc.id
+            )
+
+        self.subnet._name = subnet_name
+
+        if not self.subnet.persisted and not cidr_block:
             raise Exception(
                 'Subnet CIDR block required for creating new subnet'
             )
 
-        self.vpc.load_internet_gateway_ids()
-        self.vpc.load_security_group_ids()
-
-        if not getattr(self, 'subnet_name', None):
-            self.subnet_name = self.name
-        if not subnet_id:
-            self.vpc.create_subnet(
+        if not self.subnet.persisted:
+            self.vpc.load_internet_gateway_ids()
+            self.subnet.persist(
                 cidr_block=cidr_block,
-                name=self.subnet_name,
                 gateway_id=self.vpc.gateway_ids[0]
-            )
-            self.subnet = self.vpc.subnets[-1]
-        else:
-            self.subnet = subnet.Subnet(
-                id=subnet_id,
-                vpc_id=self.vpc.id
             )
 
         user_data = ''
         if getattr(self, 'configuration', None):
-            self.configuration.cell = self.subnet.id
+            self.configuration.subnet_id = self.subnet.id
             user_data = self.configuration.get_userdata()
+
+        self.vpc.load_security_group_ids(sg_names=sg_names)
 
         self.subnet.instances = instances.Instances.create(
             name=self.name,
@@ -70,21 +70,26 @@ class BaseProvision:
             role=self.role
         )
 
-    def destroy(self, subnet_id=None):
-        if subnet_id:
-            self.subnet = subnet.Subnet(id=subnet_id)
+    def destroy(self, subnet_name=None):
+        if subnet_name:
+            self.subnet = subnet.Subnet(name=subnet_name)
             self.subnet.destroy(role=self.role)
         else:
             _instances = instances.Instances.get_by_roles(
-                vpc_id=self.id,
+                vpc_id=self.vpc.id,
                 roles=[self.role]
             )
 
+            _subnet_ids = set(_i.subnet_id for _i in _instances.instances)
+
             _instances.terminate()
 
-            lambda _i: subnet.Subnet(
-                id=_i.subnet_id, role=self.role
-            ).destroy(), _instances.instances
+            [
+                subnet.Subnet(
+                    id=_id,
+                    role=self.role
+                ).destroy() for _id in _subnet_ids
+            ]
 
     def show(self):
         return self.subnet.show()

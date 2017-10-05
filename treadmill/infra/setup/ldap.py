@@ -14,9 +14,9 @@ class LDAP(base_provision.BaseProvision):
             tm_release,
             instance_type,
             app_root,
-            cell_subnet_id,
             ipa_admin_password,
-            subnet_id=None
+            proid,
+            subnet_name,
     ):
         # TODO: remove count as parameter
         count = 1
@@ -32,19 +32,20 @@ class LDAP(base_provision.BaseProvision):
         )[constants.ROLES['IPA']]
 
         self.configuration = configuration.LDAP(
-            cell_subnet_id=cell_subnet_id,
             tm_release=tm_release,
             app_root=app_root,
             hostname=hostname,
             ipa_admin_password=ipa_admin_password,
             ipa_server_hostname=ipa_server_hostname,
-            otp=otp
+            otp=otp,
+            proid=proid
         )
         super().setup(
             image=image,
             count=count,
             cidr_block=cidr_block,
-            subnet_id=subnet_id,
             key=key,
-            instance_type=instance_type
+            instance_type=instance_type,
+            subnet_name=subnet_name,
+            sg_names=[constants.COMMON_SEC_GRP],
         )
