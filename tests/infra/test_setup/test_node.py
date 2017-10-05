@@ -86,13 +86,20 @@ class NodeTest(unittest.TestCase):
 
         self.assertEqual(_zk_url, 'zookeeper://foo@zk1:2181')
 
+    @mock.patch('treadmill.api.ipa.API')
     @mock.patch('treadmill.infra.instances.Instances')
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
     def test_node_destroy_by_instance_id(self, VPCMock,
-                                         ConnectionMock, InstancesMock):
+                                         ConnectionMock, InstancesMock,
+                                         IpaAPIMock):
         _instances_obj_mock = mock.Mock()
         InstancesMock.get = mock.Mock(return_value=_instances_obj_mock)
+        InstancesMock.get_hostnames_by_roles = mock.Mock(return_value={
+            'NODE': 'node1-1000.domain'
+        })
+        _ipa_api_mock = IpaAPIMock()
+        _ipa_api_mock.delete_host = mock.Mock()
 
         node = Node(
             vpc_id='vpc-id',
@@ -104,14 +111,24 @@ class NodeTest(unittest.TestCase):
 
         InstancesMock.get.assert_called_once_with(ids=['instance-id'])
         _instances_obj_mock.terminate.assert_called_once_with()
+        _ipa_api_mock.delete_host.assert_called_once_with(
+            hostname='node1-1000.domain'
+        )
 
+    @mock.patch('treadmill.api.ipa.API')
     @mock.patch('treadmill.infra.instances.Instances')
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
     def test_node_destroy_by_instance_name(self, VPCMock,
-                                           ConnectionMock, InstancesMock):
+                                           ConnectionMock, InstancesMock,
+                                           IpaAPIMock):
         _instances_obj_mock = mock.Mock()
         InstancesMock.get = mock.Mock(return_value=_instances_obj_mock)
+        InstancesMock.get_hostnames_by_roles = mock.Mock(return_value={
+            'NODE': 'node-instance-name.domain'
+        })
+        _ipa_api_mock = IpaAPIMock()
+        _ipa_api_mock.delete_host = mock.Mock()
 
         node = Node(
             vpc_id='vpc-id',
@@ -132,7 +149,11 @@ class NodeTest(unittest.TestCase):
             ]
         )
         _instances_obj_mock.terminate.assert_called_once_with()
+        _ipa_api_mock.delete_host.assert_called_once_with(
+            hostname='node-instance-name.domain'
+        )
 
+    @mock.patch('treadmill.api.ipa.API')
     @mock.patch('treadmill.infra.instances.Instances')
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
@@ -140,9 +161,13 @@ class NodeTest(unittest.TestCase):
             self,
             VPCMock,
             ConnectionMock,
-            InstancesMock
+            InstancesMock,
+            IpaAPIMock,
     ):
         InstancesMock.get = mock.Mock()
+        _ipa_api_mock = IpaAPIMock()
+        _ipa_api_mock.delete_host = mock.Mock()
+
         node = Node(
             vpc_id='vpc-id',
             name=None
@@ -150,3 +175,4 @@ class NodeTest(unittest.TestCase):
         node.destroy()
 
         InstancesMock.get.assert_not_called()
+        _ipa_api_mock.delete_host.assert_not_called()

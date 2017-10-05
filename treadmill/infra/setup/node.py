@@ -50,6 +50,9 @@ class Node(base_provision.BaseProvision):
             )
 
     def destroy(self, instance_id=None):
+        _hostnames = self.hostnames_for(roles=[self.role])[0].split(',')
+        _ipa = ipa.API()
+
         if instance_id:
             _instances = instances.Instances.get(ids=[instance_id])
         elif self.name:
@@ -69,3 +72,6 @@ class Node(base_provision.BaseProvision):
             return
 
         _instances.terminate()
+
+        for _h in _hostnames:
+            _ipa.delete_host(hostname=_h.lower())

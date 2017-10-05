@@ -138,8 +138,8 @@ class API(object):
                     'cell',
                     '--vpc-name',
                     vpc_name,
-                    '--subnet-id',
-                    cell_id
+                    '--subnet-name',
+                    cell_name
                 ], stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as e:
                 e.message = e.output.decode().replace('\n', '')
