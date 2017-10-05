@@ -47,3 +47,17 @@ class LDAP(base_provision.BaseProvision):
                 subnet_name=subnet_name,
                 sg_names=[constants.COMMON_SEC_GRP],
             )
+
+    def destroy(
+             self,
+             subnet_name,
+    ):
+        _hostnames = self.hostnames_for(
+            [constants.ROLES[self.role]]
+        )[0].split(',')
+        _ipa = ipa.API()
+
+        super().destroy(subnet_name=subnet_name)
+
+        for _h in _hostnames:
+            _ipa.delete_host(hostname=_h.lower())

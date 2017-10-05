@@ -382,11 +382,10 @@ def init():
                   help="Options YAML file. ")
     @click.pass_context
     @cli.ON_CLI_EXCEPTIONS
-    def configure_node(ctx, vpc_id, key, image, subnet_name, region, name,    
+    def configure_node(ctx, vpc_id, key, image, subnet_name, region, name,
                        instance_type, tm_release, app_root,
                        ipa_admin_password, with_api, manifest):
         """Configure new Node in Cell"""
-
         domain = ctx.obj['DOMAIN']
         proid = ctx.obj['PROID']
 

@@ -104,15 +104,24 @@ class LDAPTest(unittest.TestCase):
         )
         _ldap_configuration_mock.get_userdata.assert_called_once()
 
+    @mock.patch('treadmill.api.ipa.API')
     @mock.patch('treadmill.infra.subnet.Subnet')
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')
-    def test_ldap_destroy(self, VPCMock, ConnectionMock,
-                          SubnetMock):
+    @mock.patch('treadmill.infra.instances.Instances')
+    def test_ldap_destroy(self, InstancesMock, VPCMock, ConnectionMock,
+                          SubnetMock, IpaAPIMock):
         _subnet_mock = SubnetMock(name='subnet-name')
         _subnet_mock.instances = mock.Mock(instances=[
             mock.Mock(private_ip='1.1.1.1')
         ])
+        _ipa_api_mock = IpaAPIMock()
+        _ipa_api_mock.delete_host = mock.Mock()
+
+        InstancesMock.get_hostnames_by_roles = mock.Mock(return_value={
+            'LDAP': 'ldap1-1000.domain'
+        })
+
         ldap = LDAP(
             vpc_id='vpc-id',
             name='ldap'
@@ -121,3 +130,6 @@ class LDAPTest(unittest.TestCase):
             subnet_name='subnet-name'
         )
         _subnet_mock.destroy.assert_called_once_with(role='LDAP')
+        _ipa_api_mock.delete_host.assert_called_once_with(
+            hostname='ldap1-1000.domain'
+        )
