@@ -98,8 +98,9 @@ class BaseProvision:
             [
                 subnet.Subnet(
                     id=_id,
+                ).destroy(
                     role=self.role
-                ).destroy() for _id in _subnet_ids
+                ) for _id in _subnet_ids
             ]
 
     def show(self):
