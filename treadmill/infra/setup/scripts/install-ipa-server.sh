@@ -21,7 +21,7 @@ echo "{{ IPA_ADMIN_PASSWORD }}" | kinit admin
 
 ipa dnszone-mod "{{ DOMAIN }}" --allow-sync-ptr=TRUE || echo "Skipping dnszon-mod"
 
-ipa dnsrecord-add "{{ DOMAIN }}" ipa-ca --a-rec ${PRIVATE_IP}
+ipa dnsrecord-add "{{ DOMAIN }}" ipa-ca --a-rec ${PRIVATE_IP} || echo "Skipping dnrecord-add. Probably already present."
 
 TMHOSTADM_OUTPUT=$(ipa -n user-add tmhostadm --first tmhostadm --last proid --shell /bin/bash --class proid --random)
 TMP_TMHOSTADM_PASSWORD=$(echo "${TMHOSTADM_OUTPUT}" | grep 'Random password:' | awk '{print $3}')
