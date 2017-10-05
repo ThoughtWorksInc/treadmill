@@ -83,7 +83,7 @@ class BaseProvision:
 
     def destroy(self, subnet_name=None):
         if subnet_name:
-            self.subnet = subnet.Subnet(name=subnet_name)
+            self.subnet = subnet.Subnet(name=subnet_name, vpc_id=self.vpc.id)
             self.subnet.destroy(role=self.role)
         else:
             _instances = instances.Instances.get_by_roles(
