@@ -36,7 +36,7 @@ class Configuration:
 class Master(Configuration):
     def __init__(self, hostname, otp, app_root, ldap_hostname,
                  tm_release, ipa_admin_password, idx,
-                 proid):
+                 proid, zk_url):
         super().__init__()
 
         self.setup_scripts = [
@@ -48,7 +48,8 @@ class Master(Configuration):
                     'APP_ROOT': app_root,
                     'LDAP_HOSTNAME': ldap_hostname,
                     'HOSTNAME': hostname,
-                    'PROID': proid
+                    'PROID': proid,
+                    'ZK_URL': zk_url,
                 },
             }, {
                 'name': 'install-ipa-client-with-otp.sh',
@@ -136,7 +137,7 @@ class IPA(Configuration):
 
 class Zookeeper(Configuration):
     def __init__(self, hostname, ldap_hostname, ipa_server_hostname, otp, idx,
-                 proid):
+                 proid, cfg_data):
         super().__init__()
 
         self.setup_scripts = [
@@ -158,7 +159,8 @@ class Zookeeper(Configuration):
                 'vars': {
                     'DOMAIN': connection.Connection.context.domain,
                     'IPA_SERVER_HOSTNAME': ipa_server_hostname,
-                    'IDX': idx
+                    'IDX': idx,
+                    'CFG_DATA': cfg_data,
                 },
             },
         ]
@@ -167,7 +169,7 @@ class Zookeeper(Configuration):
 class Node(Configuration):
     def __init__(self, tm_release, app_root,
                  ldap_hostname, otp, with_api, hostname,
-                 ipa_admin_password, proid):
+                 ipa_admin_password, proid, zk_url):
         super().__init__()
 
         self.setup_scripts = [
@@ -179,7 +181,8 @@ class Node(Configuration):
                     'SUBNET_ID': self.subnet_id,
                     'LDAP_HOSTNAME': ldap_hostname,
                     'HOSTNAME': hostname,
-                    'PROID': proid
+                    'PROID': proid,
+                    'ZK_URL': zk_url,
                 }
             }, {
                 'name': 'install-ipa-client-with-otp.sh',

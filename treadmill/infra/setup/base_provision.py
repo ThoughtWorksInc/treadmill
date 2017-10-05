@@ -109,10 +109,14 @@ class BaseProvision:
         _hostnames = {}
         for _idx in range(0, count):
             _idx_s = str(_idx + 1)
-            _hostnames[
-                self.name + _idx_s + '-' + str(
-                    time.time()
-                ) + '.' + connection.Connection.context.domain
-            ] = _idx_s
+            _hostnames[_idx_s] = self.name + _idx_s + '-' + str(
+                time.time()
+            ) + '.' + connection.Connection.context.domain
 
         return _hostnames
+
+    def _zk_url(self, hostname):
+        return 'zookeeper://foo@' + ','.join([
+            _zk_h.strip() + ':' + str(constants.ZK_CLIENT_PORT)
+            for _zk_h in hostname.split(',')
+        ])

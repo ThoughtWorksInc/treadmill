@@ -45,11 +45,11 @@ class MasterTest(unittest.TestCase):
 
     @mock.patch('builtins.open', create=True)
     def test_master_configuration_script_data(self, open_mock):
-        config = configuration.Master('', '', '', '', '', '', '', '',)
+        config = configuration.Master('', '', '', '', '', '', '', '', '')
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'HOSTNAME', 'SUBNET_ID', 'LDAP_HOSTNAME', 'APP_ROOT',
-                'PROID'
+                'PROID', 'ZK_URL'
             ],
             'install-ipa-client-with-otp.sh': [
                 'OTP'
@@ -155,14 +155,16 @@ class ZookeeperTest(unittest.TestCase):
             ipa_server_hostname='ipa_server_hostname',
             otp='otp',
             idx='idx',
-            proid='foobar'
+            proid='foobar',
+            cfg_data='foobar'
         )
         expected_script_data = {
             'provision-base.sh': [
                 'DOMAIN', 'HOSTNAME', 'LDAP_HOSTNAME', 'PROID'
             ],
             'install-ipa-client-with-otp.sh': ['OTP'],
-            'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME', 'IDX'],
+            'provision-zookeeper.sh': ['DOMAIN', 'IPA_SERVER_HOSTNAME',
+                                       'IDX', 'CFG_DATA'],
         }
 
         self.assertCountEqual(
@@ -193,10 +195,12 @@ class NodeTest(unittest.TestCase):
             with_api=False,
             otp='otp',
             proid='foobar',
+            zk_url='zk-url',
         )
         expected_script_data = {
             'provision-base.sh': ['DOMAIN', 'HOSTNAME', 'APP_ROOT',
-                                  'PROID', 'SUBNET_ID', 'LDAP_HOSTNAME'],
+                                  'PROID', 'SUBNET_ID', 'LDAP_HOSTNAME',
+                                  'ZK_URL'],
             'install-ipa-client-with-otp.sh': ['OTP'],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'configure-node.sh': [

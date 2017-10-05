@@ -24,7 +24,8 @@ class LDAP(base_provision.BaseProvision):
             roles=[constants.ROLES['IPA']]
         )
 
-        for _ldap_h in _ldap_hostnames:
+        for _idx in _ldap_hostnames.keys():
+            _ldap_h = _ldap_hostnames[_idx]
             otp = _ipa.add_host(hostname=_ldap_h)
             self.name = _ldap_h
 

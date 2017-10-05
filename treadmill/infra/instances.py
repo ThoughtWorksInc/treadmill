@@ -37,7 +37,7 @@ class Instance(ec2object.EC2Object):
 
     @property
     def hostname(self):
-        return self.name.lower() + '.' + connection.Connection.context.domain
+        return self.name
 
     @property
     def subnet_id(self):
@@ -140,9 +140,13 @@ class Instances:
             vpc_id=vpc_id,
             roles=roles
         ).instances
+
         _hostnames = {}
         for _i in _instances:
-            _hostnames[_i.role] = _i.hostname
+            if _hostnames.get(_i.role):
+                _hostnames[_i.role] += ',' + _i.hostname
+            else:
+                _hostnames[_i.role] = _i.hostname
 
         return _hostnames
 
