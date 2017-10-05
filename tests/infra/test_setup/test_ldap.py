@@ -65,7 +65,7 @@ class LDAPTest(unittest.TestCase):
 
         self.assertEqual(ldap.subnet.instances, instances_mock)
         _ipa_api_mock.add_host.assert_called_with(
-            hostname='ldap-1000.domain'
+            hostname='ldap1-1000.domain'
         )
         InstancesMock.get_hostnames_by_roles.assert_called_with(
             vpc_id=mock.ANY,
@@ -73,7 +73,7 @@ class LDAPTest(unittest.TestCase):
         )
         InstancesMock.create.assert_called_once_with(
             image='foo-123',
-            name='ldap-1000',
+            name='ldap1-1000.domain',
             count=1,
             subnet_id='subnet-id',
             instance_type='small',
@@ -93,7 +93,7 @@ class LDAPTest(unittest.TestCase):
         self.assertEqual(
             LDAPConfigurationMock.mock_calls[1],
             mock.mock.call(
-                hostname='ldap-1000.domain',
+                hostname='ldap1-1000.domain',
                 otp='otp',
                 tm_release='release',
                 app_root='app-root',
