@@ -16,12 +16,16 @@ class Node(base_provision.BaseProvision):
             proid,
             subnet_name
     ):
-        ldap_hostname, = self.hostnames_for(roles=[constants.ROLES['LDAP']])
+        ldap_hostname, zk_hostname = self.hostnames_for(roles=[
+            constants.ROLES['LDAP'],
+            constants.ROLES['ZOOKEEPER'],
+        ])
 
         _ipa = ipa.API()
         _node_hostnames = self._hostname_cluster(count=1)
 
-        for _node_h in _node_hostnames:
+        for _idx in _node_hostnames.keys():
+            _node_h = _node_hostnames[_idx]
             otp = _ipa.add_host(hostname=_node_h)
             self.name = _node_h
 
@@ -33,7 +37,8 @@ class Node(base_provision.BaseProvision):
                 with_api=with_api,
                 hostname=_node_h,
                 ipa_admin_password=ipa_admin_password,
-                proid=proid
+                proid=proid,
+                zk_url=self._zk_url(zk_hostname)
             )
             super().setup(
                 image=image,

@@ -9,13 +9,7 @@ yum -y install zookeeper-ldap-plugin --nogpgcheck
 
 # Configure
 
-(
-cat <<EOF
-server.1=TreadmillZookeeper1.{{ DOMAIN }}:2888:3888
-server.2=TreadmillZookeeper2.{{ DOMAIN }}:2888:3888
-server.3=TreadmillZookeeper3.{{ DOMAIN }}:2888:3888
-EOF
-) >> /etc/zookeeper/conf/zoo.cfg
+echo "{{ CFG_DATA }}" >> /etc/zookeeper/conf/zoo.cfg
 
 mac_addr=`cat /sys/class/net/eth0/address`
 subnet_id=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/$mac_addr/subnet-id`

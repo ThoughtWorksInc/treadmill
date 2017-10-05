@@ -60,6 +60,32 @@ class NodeTest(unittest.TestCase):
         self.assertIsNone(node.hostnames_for(roles=['IPA']))
         self.assertIsNone(node.hostnames_for(roles=[]))
 
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_zk_url_cluster(self, ConnectionMock):
+        node = Node(
+            vpc_id='vpc-id',
+            name='node'
+        )
+
+        _zk_url = node._zk_url(
+            hostname='zk1,zk2,zk3'
+        )
+
+        self.assertEqual(_zk_url, 'zookeeper://foo@zk1:2181,zk2:2181,zk3:2181')
+
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_zk_url_standalone(self, ConnectionMock):
+        node = Node(
+            vpc_id='vpc-id',
+            name='node'
+        )
+
+        _zk_url = node._zk_url(
+            hostname='zk1'
+        )
+
+        self.assertEqual(_zk_url, 'zookeeper://foo@zk1:2181')
+
     @mock.patch('treadmill.infra.instances.Instances')
     @mock.patch('treadmill.infra.connection.Connection')
     @mock.patch('treadmill.infra.vpc.VPC')

@@ -17,14 +17,17 @@ class Master(base_provision.BaseProvision):
             proid,
             subnet_name,
     ):
-        ldap_hostname, = self.hostnames_for(roles=[constants.ROLES['LDAP']])
+        ldap_hostname, zk_hostname = self.hostnames_for(roles=[
+            constants.ROLES['LDAP'],
+            constants.ROLES['ZOOKEEPER'],
+        ])
 
         _ipa = ipa.API()
         _master_hostnames = self._hostname_cluster(count)
 
-        for _master_h in _master_hostnames.keys():
+        for _idx in _master_hostnames.keys():
+            _master_h = _master_hostnames[_idx]
             _otp = _ipa.add_host(hostname=_master_h)
-            _idx = _master_hostnames[_master_h]
             self.name = _master_h
 
             self.configuration = configuration.Master(
@@ -35,7 +38,8 @@ class Master(base_provision.BaseProvision):
                 app_root=app_root,
                 ipa_admin_password=ipa_admin_password,
                 idx=_idx,
-                proid=proid
+                proid=proid,
+                zk_url=self._zk_url(zk_hostname)
             )
             super().setup(
                 image=image,

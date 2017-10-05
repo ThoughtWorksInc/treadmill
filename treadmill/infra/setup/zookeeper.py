@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from treadmill.infra.setup import base_provision
 from treadmill.infra import configuration, constants
 from treadmill.api import ipa
@@ -14,10 +16,11 @@ class Zookeeper(base_provision.BaseProvision):
         )
         _ipa = ipa.API()
         _zk_hostnames = self._hostname_cluster(count=count)
+        _cfg_data = self._construct_cfg_data(_zk_hostnames)
 
-        for _zk_h in _zk_hostnames.keys():
+        for _idx in _zk_hostnames.keys():
+            _zk_h = _zk_hostnames[_idx]
             _otp = _ipa.add_host(hostname=_zk_h)
-            _idx = _zk_hostnames[_zk_h]
             self.name = _zk_h
 
             self.configuration = configuration.Zookeeper(
@@ -27,6 +30,7 @@ class Zookeeper(base_provision.BaseProvision):
                 otp=_otp,
                 idx=_idx,
                 proid=proid,
+                cfg_data=_cfg_data
             )
 
             super().setup(
@@ -38,3 +42,9 @@ class Zookeeper(base_provision.BaseProvision):
                 subnet_name=subnet_name,
                 sg_names=[constants.COMMON_SEC_GRP],
             )
+
+    def _construct_cfg_data(self, hostnames):
+        return '\n'.join(
+            ['server.' + _h[0] + '=' + _h[1] + ':2888:3888'
+             for _h in OrderedDict(sorted(hostnames.items())).items()]
+        )
