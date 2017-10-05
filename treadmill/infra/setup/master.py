@@ -1,5 +1,5 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants, instances
+from treadmill.infra import configuration, constants
 from treadmill.api import ipa
 
 
@@ -17,31 +17,26 @@ class Master(base_provision.BaseProvision):
             proid,
             subnet_name,
     ):
-        _hostnames = instances.Instances.get_hostnames_by_roles(
-            vpc_id=self.vpc.id,
-            roles=[
-                constants.ROLES['LDAP'],
-            ]
-        )
+        ldap_hostname, = self.hostnames_for(roles=[constants.ROLES['LDAP']])
 
         _ipa = ipa.API()
         _master_hostnames = self._hostname_cluster(count)
 
-        _name = self.name
         for _master_h in _master_hostnames.keys():
             _otp = _ipa.add_host(hostname=_master_h)
             _idx = _master_hostnames[_master_h]
+            self.name = _master_h
+
             self.configuration = configuration.Master(
                 hostname=_master_h,
                 otp=_otp,
-                ldap_hostname=_hostnames[constants.ROLES['LDAP']],
+                ldap_hostname=ldap_hostname,
                 tm_release=tm_release,
                 app_root=app_root,
                 ipa_admin_password=ipa_admin_password,
                 idx=_idx,
                 proid=proid
             )
-            self.name = _name + _idx
             super().setup(
                 image=image,
                 count=1,
