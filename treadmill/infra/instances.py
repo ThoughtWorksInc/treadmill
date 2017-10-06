@@ -228,7 +228,7 @@ class Instances:
         for _i in self.instances:
             if _i.role != constants.ROLES['IPA']:
                 try:
-                    _api.delete_host(hostname=_i.hostname)
+                    _api.delete_host(hostname=_i.hostname.lower())
                 except AssertionError as e:
                     _LOGGER.warn(
                         'Couldn\'t delete host ' + _i.hostname + ' from ipa. ',
