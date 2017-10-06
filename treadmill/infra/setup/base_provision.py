@@ -3,7 +3,6 @@ from treadmill.infra import connection
 from treadmill.infra import vpc
 from treadmill.infra import subnet
 from treadmill.infra import constants
-from treadmill.api import ipa
 
 import time
 
