@@ -99,6 +99,14 @@ class LDAPTest(unittest.TestCase):
         _ipa_api_mock.add_host.assert_called_with(
             hostname='ldap1-1000.domain'
         )
+        _ipa_api_mock.service_add.assert_called_with(
+            'ldap',
+            'ldap1-1000.domain',
+            {
+                'domain': 'domain',
+                'hostname': 'ldap1-1000.domain'
+            }
+        )
         InstancesMock.get_hostnames_by_roles.assert_called_with(
             vpc_id=mock.ANY,
             roles=['IPA']

@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants, exceptions
+from treadmill.infra import configuration, constants, exceptions, connection
 from treadmill.api import ipa
 
 
@@ -27,8 +27,11 @@ class Zookeeper(base_provision.BaseProvision):
         for _idx in _zk_hostnames.keys():
             _zk_h = _zk_hostnames[_idx]
             _otp = _ipa.add_host(hostname=_zk_h)
+            _ipa.service_add('zookeeper', _zk_h, {
+                'domain': connection.Connection.context.domain,
+                'hostname': _zk_h,
+            })
             self.name = _zk_h
-
             self.configuration = configuration.Zookeeper(
                 ldap_hostname=ldap_hostname,
                 ipa_server_hostname=ipa_server_hostname,
@@ -38,7 +41,6 @@ class Zookeeper(base_provision.BaseProvision):
                 proid=proid,
                 cfg_data=_cfg_data
             )
-
             super().setup(
                 image=image,
                 count=1,
