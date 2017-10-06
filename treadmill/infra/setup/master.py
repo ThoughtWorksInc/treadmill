@@ -1,5 +1,5 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants
+from treadmill.infra import configuration, constants, exceptions
 from treadmill.api import ipa
 
 
@@ -21,6 +21,9 @@ class Master(base_provision.BaseProvision):
             constants.ROLES['LDAP'],
             constants.ROLES['ZOOKEEPER'],
         ])
+
+        if not ldap_hostname:
+            raise exceptions.LDAPNotFound()
 
         _ipa = ipa.API()
         _master_hostnames = self._hostname_cluster(count)

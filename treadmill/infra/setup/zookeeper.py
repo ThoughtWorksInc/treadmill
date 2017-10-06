@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants
+from treadmill.infra import configuration, constants, exceptions
 from treadmill.api import ipa
 
 
@@ -14,6 +14,12 @@ class Zookeeper(base_provision.BaseProvision):
                 constants.ROLES['LDAP'],
             ]
         )
+
+        if not ipa_server_hostname:
+            raise exceptions.IPAServerNotFound()
+        if not ldap_hostname:
+            raise exceptions.LDAPNotFound()
+
         _ipa = ipa.API()
         _zk_hostnames = self._hostname_cluster(count=count)
         _cfg_data = self._construct_cfg_data(_zk_hostnames)

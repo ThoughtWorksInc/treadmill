@@ -1,5 +1,5 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants
+from treadmill.infra import configuration, constants, exceptions
 from treadmill.api import ipa
 
 
@@ -17,12 +17,15 @@ class LDAP(base_provision.BaseProvision):
             proid,
             subnet_name,
     ):
-        _ipa = ipa.API()
-        _ldap_hostnames = self._hostname_cluster(count=count)
-
         ipa_server_hostname, = self.hostnames_for(
             roles=[constants.ROLES['IPA']]
         )
+
+        if not ipa_server_hostname:
+            raise exceptions.IPAServerNotFound()
+
+        _ipa = ipa.API()
+        _ldap_hostnames = self._hostname_cluster(count=count)
 
         for _idx in _ldap_hostnames.keys():
             _ldap_h = _ldap_hostnames[_idx]
