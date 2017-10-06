@@ -234,7 +234,6 @@ class Instances:
                         'Couldn\'t delete host ' + _i.hostname + ' from ipa. ',
                         e
                     )
-                    pass
 
     def delete_volumes(self):
         for volume_id in self.volume_ids:
