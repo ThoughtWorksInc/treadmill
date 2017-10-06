@@ -51,7 +51,7 @@ class API(object):
                         yaml.dump(_content, f, default_flow_style=False)
 
                     try:
-                        subprocess.check_output([
+                        result = subprocess.check_output([
                             'treadmill',
                             'admin',
                             'cloud',
@@ -63,8 +63,10 @@ class API(object):
                             _file_path
                         ], stderr=subprocess.STDOUT)
                     except subprocess.CalledProcessError as e:
-                        e.message = e.output.decode().replace('\n', '')
+                        e.message = e.output.decode('utf-8')
                         raise
+
+                    return json.loads(result.decode('utf-8').replace("'", '"'))
                 else:
                     raise ValueError(
                         ', '.join(default_mandatory_params) +
@@ -78,7 +80,7 @@ class API(object):
                     'subnet_name',
                 ]
 
-            _instantiate(_mandatory_params)
+            return _instantiate(_mandatory_params)
 
         def delete_server(
                 vpc_name,
