@@ -6,10 +6,42 @@ import unittest
 import mock
 
 from treadmill.infra.setup.ldap import LDAP
+from treadmill.infra.setup.base_provision import BaseProvision
+from treadmill.infra import exceptions
 
 
 class LDAPTest(unittest.TestCase):
     """Tests EC2 LDAP"""
+
+    @mock.patch.object(BaseProvision,
+                       'hostnames_for',
+                       mock.Mock(return_value=[None]))
+    @mock.patch('treadmill.infra.connection.Connection',
+                mock.Mock())
+    def test_setup_ldap_no_ipa(self):
+        ldap = LDAP(
+            name='ldap',
+            vpc_id='vpc-id',
+        )
+
+        with self.assertRaises(exceptions.IPAServerNotFound) as err:
+            ldap.setup(
+                image='foo-123',
+                count=1,
+                cidr_block='cidr-block',
+                key='some-key',
+                instance_type='small',
+                tm_release='release',
+                app_root='app-root',
+                ipa_admin_password='ipa_pass',
+                proid='foobar',
+                subnet_name='sub-name'
+            )
+
+        self.assertEqual(
+            err.exception.message,
+            'IPAServerNotFound: Please check if IPA Server is up and running.'
+        )
 
     @mock.patch('time.time', mock.Mock(return_value=1000))
     @mock.patch('treadmill.infra.subnet.Subnet')

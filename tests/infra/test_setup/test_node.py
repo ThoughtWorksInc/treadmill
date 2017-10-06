@@ -57,8 +57,8 @@ class NodeTest(unittest.TestCase):
             name='node'
         )
 
-        self.assertIsNone(node.hostnames_for(roles=['IPA']))
-        self.assertIsNone(node.hostnames_for(roles=[]))
+        self.assertEqual(node.hostnames_for(roles=['IPA']), [None])
+        self.assertEqual(node.hostnames_for(roles=[]), [])
 
     @mock.patch('treadmill.infra.connection.Connection')
     def test_zk_url_cluster(self, ConnectionMock):

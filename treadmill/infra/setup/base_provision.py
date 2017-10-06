@@ -29,8 +29,7 @@ class BaseProvision:
             roles=roles
         )
 
-        if _result:
-            return [_result.get(_r) for _r in roles]
+        return [_result.get(_r) for _r in roles]
 
     def setup(
             self,
