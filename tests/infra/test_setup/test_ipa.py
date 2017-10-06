@@ -12,6 +12,7 @@ from treadmill.infra import constants
 class IPATest(unittest.TestCase):
     """Tests EC2 ipa setup."""
 
+    @mock.patch('time.time', mock.Mock(return_value=1000))
     @mock.patch('treadmill.infra.subnet.Subnet')
     @mock.patch('treadmill.infra.get_iam_role')
     @mock.patch('treadmill.infra.configuration.IPA')
@@ -98,7 +99,7 @@ class IPATest(unittest.TestCase):
         self.assertEqual(ipa.subnet.instances, instances_mock)
         InstancesMock.create.assert_called_once_with(
             image='foo-123',
-            name='ipa',
+            name='ipa1-1000.foo.bar',
             count=1,
             subnet_id='subnet-id',
             instance_type='small',
@@ -120,7 +121,7 @@ class IPATest(unittest.TestCase):
             mock.mock.call(
                 ipa_admin_password='ipa-admin-password',
                 tm_release='release',
-                name='ipa',
+                hostname='ipa1-1000.foo.bar',
                 vpc=_vpc_mock,
                 proid='foobar'
             )

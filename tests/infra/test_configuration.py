@@ -117,12 +117,12 @@ class IPATest(unittest.TestCase):
         config = configuration.IPA(
             ipa_admin_password='admin-password',
             tm_release='some-release',
-            name='ipa',
+            hostname='ipa',
             vpc=mock.Mock(),
             proid='foobar'
         )
         expected_script_data = {
-            'provision-base.sh': ['DOMAIN', 'NAME', 'REGION',
+            'provision-base.sh': ['DOMAIN', 'HOSTNAME', 'REGION',
                                   'PROID', 'SUBNET_ID'],
             'install-treadmill.sh': ['TREADMILL_RELEASE'],
             'install-ipa-server.sh': [

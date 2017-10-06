@@ -107,7 +107,7 @@ class LDAP(Configuration):
 
 
 class IPA(Configuration):
-    def __init__(self, name, vpc, ipa_admin_password,
+    def __init__(self, hostname, vpc, ipa_admin_password,
                  tm_release, proid):
         super().__init__()
 
@@ -116,7 +116,7 @@ class IPA(Configuration):
                 'name': 'provision-base.sh',
                 'vars': {
                     'DOMAIN': connection.Connection.context.domain,
-                    'NAME': name,
+                    'HOSTNAME': hostname,
                     'REGION': connection.Connection.context.region_name,
                     'PROID': proid,
                     'SUBNET_ID': self.subnet_id,

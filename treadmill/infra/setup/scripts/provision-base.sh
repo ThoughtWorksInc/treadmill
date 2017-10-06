@@ -4,11 +4,7 @@ rpm -ivh https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-10.noar
 yum -y install python34 python-kerberos git python34-devel
 
 # Configure
-{% if HOSTNAME is defined %}
 hostnamectl set-hostname "{{ HOSTNAME }}"
-{% else %}
-hostnamectl set-hostname "{{ NAME }}.{{ DOMAIN }}"
-{% endif %}
 
 LDAP_DC=$(echo "{{ DOMAIN }}" | sed -E 's/([a-z]*)\.([a-z]*)/dc=\1,dc=\2/g')
 LDAP_URL=ldap://{{ LDAP_HOSTNAME|lower }}:22389

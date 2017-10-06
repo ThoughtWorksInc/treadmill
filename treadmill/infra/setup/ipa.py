@@ -52,22 +52,29 @@ class IPA(base_provision.BaseProvision):
             'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
         }]
         self.vpc.add_secgrp_rules(ip_permissions, secgroup_id)
-        self.configuration = configuration.IPA(
-            name=self.name,
-            vpc=self.vpc,
-            ipa_admin_password=ipa_admin_password,
-            tm_release=tm_release,
-            proid=proid
-        )
-        super().setup(
-            image=image,
-            count=count,
-            cidr_block=cidr_block,
-            key=key,
-            instance_type=instance_type,
-            subnet_name=subnet_name,
-            sg_names=[constants.COMMON_SEC_GRP, constants.IPA_SEC_GRP],
-        )
+
+        _ipa_hostnames = self._hostname_cluster(count=count)
+
+        for _idx in _ipa_hostnames.keys():
+            _ipa_h = _ipa_hostnames[_idx]
+            self.name = _ipa_h
+
+            self.configuration = configuration.IPA(
+                hostname=_ipa_h,
+                vpc=self.vpc,
+                ipa_admin_password=ipa_admin_password,
+                tm_release=tm_release,
+                proid=proid
+            )
+            super().setup(
+                image=image,
+                count=count,
+                cidr_block=cidr_block,
+                key=key,
+                instance_type=instance_type,
+                subnet_name=subnet_name,
+                sg_names=[constants.COMMON_SEC_GRP, constants.IPA_SEC_GRP],
+            )
 
         def check_passed_status():
             _LOGGER.info('Checking IPA server running status...')
