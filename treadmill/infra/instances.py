@@ -1,6 +1,8 @@
 from treadmill.infra import connection
 from treadmill.infra import ec2object
 from treadmill.infra import constants
+from treadmill.api import ipa
+
 from datetime import datetime
 from functools import reduce
 import logging
@@ -218,6 +220,21 @@ class Instances:
         self.load_volume_ids()
         if self.volume_ids:
             self.delete_volumes()
+
+        self._delete_host_from_ipa()
+
+    def _delete_host_from_ipa(self):
+        _api = ipa.API()
+        for _i in self.instances:
+            if _i.role != constants.ROLES['IPA']:
+                try:
+                    _api.delete_host(hostname=_i.hostname)
+                except AssertionError as e:
+                    _LOGGER.warn(
+                        'Couldn\'t delete host ' + _i.hostname + ' from ipa. ',
+                        e
+                    )
+                    pass
 
     def delete_volumes(self):
         for volume_id in self.volume_ids:

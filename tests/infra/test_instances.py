@@ -227,13 +227,15 @@ class InstancesTest(unittest.TestCase):
             InstanceIds=[1, 2]
         )
 
+    @mock.patch('treadmill.api.ipa.API')
     @mock.patch('treadmill.infra.instances.Instance')
     @mock.patch('treadmill.infra.instances.connection.Connection')
-    def test_terminate(self, ConnectionMock, InstanceMock):
+    def test_terminate(self, ConnectionMock, InstanceMock, IpaAPIMock):
         conn_mock = ConnectionMock()
-
+        ipa_api_mock = IpaAPIMock()
         instance_1_mock = InstanceMock()
         instance_1_mock.id = 1
+        instance_1_mock.hostname = 'hostname'
         instance = Instances(instances=[instance_1_mock])
         instance.volume_ids = ['vol-id0']
 
@@ -250,6 +252,35 @@ class InstancesTest(unittest.TestCase):
                 mock.mock.call(VolumeId='vol-id0'),
             ]
         )
+        ipa_api_mock.delete_host.assert_called_once_with(hostname='hostname')
+
+    @mock.patch('treadmill.api.ipa.API')
+    @mock.patch('treadmill.infra.instances.Instance')
+    @mock.patch('treadmill.infra.instances.connection.Connection')
+    def test_terminate_ipa(self, ConnectionMock, InstanceMock, IpaAPIMock):
+        conn_mock = ConnectionMock()
+        ipa_api_mock = IpaAPIMock()
+        instance_1_mock = InstanceMock()
+        instance_1_mock.id = 1
+        instance_1_mock.role = 'IPA'
+        instance_1_mock.hostname = 'hostname'
+        instance = Instances(instances=[instance_1_mock])
+        instance.volume_ids = ['vol-id0']
+
+        Instance.ec2_conn = conn_mock
+        instance.terminate()
+
+        conn_mock.describe_instance_status.assert_called()
+        conn_mock.terminate_instances.assert_called_once_with(
+            InstanceIds=[1]
+        )
+        self.assertCountEqual(
+            conn_mock.delete_volume.mock_calls,
+            [
+                mock.mock.call(VolumeId='vol-id0'),
+            ]
+        )
+        ipa_api_mock.delete_host.assert_not_called()
 
     @mock.patch('treadmill.infra.instances.connection.Connection')
     def test_load_volume_ids(self, connectionMock):
