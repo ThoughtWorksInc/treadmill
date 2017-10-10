@@ -107,7 +107,7 @@ class SpotInstancesTest(unittest.TestCase):
             StartTime=datetime(2017, 10, 10, 0, 0, 0),
             EndTime=datetime(2017, 10, 10, 1, 0, 0),
             AvailabilityZone='some-zone',
-            ProductDescriptions=['some-description'],
+            ProductDescriptions='some-description',
             InstanceTypes=['some-instance-type']
         )
         self.assertEquals(avg_price, 2.5)
