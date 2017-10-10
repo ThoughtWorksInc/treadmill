@@ -5,7 +5,7 @@ import logging
 import re
 import pkg_resources
 
-from treadmill.infra import constants, connection, vpc, subnet
+from treadmill.infra import constants, connection, vpc, subnet, spot_instances
 from treadmill.infra.setup import ipa, ldap, node, cell
 from treadmill.infra.utils import security_group, hosted_zones
 
@@ -714,5 +714,24 @@ def init():
     def delete_hosted_zones(zones_to_retain):
         """Delete Hosted Zones"""
         hosted_zones.delete_obsolete(zones_to_retain)
+
+    @cloud.command(name='get-spot-price')
+    @click.option('--availability-zone', help='Availability Zone')
+    @click.option('--product-desc', help='Product description',
+                  default='Linux/UNIX')
+    @click.option('--instance-type', help='Instance Type', default='m4.large')
+    def get_spot_price(availability_zone, product_desc, instance_type):
+        """Get average spot price for last hour"""
+        click.echo(
+            spot_instances.SpotInstances._get_average_price_for_one_hour(
+                availability_zone=(
+                    availability_zone
+                    if availability_zone
+                    else subnet.Subnet._availability_zone()
+                ),
+                product_description=product_desc,
+                instance_type=instance_type
+            )
+        )
 
     return cloud
