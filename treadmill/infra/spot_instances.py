@@ -84,7 +84,7 @@ class SpotInstances(instances.Instances):
         response = conn.describe_spot_price_history(
             StartTime=time - timedelta(hours=1),
             EndTime=time,
-            ProductDescriptions=product_description,
+            ProductDescriptions=[product_description],
             AvailabilityZone=availability_zone,
             InstanceTypes=[instance_type]
         )
