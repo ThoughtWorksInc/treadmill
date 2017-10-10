@@ -90,7 +90,7 @@ class SpotInstances(instances.Instances):
         )
 
         spot_prices = [
-            history['SpotPrice']
+            float(history['SpotPrice'])
             for history in response['SpotPriceHistory']
         ]
 
