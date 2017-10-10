@@ -6,6 +6,7 @@ import unittest
 import mock
 
 from treadmill.infra.spot_instances import SpotInstances
+from datetime import datetime
 
 
 class SpotInstancesTest(unittest.TestCase):
@@ -76,3 +77,37 @@ class SpotInstancesTest(unittest.TestCase):
         conn_mock.describe_instances.assert_has_calls(
             [mock.call(InstanceIds=['1']), mock.call(InstanceIds=['2'])]
         )
+
+    @mock.patch('treadmill.infra.spot_instances.datetime')
+    @mock.patch('treadmill.infra.connection.Connection')
+    def test_get_average_price_for_one_hour(
+        self, ConnectionMock, DateTimeMock
+    ):
+        conn_mock = ConnectionMock()
+        DateTimeMock.now.return_value = datetime(2017, 10, 10, 1, 0, 0)
+        response = {
+            'SpotPriceHistory': [
+                {'SpotPrice': 1.0},
+                {'SpotPrice': 2.0},
+                {'SpotPrice': 3.0},
+                {'SpotPrice': 4.0}
+            ]
+        }
+        conn_mock.describe_spot_price_history = mock.Mock(
+            return_value=response
+        )
+
+        avg_price = SpotInstances._get_average_price_for_one_hour(
+            availability_zone='some-zone',
+            product_description='some-description',
+            instance_type='some-instance-type'
+        )
+
+        conn_mock.describe_spot_price_history.assert_called_once_with(
+            StartTime=datetime(2017, 10, 10, 0, 0, 0),
+            EndTime=datetime(2017, 10, 10, 1, 0, 0),
+            AvailabilityZone='some-zone',
+            ProductDescriptions=['some-description'],
+            InstanceTypes=['some-instance-type']
+        )
+        self.assertEquals(avg_price, 2.5)

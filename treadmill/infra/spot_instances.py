@@ -1,5 +1,5 @@
 from treadmill.infra import connection, instances, constants, subnet
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import base64
 
@@ -74,3 +74,24 @@ class SpotInstances(instances.Instances):
             )['SpotInstanceRequests'][0]
             if request['State'] == 'active':
                 return request['InstanceId']
+
+    @classmethod
+    def _get_average_price_for_one_hour(
+        cls, availability_zone, product_description, instance_type
+    ):
+        conn = connection.Connection()
+        time = datetime.now()
+        response = conn.describe_spot_price_history(
+            StartTime=time - timedelta(hours=1),
+            EndTime=time,
+            ProductDescriptions=[product_description],
+            AvailabilityZone=availability_zone,
+            InstanceTypes=[instance_type]
+        )
+
+        spot_prices = [
+            history['SpotPrice']
+            for history in response['SpotPriceHistory']
+        ]
+
+        return sum(spot_prices) / float(len(spot_prices))
