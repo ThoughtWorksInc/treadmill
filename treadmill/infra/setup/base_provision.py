@@ -29,7 +29,7 @@ class BaseProvision:
             instance_type,
             subnet_id=None,
             cidr_block=None,
-            spot=False
+            spot=False,
             spot_type=None,
             spot_duration_minutes=None,
             spot_price=None
@@ -74,7 +74,7 @@ class BaseProvision:
                 role=self.role,
                 spot_type=spot_type,
                 spot_duration_minutes=spot_duration_minutes,
-                spot_price=spot_price
+                spot_price=spot_price,
                 user_data='systemctl restart treadmill-node'
             )
             return

@@ -4,7 +4,7 @@ import sys
 import polling
 
 
-instance_id = sys.argv[1]
+instance_id = sys.argv[-1]
 
 
 def create_image():

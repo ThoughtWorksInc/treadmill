@@ -622,8 +622,11 @@ def init():
     @cloud.command(name='spot-price')
     @click.option('--availability-zone', help='Availability Zone')
     @click.option('--product-desc', help='Product description',
-                  default='Linux/UNIX')
-    @click.option('--instance-type', help='Instance Type', default='m4large')
+                  default='Linux/UNIX', show_default=True)
+    @click.option('--instance-type',
+                  help='Instance Type',
+                  default=constants.INSTANCE_TYPES['EC2']['m4large'],
+                  show_default=True)
     def get_spot_price(availability_zone, product_desc, instance_type):
         """Get average spot price for last hour"""
         click.echo(

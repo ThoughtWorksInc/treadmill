@@ -36,10 +36,8 @@ IPA_SEC_GRP = 'ipa_secgrp'
 IPA_API_PORT = 5108
 ZK_CLIENT_PORT = 2181
 DEMAND_PRICE = {
-    {
-        'm4large': {
-            'us-east-1': '0.1',
-            'ca-central-1': '0.111'
-        }
+    'm4large': {
+        'us-east-1': '0.1',
+        'ca-central-1': '0.111'
     }
 }
