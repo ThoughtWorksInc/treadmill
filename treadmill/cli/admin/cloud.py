@@ -5,7 +5,7 @@ import logging
 
 from treadmill.infra import constants, connection, vpc, subnet, spot_instances
 from treadmill.infra.setup import ipa, ldap, node, cell
-from treadmill.infra.utils import security_group, hosted_zones
+from treadmill.infra.utils import security_group
 from treadmill.infra.utils import mutually_exclusive_option, cli_callbacks
 
 _LOGGER = logging.getLogger(__name__)
@@ -362,7 +362,7 @@ def init():
     @click.option('--image', required=True,
                   help='Image to use for new node instance e.g. RHEL-7.4')
     @click.option('--instance-type',
-                  default=constants.INSTANCE_TYPES['EC2']['large'],
+                  default=constants.INSTANCE_TYPES['EC2']['m4large'],
                   help='AWS ec2 instance type')
     @click.option('--tm-release',
                   callback=cli_callbacks.current_release_version,
@@ -378,6 +378,15 @@ def init():
                   default=False, help='Provision node with Treadmill APIs')
     @click.option('--spot', required=False, is_flag=True, default=False,
                   help='Spin Up Node with Spot Instances')
+    @click.option('--spot-type', required=False, default='persistent',
+                  help='one-time | persistent', show_default=True)
+    @click.option('--spot-duration-minutes', required=False,
+                  help='(60, 120, 180, 240, 300, or 360)')
+    @click.option('--spot-price',
+                  required=False,
+                  default=constants.DEMAND_PRICE['m4large']['us-east-1'],
+                  help='The maximum hourly price (bid) for any Spot instance \
+                  launched to fulfill the request.')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=mutually_exclusive_option.MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -391,15 +400,22 @@ def init():
                                       'subnet_id',
                                       'ipa_admin_password',
                                       'spot',
+                                      'spot_type',
+                                      'spot_duration_minutes',
+                                      'spot_price'
                                       'with_api'],
                   help="Options YAML file. ")
     @click.pass_context
     def configure_node(ctx, vpc_id, region, name, key, image,
                        instance_type, tm_release, app_root,
                        subnet_id, ipa_admin_password, with_api,
-                       spot, manifest):
+                       spot, spot_type, spot_duration_minutes, spot_price,
+                       manifest):
         """Configure new Node in Cell"""
-
+        if spot:
+            if not (spot_type or spot_price):
+                raise click.BadParameter('Spot Type/Price are mandatory \
+                arguments with spot')
         domain = ctx.obj['DOMAIN']
 
         connection.Connection.context.domain = domain
@@ -422,7 +438,10 @@ def init():
             subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
             with_api=with_api,
-            spot=spot
+            spot=spot,
+            spot_type=spot_type,
+            spot_duration_minutes=spot_duration_minutes,
+            spot_price=spot_price
         )
         click.echo(
             pprint(_node.subnet.show())
@@ -600,23 +619,29 @@ def init():
         """Disable Port from my ip"""
         security_group.disable(port, security_group_id, protocol, anywhere)
 
-    @cloud.command(name='get-spot-price')
+    @cloud.command(name='spot-price')
     @click.option('--availability-zone', help='Availability Zone')
     @click.option('--product-desc', help='Product description',
                   default='Linux/UNIX')
-    @click.option('--instance-type', help='Instance Type', default='m4.large')
+    @click.option('--instance-type', help='Instance Type', default='m4large')
     def get_spot_price(availability_zone, product_desc, instance_type):
         """Get average spot price for last hour"""
         click.echo(
-            spot_instances.SpotInstances._get_average_price_for_one_hour(
-                availability_zone=(
-                    availability_zone
-                    if availability_zone
-                    else subnet.Subnet._availability_zone()
+            {
+                'SpotPrice': spot_instances.SpotInstances.
+                _get_average_price_for_one_hour(
+                    availability_zone=(
+                        availability_zone
+                        if availability_zone
+                        else subnet.Subnet._availability_zone()
+                    ),
+                    product_description=product_desc,
+                    instance_type=instance_type
                 ),
-                product_description=product_desc,
-                instance_type=instance_type
-            )
+                'OnDemandPrice': constants.DEMAND_PRICE['m4large'][
+                    'us-east-1'
+                ]
+            }
         )
 
     return cloud

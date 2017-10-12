@@ -15,7 +15,10 @@ class Node(base_provision.BaseProvision):
             subnet_id,
             with_api,
             ipa_admin_password,
-            spot
+            spot,
+            spot_type,
+            spot_duration_minutes,
+            spot_price
     ):
         self.name = self.name + '-' + str(time.time())
         self.hostname = self.name + '.' + connection.Connection.context.domain
@@ -44,7 +47,10 @@ class Node(base_provision.BaseProvision):
             subnet_id=subnet_id,
             key=key,
             instance_type=instance_type,
-            spot=spot
+            spot=spot,
+            spot_type=spot_type,
+            spot_duration_minutes=spot_duration_minutes,
+            spot_price=spot_price
         )
 
     def destroy(self, instance_id=None):

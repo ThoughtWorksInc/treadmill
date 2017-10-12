@@ -30,6 +30,9 @@ class BaseProvision:
             subnet_id=None,
             cidr_block=None,
             spot=False
+            spot_type=None,
+            spot_duration_minutes=None,
+            spot_price=None
     ):
         if not subnet_id and not cidr_block:
             raise Exception(
@@ -69,7 +72,10 @@ class BaseProvision:
                 key_name=key,
                 secgroup_ids=self.vpc.secgroup_ids,
                 role=self.role,
-                user_data=user_data
+                spot_type=spot_type,
+                spot_duration_minutes=spot_duration_minutes,
+                spot_price=spot_price
+                user_data='systemctl restart treadmill-node'
             )
             return
 

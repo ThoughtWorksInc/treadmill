@@ -32,7 +32,10 @@ class SpotInstances(instances.Instances):
             subnet_id,
             secgroup_ids,
             role,
-            user_data
+            user_data,
+            spot_type,
+            spot_duration_minutes,
+            spot_price
     ):
         launch_specifications = {
             'ImageId': SpotInstances.get_ami_id(image),
@@ -49,9 +52,13 @@ class SpotInstances(instances.Instances):
         conn = connection.Connection()
         region = connection.Connection.context.region_name
         spot_requests = conn.request_spot_instances(
-            SpotPrice=constants.DEMAND_PRICE[region],
+            SpotPrice=(
+                spot_price or constants.DEMAND_PRICE['m4large'][region]
+            ),
             LaunchSpecification=launch_specifications,
-            InstanceCount=count
+            InstanceCount=count,
+            Type=spot_type,
+            BlockDurationMinutes=spot_duration_minutes,
         )['SpotInstanceRequests']
 
         conn = connection.Connection()

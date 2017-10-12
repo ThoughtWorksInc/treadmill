@@ -43,7 +43,15 @@ def init(api, cors, impl):
             description='Treadmill Release URL/Version'
         ),
         'app_root': fields.String(description='Server APP Root'),
-        'spot': fields.Boolean(description='use spot-instance?')
+        'spot': fields.Boolean(description='use spot-instance?'),
+        'spot_type': fields.String(description='one-time | persistent'),
+        'spot_duration_minutes': fields.Integer(
+            description='(60, 120, 180, 240, 300, or 360)'
+        ),
+        'spot_price': fields.String(
+            description='The maximum hourly price (bid) for any Spot instance \
+            launched to fulfill the request.'
+        ),
     }
 
     server_model = api.model(
