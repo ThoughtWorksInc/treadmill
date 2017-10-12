@@ -75,7 +75,7 @@ class BaseProvision:
                 spot_type=spot_type,
                 spot_duration_minutes=spot_duration_minutes,
                 spot_price=spot_price,
-                user_data='systemctl restart treadmill-node'
+                user_data=user_data,
             )
             return
 
