@@ -26,7 +26,7 @@ def create_on_demand_instance_for(image_id):
         secgroup_ids=[sg['GroupId'] for sg in spot_instance.metadata['SecurityGroups']],
         instance_type=spot_instance.metadata['InstanceType'],
         count=1,
-        user_data='systemctl start treadmill-node',
+        user_data='su -c "kinit -k -t /etc/treadmld.keytab treadmld" treadmld && systemctl start treadmill-node',
         role='NODE',
         name=spot_instance.name,
         image=''
