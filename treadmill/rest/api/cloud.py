@@ -43,6 +43,7 @@ def init(api, cors, impl):
             description='Treadmill Release URL/Version'
         ),
         'app_root': fields.String(description='Server APP Root'),
+        'spot': fields.Boolean(description='use spot-instance?')
     }
 
     server_model = api.model(
