@@ -1,6 +1,5 @@
 from treadmill.infra import connection, instances, constants, subnet
 from datetime import datetime, timedelta
-import time
 import base64
 import polling
 
@@ -103,5 +102,3 @@ class SpotInstances(instances.Instances):
         ]
 
         return sum(spot_prices) / float(len(spot_prices))
-
-

@@ -620,25 +620,16 @@ def init():
         security_group.disable(port, security_group_id, protocol, anywhere)
 
     @cloud.command(name='spot-price')
-    @click.option('--availability-zone', help='Availability Zone')
-    @click.option('--product-desc', help='Product description',
-                  default='Linux/UNIX', show_default=True)
     @click.option('--instance-type',
                   help='Instance Type',
                   default=constants.INSTANCE_TYPES['EC2']['m4large'],
                   show_default=True)
-    def get_spot_price(availability_zone, product_desc, instance_type):
+    def get_spot_price(instance_type):
         """Get average spot price for last hour"""
         click.echo(
             {
                 'SpotPrice': spot_instances.SpotInstances.
-                _get_average_price_for_one_hour(
-                    availability_zone=(
-                        availability_zone
-                        if availability_zone
-                        else subnet.Subnet._availability_zone()
-                    ),
-                    product_description=product_desc,
+                get_current_spot_price(
                     instance_type=instance_type
                 ),
                 'OnDemandPrice': constants.DEMAND_PRICE['m4large'][
