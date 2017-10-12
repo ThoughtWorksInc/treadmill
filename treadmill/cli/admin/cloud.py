@@ -3,7 +3,7 @@ import click
 from pprint import pprint
 import logging
 
-from treadmill.infra import constants, connection, vpc, subnet
+from treadmill.infra import constants, connection, vpc, subnet, spot_instances
 from treadmill.infra.setup import ipa, ldap, node, cell
 from treadmill.infra.utils import security_group, hosted_zones
 from treadmill.infra.utils import mutually_exclusive_option, cli_callbacks
@@ -376,6 +376,8 @@ def init():
                   help='Password for IPA admin')
     @click.option('--with-api', required=False, is_flag=True,
                   default=False, help='Provision node with Treadmill APIs')
+    @click.option('--spot', required=False, is_flag=True, default=False,
+                  help='Spin Up Node with Spot Instances')
     @click.option('-m', '--' + _OPTIONS_FILE,
                   cls=mutually_exclusive_option.MutuallyExclusiveOption,
                   mutually_exclusive=['region',
@@ -387,13 +389,15 @@ def init():
                                       'tm_release',
                                       'app_root',
                                       'subnet_id',
-                                      'ipa_admin_password'
+                                      'ipa_admin_password',
+                                      'spot',
                                       'with_api'],
                   help="Options YAML file. ")
     @click.pass_context
     def configure_node(ctx, vpc_id, region, name, key, image,
                        instance_type, tm_release, app_root,
-                       subnet_id, ipa_admin_password, with_api, manifest):
+                       subnet_id, ipa_admin_password, with_api,
+                       spot, manifest):
         """Configure new Node in Cell"""
 
         domain = ctx.obj['DOMAIN']
@@ -418,6 +422,7 @@ def init():
             subnet_id=subnet_id,
             ipa_admin_password=ipa_admin_password,
             with_api=with_api,
+            spot=spot
         )
         click.echo(
             pprint(_node.subnet.show())
@@ -595,11 +600,23 @@ def init():
         """Disable Port from my ip"""
         security_group.disable(port, security_group_id, protocol, anywhere)
 
-    @cloud.command(name='delete-hosted-zone')
-    @click.option('--zones-to-retain', required=True,
-                  help='Hosted Zone IDs to retain', multiple=True)
-    def delete_hosted_zones(zones_to_retain):
-        """Delete Hosted Zones"""
-        hosted_zones.delete_obsolete(zones_to_retain)
+    @cloud.command(name='get-spot-price')
+    @click.option('--availability-zone', help='Availability Zone')
+    @click.option('--product-desc', help='Product description',
+                  default='Linux/UNIX')
+    @click.option('--instance-type', help='Instance Type', default='m4.large')
+    def get_spot_price(availability_zone, product_desc, instance_type):
+        """Get average spot price for last hour"""
+        click.echo(
+            spot_instances.SpotInstances._get_average_price_for_one_hour(
+                availability_zone=(
+                    availability_zone
+                    if availability_zone
+                    else subnet.Subnet._availability_zone()
+                ),
+                product_description=product_desc,
+                instance_type=instance_type
+            )
+        )
 
     return cloud

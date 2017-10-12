@@ -165,7 +165,8 @@ class Subnet(ec2object.EC2Object):
             "ap-southeast-1": "ap-southeast-1a",
             "ap-southeast-2": "ap-southeast-2a",
             "us-west-1": "us-west-1b",
-            "us-west-2": "us-west-2a"
+            "us-west-2": "us-west-2a",
+            "ca-central-1": "ca-central-1b"
         }
 
         return _map.get(connection.Connection.context.region_name, None)

@@ -1,4 +1,4 @@
-from treadmill.infra import instances
+from treadmill.infra import instances, spot_instances
 from treadmill.infra import connection
 from treadmill.infra import vpc
 from treadmill.infra import subnet
@@ -29,6 +29,7 @@ class BaseProvision:
             instance_type,
             subnet_id=None,
             cidr_block=None,
+            spot=False
     ):
         if not subnet_id and not cidr_block:
             raise Exception(
@@ -57,6 +58,20 @@ class BaseProvision:
         if getattr(self, 'configuration', None):
             self.configuration.cell = self.subnet.id
             user_data = self.configuration.get_userdata()
+
+        if spot:
+            self.subnet.instances = spot_instances.SpotInstances.create(
+                name=self.name,
+                image=image,
+                count=count,
+                subnet_id=self.subnet.id,
+                instance_type=instance_type,
+                key_name=key,
+                secgroup_ids=self.vpc.secgroup_ids,
+                role=self.role,
+                user_data=user_data
+            )
+            return
 
         self.subnet.instances = instances.Instances.create(
             name=self.name,

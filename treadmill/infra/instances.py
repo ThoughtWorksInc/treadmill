@@ -142,11 +142,11 @@ class Instances:
             subnet_id,
             secgroup_ids,
             user_data,
-            role
+            role, image_id=None
     ):
         conn = connection.Connection()
         _instances = conn.run_instances(
-            ImageId=Instances.get_ami_id(image),
+            ImageId=image_id or Instances.get_ami_id(image),
             MinCount=count,
             MaxCount=count,
             InstanceType=instance_type,
@@ -248,7 +248,7 @@ class Instances:
         images = conn.describe_images(
             Filters=[
                 {'Name': 'name', 'Values': [image + '*']},
-                {'Name': 'owner-id', 'Values': ['309956199498']},
+                {'Name': 'owner-id', 'Values': ['410186602215']},
                 {'Name': 'image-type', 'Values': ['machine']}
             ],
         )['Images']

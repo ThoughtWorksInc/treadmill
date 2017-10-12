@@ -29,3 +29,12 @@ ROLES = {
     'ZOOKEEPER': 'ZOOKEEPER',
     'DEFAULT': 'DEFAULT'
 }
+
+COMMON_SEC_GRP = 'sg_common'
+IPA_SEC_GRP = 'ipa_secgrp'
+IPA_API_PORT = 5108
+ZK_CLIENT_PORT = 2181
+DEMAND_PRICE = {
+    'us-east-1': '0.1',
+    'ca-central-1': '0.111'
+}
