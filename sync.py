@@ -1,6 +1,5 @@
 import sys
 import subprocess
-from datetime import date
 
 
 if sys.argv[1] == 'help':
@@ -17,7 +16,7 @@ else:
     else:
         print('Preparing...')
         branch = sys.argv[1]
-        merge_branch = branch.strip() + date.today().strftime('-%d-%m-%Y') + '-merge'
+        merge_branch = branch.strip() + '-merge'
         subprocess.call(['git', 'checkout', branch])
         print('Deleting old branch ' + merge_branch + ' locally...')
         subprocess.call(['git', 'branch', '-D', merge_branch])
