@@ -22,7 +22,12 @@ class LDAP(base_provision.BaseProvision):
         count = 1
         self.name = self.name + '-' + str(time.time())
         hostname = self.name + '.' + connection.Connection.context.domain
-        otp = ipa.API().add_host(hostname=hostname)
+        _ipa = ipa.API()
+        otp = _ipa.add_host(hostname=hostname)
+        _ipa.service_add('ldap', hostname, {
+            'domain': connection.Connection.context.domain,
+            'hostname': hostname,
+        })
 
         ipa_server_hostname = instances.Instances.get_hostnames_by_roles(
             vpc_id=self.vpc.id,

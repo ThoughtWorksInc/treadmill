@@ -1,5 +1,5 @@
 from treadmill.infra.setup import base_provision
-from treadmill.infra import configuration, constants
+from treadmill.infra import configuration, constants, connection
 from treadmill.infra import instances
 from treadmill.api import ipa
 
@@ -27,6 +27,10 @@ class Zookeeper(base_provision.BaseProvision):
         _name = self.name
         for _zk_h in _zk_hostnames.keys():
             _otp = _ipa.add_host(hostname=_zk_h)
+            _ipa.service_add('zookeeper', _zk_h, {
+                'domain': connection.Connection.context.domain,
+                'hostname': _zk_h,
+            })
             _idx = _zk_hostnames[_zk_h]
             self.configuration = configuration.Zookeeper(
                 ldap_hostname=_hostnames[constants.ROLES['LDAP']],
